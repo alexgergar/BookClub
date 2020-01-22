@@ -35,11 +35,7 @@ function App() {
   });
 
   if (!user) {
-    return (
-      <View>
-        <Text>Login</Text>
-      </View>
-    );
+    return <MainEventScreen />;
   }
 
 
