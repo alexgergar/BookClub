@@ -11,7 +11,7 @@ import {
 } from 'react-native';
 import axios from 'axios';
 import {bookClubEvent} from '../utils/testInfo';
-import {Button, Icon, ListItem} from 'react-native-elements';
+import {Button, Icon, Avatar} from 'react-native-elements';
 import ListAvatarOnLeft from '../components/ListAvatarOnLeft';
 
 export default class MainEvent extends Component {
@@ -24,18 +24,16 @@ export default class MainEvent extends Component {
       })
       .catch(error => console.log(error));
   };
+
+  handleGetInitials = fullName => {
+    return fullName.split(" ").map((n) => n[0]).join("");
+  } 
   
   
   render() {
     const listOfAttendees = bookClubEvent.attendees.map((attendee, index) => {
-      return (
-        <ListItem
-          key={index}
-          // leftAvatar={{source: {uril: ###}}}
-          title={attendee.guestName}
-          bottomDivider
-          />
-      )
+      const initialsOfName = this.handleGetInitials(attendee.guestName);
+      return <Avatar key={index} rounded title={initialsOfName} />
     })
     return (
       <SafeAreaView>
@@ -99,33 +97,29 @@ export default class MainEvent extends Component {
                     {bookClubEvent.whatGuestsProvides[0].whatTheyAreBringing}!
                   </Text>
                 </View>
-                <View style={styles.whatToBringContainer}>
-                  <Icon name="add-alert" type="material" />
-                  <Text style={styles.cardTitleStyle}>
-                    2Bring{' '}
-                    {bookClubEvent.whatGuestsProvides[0].whatTheyAreBringing}!
-                  </Text>
+                <View style={styles.headlineView}>
+                  <Text style={styles.headlineText}>Who is coming?</Text>
                 </View>
-                <View style={styles.whatToBringContainer}>
-                  <Icon name="add-alert" type="material" />
-                  <Text style={styles.cardTitleStyle}>
-                    3Bring{' '}
-                    {bookClubEvent.whatGuestsProvides[0].whatTheyAreBringing}!
-                  </Text>
-                </View>
-                <View style={styles.whatToBringContainer}>
-                  <Icon name="add-alert" type="material" />
-                  <Text style={styles.cardTitleStyle}>
-                    4Bring{' '}
-                    {bookClubEvent.whatGuestsProvides[0].whatTheyAreBringing}!
-                  </Text>
-                </View>
-                {/* <View style={styles.whoIsComingListContainer}>
+                <View style={styles.whoIsComingListContainer}>
                   {listOfAttendees}
-                </View> */}
+                </View>
+                <View style={styles.headlineView}>
+                  <Text style={styles.headlineText}>Info</Text>
+                </View>
+                <View style={styles.importantInfoContainer}>
+                  <Text style={styles.eventDetailsText}>{bookClubEvent.host.name} wanted you to know...</Text>
+                  <Text style={styles.eventDetailsQuoteText}>{bookClubEvent.detailsForLocation}</Text>
+                </View>
+                <View style={styles.headlineView}>
+                  <Text style={styles.headlineText}>Just so you know</Text>
+                </View>
+                <View style={styles.importantInfoContainer}>
+                  <Text style={styles.eventDetailsText}>{bookClubEvent.detailsForEvent}</Text>
+                </View>
+                
 
                 {/* }
-              <Text>Card list of who is attending - click and it expands into more info</Text>
+              <Text>Card list of who is attending - click and it expands into more info - slice the list based on a certain number based on size of avatar then add plus sign</Text>
               <Text>Details/important info on what to know - how to get to location, allergies, door access codes - bulleted or list formate</Text>
               <Text>Details for location</Text> {*/}
               </View>
@@ -156,7 +150,8 @@ const styles = StyleSheet.create({
     // zIndex: 1,
     backgroundColor: 'white',
     marginTop: windowHeight * 0.2,
-    borderRadius: 15,
+    borderTopLeftRadius: 15,
+    borderTopRightRadius: 15,
     bottom: 0,
     width: '90%',
     paddingBottom: 100,
@@ -242,8 +237,47 @@ const styles = StyleSheet.create({
     paddingLeft: 10,
     fontSize: 18,
   },
-  whoIsComingListContainer: {
+  headlineView: {
+    left: '5%',
   },
+  headlineText: {
+    textTransform: 'uppercase',
+    color: '#3A5673',
+    fontSize: 12,
+  },
+  whoIsComingListContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    // borderRadius: 10,
+    // backgroundColor: 'rgba(165, 172, 181, 0.2)',
+    marginLeft: '5%',
+    marginRight: '5%',
+    marginTop: 5,
+    marginBottom: 15,
+    // borderColor: 'rgba(165, 172, 181, 0.21)',
+    borderWidth: 0,
+  },
+  listItemContentWhoIsComing: {
+    backgroundColor: 'rgba(165, 172, 181, 0.1)',
+  },
+  listContainerWhoIsComing: {
+    borderRadius: 10,
+    borderWidth: 0,
+  },
+  eventDetailsText: {
+    marginLeft: '5%',
+    marginRight: '5%',
+    color: '#1E3342',
+  },
+  eventDetailsQuoteText: {
+    fontStyle: 'italic',
+    marginLeft: '8%',
+    marginRight: '8%',
+    color: '#1E3342',
+  },
+  importantInfoContainer: {
+    marginBottom: 10,
+  }
 });
 
 
