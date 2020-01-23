@@ -7,10 +7,12 @@ import {
   Image,
   ScrollView,
   Dimensions,
+  FlatList
 } from 'react-native';
 import axios from 'axios';
 import {bookClubEvent} from '../utils/testInfo';
-import {Button, Icon, Card} from 'react-native-elements';
+import {Button, Icon, ListItem} from 'react-native-elements';
+import ListAvatarOnLeft from '../components/ListAvatarOnLeft';
 
 export default class MainEvent extends Component {
 
@@ -25,75 +27,111 @@ export default class MainEvent extends Component {
   
   
   render() {
+    const listOfAttendees = bookClubEvent.attendees.map((attendee, index) => {
+      return (
+        <ListItem
+          key={index}
+          // leftAvatar={{source: {uril: ###}}}
+          title={attendee.guestName}
+          bottomDivider
+          />
+      )
+    })
     return (
-      <SafeAreaView style={styles.container}>
-        <Image
-          style={styles.bookImageView}
-          source={require('../utils/bookPlaceholder.png')}
-          resizeMode={'cover'}
-        />
-        <View style={styles.backgroundContentContainer}>
-          <View style={styles.informationContentContainer}>
-            <View style={styles.textRowCenterAlign}>
-              <Text style={styles.dateText}>{bookClubEvent.date}</Text>
-              <Text style={styles.spacerText}> at </Text>
-              <Text style={styles.dateText}>{bookClubEvent.startTime}</Text>
-            </View>
-
-            {/* in the future maybe change this to a card component or a box that the user can click on to get more info on person, contact info, map, ect. see notes from 1.21.20 */}
-            <View style={{marginTop: 10}}>
-              <Text
-                style={{
-                  fontSize: 12,
-                  textTransform: 'uppercase',
-                  textAlign: 'center',
-                }}>
-                {bookClubEvent.host.name}
-              </Text>
-              <Text style={styles.addressText}>
-                {bookClubEvent.location.streetAddress}
-              </Text>
+      <SafeAreaView>
+        <ScrollView contentContainerStyle={styles.container}>
+          <Image
+            style={styles.bookImageView}
+            source={require('../utils/bookPlaceholder.png')}
+            resizeMode={'cover'}
+          />
+          <View style={styles.backgroundContentContainer}>
+            <View style={styles.informationContentContainer}>
               <View style={styles.textRowCenterAlign}>
-                <Text style={styles.cityStateZipText}>
-                  {bookClubEvent.location.city} {bookClubEvent.location.state},
-                  {bookClubEvent.location.zipcode}
-                </Text>
-              </View>
-            </View>
-            {/* end of card data... */}
-            <View style={styles.hortizontalLine} />
-            <View style={styles.clickableDetailTabRow}>
-              {/* make these buttons into a unique component using theming for active/non active passing props */}
-              <Button
-                title="Event Details"
-                type="clear"
-                titleStyle={styles.detailButtonsTitleStyle}
-                containerStyle={styles.detailButtonsContainerStyle}
-              />
-              <Button
-                title="Book Details"
-                type="clear"
-                titleStyle={styles.detailButtonsTitleStyle}
-                containerStyle={styles.detailButtonsContainerStyle}
-              />
-            </View>
-            <View>
-              <View style={styles.whatToBringContainer}>
-                <Icon name="add-alert" type="material" />
-                <Text style={styles.cardTitleStyle}>
-                  Bring{' '}
-                  {bookClubEvent.whatGuestsProvides.uid1.whatTheyAreBringing}!
-                </Text>
+                <Text style={styles.dateText}>{bookClubEvent.date}</Text>
+                <Text style={styles.spacerText}> at </Text>
+                <Text style={styles.dateText}>{bookClubEvent.startTime}</Text>
               </View>
 
-              {/* }
-              <Text>What I need to bring to event as card with icon or if I need to pick from list - tell what i'm bringing</Text>
+              {/* in the future maybe change this to a card component or a box that the user can click on to get more info on person, contact info, map, ect. see notes from 1.21.20 */}
+              <View style={{marginTop: 10}}>
+                <Text
+                  style={{
+                    fontSize: 12,
+                    textTransform: 'uppercase',
+                    textAlign: 'center',
+                  }}>
+                  {bookClubEvent.host.name}
+                </Text>
+                <Text style={styles.addressText}>
+                  {bookClubEvent.location.streetAddress}
+                </Text>
+                <View style={styles.textRowCenterAlign}>
+                  <Text style={styles.cityStateZipText}>
+                    {bookClubEvent.location.city} {bookClubEvent.location.state}
+                    ,{bookClubEvent.location.zipcode}
+                  </Text>
+                </View>
+              </View>
+              {/* end of card data... */}
+              <View style={styles.hortizontalLine} />
+              <View style={styles.clickableDetailTabRow}>
+                {/* make these buttons into a unique component using theming for active/non active passing props */}
+                <Button
+                  title="Event Details"
+                  type="clear"
+                  titleStyle={styles.detailButtonsTitleStyle}
+                  containerStyle={styles.detailButtonsContainerStyle}
+                />
+                <Button
+                  title="Book Details"
+                  type="clear"
+                  titleStyle={styles.detailButtonsTitleStyle}
+                  containerStyle={styles.detailButtonsContainerStyle}
+                />
+              </View>
+              <View>
+                {/* What I need to bring to event as card with icon or if I need to pick from list - tell what i'm bringing */}
+                <View style={styles.whatToBringContainer}>
+                  <Icon name="add-alert" type="material" />
+                  <Text style={styles.cardTitleStyle}>
+                    Bring{' '}
+                    {bookClubEvent.whatGuestsProvides[0].whatTheyAreBringing}!
+                  </Text>
+                </View>
+                <View style={styles.whatToBringContainer}>
+                  <Icon name="add-alert" type="material" />
+                  <Text style={styles.cardTitleStyle}>
+                    2Bring{' '}
+                    {bookClubEvent.whatGuestsProvides[0].whatTheyAreBringing}!
+                  </Text>
+                </View>
+                <View style={styles.whatToBringContainer}>
+                  <Icon name="add-alert" type="material" />
+                  <Text style={styles.cardTitleStyle}>
+                    3Bring{' '}
+                    {bookClubEvent.whatGuestsProvides[0].whatTheyAreBringing}!
+                  </Text>
+                </View>
+                <View style={styles.whatToBringContainer}>
+                  <Icon name="add-alert" type="material" />
+                  <Text style={styles.cardTitleStyle}>
+                    4Bring{' '}
+                    {bookClubEvent.whatGuestsProvides[0].whatTheyAreBringing}!
+                  </Text>
+                </View>
+                {/* <View style={styles.whoIsComingListContainer}>
+                  {listOfAttendees}
+                </View> */}
+
+                {/* }
               <Text>Card list of who is attending - click and it expands into more info</Text>
               <Text>Details/important info on what to know - how to get to location, allergies, door access codes - bulleted or list formate</Text>
               <Text>Details for location</Text> {*/}
+              </View>
             </View>
           </View>
-        </View>
+        </ScrollView>
       </SafeAreaView>
     );
   }
@@ -115,19 +153,20 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   backgroundContentContainer: {
-    zIndex: 1,
+    // zIndex: 1,
     backgroundColor: 'white',
-    position: 'absolute',
     marginTop: windowHeight * 0.2,
     borderRadius: 15,
-    overflow: 'scroll',
-    height: '100%',
+    bottom: 0,
     width: '90%',
+    paddingBottom: 100,
+        // bottom: starterHeightPositionForInformationTextUnderBookImage,
   },
   informationContentContainer: {
+    flexGrow: 1,
     padding: 10,
     position: 'relative',
-    zIndex: 10,
+    // zIndex: 10,
     top: starterHeightPositionForInformationTextUnderBookImage,
   },
   bookImageView: {
@@ -191,6 +230,8 @@ const styles = StyleSheet.create({
     padding: 15,
     marginLeft: '5%',
     marginRight: '5%',
+    marginTop: 10,
+    marginBottom: 10,
     flexDirection: 'row',
     alignItems: 'center',
     borderColor: 'rgba(165, 172, 181, 0.21)',
@@ -200,6 +241,8 @@ const styles = StyleSheet.create({
     textTransform: 'uppercase',
     paddingLeft: 10,
     fontSize: 18,
+  },
+  whoIsComingListContainer: {
   },
 });
 

@@ -23,44 +23,39 @@ export const bookClubEvent = {
     'At the call box, find me under Gergar and I can let you in',
   detailsForEvent: 'I have a dog so let me know if anyone is allergic',
   whatHostProvides: ['wine', 'cheese platter', 'seltzer'],
-  whatGuestsProvides: {
-      uid1: {
-        guestName: 'Esther Song',
-        whatTheyAreBringing: 'cups',
-      },
-      uid2: {
-        guestName: 'Rachel Urban',
-        whatTheyAreBringing: 'plates',
-      },
-      uid3: {
-        guestName: 'Molly Canton',
-        whatTheyAreBringing: 'rose',
+  whatGuestsProvides: [
+    {
+      uid: 'alsjdf830unasd93',
+      guestName: 'Esther Song',
+      whatTheyAreBringing: 'cups',
     },
-},
+    {
+      uid: 'asd903rndkasdgu83d3',
+      guestName: 'Rachel Urban',
+      whatTheyAreBringing: 'plates',
+    },
+    {
+      uid: 'imadg399dmmmsdfod3',
+      guestName: 'Molly Canton',
+      whatTheyAreBringing: 'rose',
+    },
+  ],
   attendees: [
     {
-      uid1: {
-        guestName: 'Esther Song',
-        coming: true,
-      },
+      guestName: 'Esther Song',
+      coming: true,
     },
     {
-      uid2: {
-        guestName: 'Rachel Urban',
-        coming: true,
-      },
+      guestName: 'Rachel Urban',
+      coming: true,
     },
     {
-      uid3: {
-        guestName: 'Molly Canton',
-        coming: true,
-      },
+      guestName: 'Molly Canton',
+      coming: true,
     },
     {
-      uid4: {
-        guestName: 'Jessica Smith',
-        coming: false,
-      },
+      guestName: 'Jessica Smith',
+      coming: false,
     },
   ],
 };
