@@ -124,36 +124,6 @@ const styles = StyleSheet.create({
     paddingRight: '12%',
     paddingTop: 3,
   },
-  whoIsComingListContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginLeft: '5%',
-    marginRight: '5%',
-    marginTop: 5,
-    marginBottom: 15,
-    borderWidth: 0,
-  },
-  listItemContentWhoIsComing: {
-    backgroundColor: 'rgba(165, 172, 181, 0.1)',
-  },
-  listContainerWhoIsComing: {
-    borderRadius: 10,
-    borderWidth: 0,
-  },
-  eventDetailsText: {
-    marginLeft: '5%',
-    marginRight: '5%',
-    color: '#1E3342',
-  },
-  eventDetailsQuoteText: {
-    fontStyle: 'italic',
-    marginLeft: '8%',
-    marginRight: '8%',
-    color: '#1E3342',
-  },
-  importantInfoContainer: {
-    marginBottom: 10,
-  },
   bookCoverList: {
     width: bookCoverListImageWidth,
     height: bookCoverListImageHeight,

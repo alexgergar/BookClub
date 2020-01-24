@@ -1,20 +1,43 @@
 import React, {Component} from 'react';
 import {Text, View, StyleSheet, Dimensions} from 'react-native';
 import {bookClubEvent} from '../utils/testInfo';
-import {Icon, Avatar} from 'react-native-elements';
+import {Avatar, Badge, Icon, withBadge} from 'react-native-elements';
 
 export default class EventDetails extends Component {
+  state = {
+    showAllAttendeesInfo: false,
+  }
   handleGetInitials = fullName => {
     return fullName
       .split(' ')
-      .map(n => n[0])
+      .map(name => name[0])
       .join('');
   };
-  render() {
-    const listOfAttendees = bookClubEvent.attendees.map((attendee, index) => {
-      const initialsOfName = this.handleGetInitials(attendee.guestName);
-      return <Avatar key={index} rounded title={initialsOfName} />;
+
+  toggleShowAllAttendeesInfo = () => {
+    this.setState({
+      showAllAttendeesInfo: !this.state.showAllAttendeesInfo,
     });
+  }
+
+  render() {
+    const excludeAfterIndex = 4;
+    const listOfAttendees = bookClubEvent.attendees.reduce((shownedAttendees, attendee, index) => {
+      if (index < excludeAfterIndex) {
+        const initialsOfName = this.handleGetInitials(attendee.guestName);
+        shownedAttendees.push(
+          <Avatar
+            key={index}
+            size={40}
+            overlayContainerStyle={styles.avatarContainer}
+            rounded
+            title={initialsOfName}
+          />,
+        );
+      }
+      return shownedAttendees
+    }, []);
+
     return (
       <View>
         {/* What I need to bring to event as card with icon or if I need to pick from list - tell what i'm bringing */}
@@ -27,7 +50,28 @@ export default class EventDetails extends Component {
         <View style={styles.headlineView}>
           <Text style={styles.headlineText}>Who is coming?</Text>
         </View>
-        <View style={styles.whoIsComingListContainer}>{listOfAttendees}</View>
+        <View style={styles.whoIsComingListContainer}>
+          {listOfAttendees}
+          <View>
+            <Avatar
+              size={30}
+              overlayContainerStyle={styles.avatarContainer}
+              rounded
+              icon={{name: 'more-horizontal', type: 'feather'}}
+            />
+            {bookClubEvent.attendees.length > 4 && (
+              <Badge
+                badgeStyle={styles.seeMoreAttendeesBadge}
+                value={
+                  <Text style={styles.badgeText}>
+                    {bookClubEvent.attendees.length - 4}
+                  </Text>
+                }
+                containerStyle={{position: 'absolute', top: -6, right: -6}}
+              />
+            )}
+          </View>
+        </View>
         <View style={styles.headlineView}>
           <Text style={styles.headlineText}>Info</Text>
         </View>
@@ -89,6 +133,7 @@ const styles = StyleSheet.create({
   },
   headlineView: {
     left: '5%',
+    paddingTop: 10,
   },
   headlineText: {
     textTransform: 'uppercase',
@@ -98,6 +143,7 @@ const styles = StyleSheet.create({
   whoIsComingListContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
+    alignItems: 'center',
     marginLeft: '5%',
     marginRight: '5%',
     marginTop: 5,
@@ -124,6 +170,18 @@ const styles = StyleSheet.create({
   },
   importantInfoContainer: {
     marginBottom: 10,
+  },
+  avatarContainer: {
+    backgroundColor: '#A5ADB5',
+    // height: windowWidth * 0.11,
+  },
+  seeMoreAttendeesBadge: {
+    backgroundColor: '#F8B787',
+    // width: windowWidth * 0.11 * 0.6,
+  },
+  badgeText: {
+    padding: 10,
+    // color: 'white',
   },
 });
 

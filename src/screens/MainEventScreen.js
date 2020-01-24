@@ -16,6 +16,10 @@ import BookDetails from '../components/BookDetails';
 import {Button} from 'react-native-elements';
 
 export default class MainEvent extends Component {
+  state = {
+    showEventDetail: true,
+  }
+
   getBookInfoFromISBN = isbn => {
     axios
       .get(`https://www.googleapis.com/books/v1/volumes?q=isbn:${isbn}`)
@@ -25,13 +29,25 @@ export default class MainEvent extends Component {
       .catch(error => console.log(error));
   };
 
+  onEventDetailPress = () => {
+    this.setState({
+      showEventDetail: true,
+    });
+  }
+
+  onBookDetailPress = () => {
+    this.setState({
+      showEventDetail: false,
+    });
+  }
+
   render() {
     return (
       <SafeAreaView>
         <ScrollView contentContainerStyle={styles.container}>
           <Image
             style={styles.bookImageView}
-            source={require('../utils/bookPlaceholder.png')}
+            source={require('../utils/circe.jpg')}
             resizeMode={'cover'}
           />
           <View style={styles.backgroundContentContainer}>
@@ -71,16 +87,17 @@ export default class MainEvent extends Component {
                   type="clear"
                   titleStyle={styles.detailButtonsTitleStyle}
                   containerStyle={styles.detailButtonsContainerStyle}
+                  onPress={this.onEventDetailPress}
                 />
                 <Button
                   title="Book Details"
                   type="clear"
                   titleStyle={styles.detailButtonsTitleStyle}
                   containerStyle={styles.detailButtonsContainerStyle}
+                  onPress={this.onBookDetailPress}
                 />
               </View>
-              {/* <EventDetails /> */}
-              <BookDetails />
+              {this.state.showEventDetail ? <EventDetails /> : <BookDetails />}
             </View>
           </View>
         </ScrollView>
