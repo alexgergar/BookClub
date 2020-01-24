@@ -7,15 +7,15 @@ import {
   Image,
   ScrollView,
   Dimensions,
-  FlatList
 } from 'react-native';
 import axios from 'axios';
 import {bookClubEvent} from '../utils/testInfo';
-import {Button, Icon, Avatar} from 'react-native-elements';
-import ListAvatarOnLeft from '../components/ListAvatarOnLeft';
+import EventDetails from '../components/EventDetails';
+import BookDetails from '../components/BookDetails';
+
+import {Button} from 'react-native-elements';
 
 export default class MainEvent extends Component {
-
   getBookInfoFromISBN = isbn => {
     axios
       .get(`https://www.googleapis.com/books/v1/volumes?q=isbn:${isbn}`)
@@ -25,16 +25,7 @@ export default class MainEvent extends Component {
       .catch(error => console.log(error));
   };
 
-  handleGetInitials = fullName => {
-    return fullName.split(" ").map((n) => n[0]).join("");
-  } 
-  
-  
   render() {
-    const listOfAttendees = bookClubEvent.attendees.map((attendee, index) => {
-      const initialsOfName = this.handleGetInitials(attendee.guestName);
-      return <Avatar key={index} rounded title={initialsOfName} />
-    })
     return (
       <SafeAreaView>
         <ScrollView contentContainerStyle={styles.container}>
@@ -88,41 +79,8 @@ export default class MainEvent extends Component {
                   containerStyle={styles.detailButtonsContainerStyle}
                 />
               </View>
-              <View>
-                {/* What I need to bring to event as card with icon or if I need to pick from list - tell what i'm bringing */}
-                <View style={styles.whatToBringContainer}>
-                  <Icon name="add-alert" type="material" />
-                  <Text style={styles.cardTitleStyle}>
-                    Bring{' '}
-                    {bookClubEvent.whatGuestsProvides[0].whatTheyAreBringing}!
-                  </Text>
-                </View>
-                <View style={styles.headlineView}>
-                  <Text style={styles.headlineText}>Who is coming?</Text>
-                </View>
-                <View style={styles.whoIsComingListContainer}>
-                  {listOfAttendees}
-                </View>
-                <View style={styles.headlineView}>
-                  <Text style={styles.headlineText}>Info</Text>
-                </View>
-                <View style={styles.importantInfoContainer}>
-                  <Text style={styles.eventDetailsText}>{bookClubEvent.host.name} wanted you to know...</Text>
-                  <Text style={styles.eventDetailsQuoteText}>{bookClubEvent.detailsForLocation}</Text>
-                </View>
-                <View style={styles.headlineView}>
-                  <Text style={styles.headlineText}>Just so you know</Text>
-                </View>
-                <View style={styles.importantInfoContainer}>
-                  <Text style={styles.eventDetailsText}>{bookClubEvent.detailsForEvent}</Text>
-                </View>
-                
-
-                {/* }
-              <Text>Card list of who is attending - click and it expands into more info - slice the list based on a certain number based on size of avatar then add plus sign</Text>
-              <Text>Details/important info on what to know - how to get to location, allergies, door access codes - bulleted or list formate</Text>
-              <Text>Details for location</Text> {*/}
-              </View>
+              {/* <EventDetails /> */}
+              <BookDetails />
             </View>
           </View>
         </ScrollView>
@@ -137,8 +95,7 @@ const windowHeight = Dimensions.get('window').height;
 const bookPlaceholderImageWidth = windowWidth * 0.3;
 const bookPlaceholderImageHeight = bookPlaceholderImageWidth * 1.6;
 const starterHeightPositionForInformationTextUnderBookImage =
-  (bookPlaceholderImageHeight + 40) - (windowHeight * 0.2);
-
+  bookPlaceholderImageHeight + 40 - windowHeight * 0.2;
 
 const styles = StyleSheet.create({
   container: {
@@ -155,7 +112,7 @@ const styles = StyleSheet.create({
     bottom: 0,
     width: '90%',
     paddingBottom: 100,
-        // bottom: starterHeightPositionForInformationTextUnderBookImage,
+    // bottom: starterHeightPositionForInformationTextUnderBookImage,
   },
   informationContentContainer: {
     flexGrow: 1,
@@ -219,76 +176,16 @@ const styles = StyleSheet.create({
     borderColor: '#F8B787',
     borderRadius: 100,
   },
-  whatToBringContainer: {
-    borderRadius: 10,
-    backgroundColor: 'rgba(165, 172, 181, 0.2)',
-    padding: 15,
-    marginLeft: '5%',
-    marginRight: '5%',
-    marginTop: 10,
-    marginBottom: 10,
-    flexDirection: 'row',
-    alignItems: 'center',
-    borderColor: 'rgba(165, 172, 181, 0.21)',
-    borderWidth: 1.5,
-  },
-  cardTitleStyle: {
-    textTransform: 'uppercase',
-    paddingLeft: 10,
-    fontSize: 18,
-  },
-  headlineView: {
-    left: '5%',
-  },
-  headlineText: {
-    textTransform: 'uppercase',
-    color: '#3A5673',
-    fontSize: 12,
-  },
-  whoIsComingListContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    // borderRadius: 10,
-    // backgroundColor: 'rgba(165, 172, 181, 0.2)',
-    marginLeft: '5%',
-    marginRight: '5%',
-    marginTop: 5,
-    marginBottom: 15,
-    // borderColor: 'rgba(165, 172, 181, 0.21)',
-    borderWidth: 0,
-  },
-  listItemContentWhoIsComing: {
-    backgroundColor: 'rgba(165, 172, 181, 0.1)',
-  },
-  listContainerWhoIsComing: {
-    borderRadius: 10,
-    borderWidth: 0,
-  },
-  eventDetailsText: {
-    marginLeft: '5%',
-    marginRight: '5%',
-    color: '#1E3342',
-  },
-  eventDetailsQuoteText: {
-    fontStyle: 'italic',
-    marginLeft: '8%',
-    marginRight: '8%',
-    color: '#1E3342',
-  },
-  importantInfoContainer: {
-    marginBottom: 10,
-  }
 });
 
-
-/* Color Theme Swatches in Hex 
+/* Color Theme Swatches in Hex
 .Book-cover-options-1-hex { color: #3A5673; } medium blue
 .Book-cover-options-2-hex { color: #EBE2CD; } light tan
 .Book-cover-options-3-hex { color: #1E3342; } dark blue
 .Book-cover-options-4-hex { color: #A5ADB5; } grey blue
 .Book-cover-options-5-hex { color: #F8B787; } peach
 
-/* Color Theme Swatches in RGBA 
+/* Color Theme Swatches in RGBA
 .Book-cover-options-1-rgba { color: rgba(58, 86, 114, 1); }
 .Book-cover-options-2-rgba { color: rgba(235, 226, 205, 1); }
 .Book-cover-options-3-rgba { color: rgba(29, 51, 66, 1); }
