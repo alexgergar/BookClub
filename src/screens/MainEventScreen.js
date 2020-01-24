@@ -20,6 +20,11 @@ export default class MainEvent extends Component {
     showEventDetail: true,
   }
 
+  componentDidMount() {
+    let goodreads_api_key = process.env.GOODREAD_API_KEY;
+    console.log(goodreads_api_key);
+  }
+
   getBookInfoFromISBN = isbn => {
     axios
       .get(`https://www.googleapis.com/books/v1/volumes?q=isbn:${isbn}`)

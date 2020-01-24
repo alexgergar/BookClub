@@ -31,8 +31,8 @@ But there is danger, too, for a woman who stands alone, and Circe unwittingly dr
          date: 'Tue Feb 18',
          startTime: '6:00 PM',
          detailsForLocation:
-           'At the call box, find me under Gergar and I can let you in',
-         detailsForEvent: 'I have a dog so let me know if anyone is allergic',
+           'At the call box, find me under Gergar and I can let you in, I have a dog so let me know if anyone is allergic',
+         detailsForEvent: 'we are going to be discussing the parts that would involve dc as a whole',
          whatHostProvides: ['wine', 'cheese platter', 'seltzer'],
          whatGuestsProvides: [
            {
