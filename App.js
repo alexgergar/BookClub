@@ -17,6 +17,9 @@ import {
   ReloadInstructions,
 } from 'react-native/Libraries/NewAppScreen';
 import MainEventScreen from './src/screens/MainEventScreen';
+import LoginScreen from './src/screens/LoginScreen';
+import CreateEventScreen from './src/screens/CreateEventScreen';
+import UserContext from './src/context/UserContext';
 
 function App() {
   const [initializing, setInitializing] = useState(true);
@@ -35,12 +38,14 @@ function App() {
   });
 
   if (!user) {
-    return <MainEventScreen />;
+    return <CreateEventScreen />;
   }
 
 
   return (
-    <MainEventScreen />
+    <UserContext.Provider value={user}>
+      <CreateEventScreen />
+    </UserContext.Provider>
   );
 };
 

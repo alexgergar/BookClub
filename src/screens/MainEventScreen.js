@@ -12,24 +12,25 @@ import axios from 'axios';
 import {bookClubEvent} from '../utils/testInfo';
 import EventDetails from '../components/EventDetails';
 import BookDetails from '../components/BookDetails';
-
 import {Button} from 'react-native-elements';
 
 export default class MainEvent extends Component {
   state = {
     showEventDetail: true,
-  }
+    bookData: null,
+  };
 
-  componentDidMount() {
-    let goodreads_api_key = process.env.GOODREAD_API_KEY;
-    console.log(goodreads_api_key);
-  }
 
-  getBookInfoFromISBN = isbn => {
+  getBookInfoFromISBNfromGoogle = isbn => {
     axios
-      .get(`https://www.googleapis.com/books/v1/volumes?q=isbn:${isbn}`)
+      .get(`https://www.googleapis.com/books/v1/volumes?q=isbn:9781408890080`)
       .then(response => {
-        console.log(response);
+        this.setState(
+          {
+            bookData: response.data.items[0].volumeInfo,
+          },
+          () => console.log(this.state.bookData),
+        );
       })
       .catch(error => console.log(error));
   };
@@ -38,23 +39,33 @@ export default class MainEvent extends Component {
     this.setState({
       showEventDetail: true,
     });
-  }
+  };
 
   onBookDetailPress = () => {
     this.setState({
       showEventDetail: false,
     });
-  }
+  };
 
   render() {
     return (
       <SafeAreaView>
         <ScrollView contentContainerStyle={styles.container}>
-          <Image
-            style={styles.bookImageView}
-            source={require('../utils/circe.jpg')}
-            resizeMode={'cover'}
-          />
+          { (this.state.bookData === null) ? 
+            (<Image
+              style={styles.bookImageView}
+              source={require('../utils/bookPlaceholder.png')}
+              resizeMode={'cover'}
+            />)
+          :
+            (<Image
+              style={styles.bookImageView}
+              source={{
+                uri: this.state.bookData.imageLinks.thumbnail,
+              }}
+              resizeMode={'cover'}
+            />)
+          }
           <View style={styles.backgroundContentContainer}>
             <View style={styles.informationContentContainer}>
               <View style={styles.textRowCenterAlign}>
@@ -99,6 +110,7 @@ export default class MainEvent extends Component {
                   type="clear"
                   titleStyle={styles.detailButtonsTitleStyle}
                   containerStyle={styles.detailButtonsContainerStyle}
+                  bookdata={this.state.bookdata}
                   onPress={this.onBookDetailPress}
                 />
               </View>
