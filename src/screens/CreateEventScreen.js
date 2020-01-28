@@ -7,27 +7,90 @@ import {
   Image,
   TextInput,
   Dimensions,
+  FlatList,
+  TouchableHighlight,
 } from 'react-native';
 import axios from 'axios';
 import {Button} from 'react-native-elements';
+import {GOOGLE_BOOKS_API_KEY} from 'react-native-dotenv';
+import urlFor from '../utils/urlFor';
 
 export default class MainEvent extends Component {
   state = {
-    bookTitle: null,
+    searchTitle: null,
+    showcontainer: false,
+    googleBooks: [],
   };
+
+
+  onSearchBooks = text => {
+    let search = encodeURI(text);
+    axios
+      .get(`https://www.googleapis.com/books/v1/volumes?q=${search}&maxResults=10&orderBy=relevance&key=${GOOGLE_BOOKS_API_KEY}`)
+      .then(response => this.setState({ googleBooks: response.data.items, showcontainer: true}))
+      .catch(error => console.log(error));
+  };
+
+  renderGoogleBooks = book => {
+      let thumbnail = {
+        small: '',
+        normal: '',
+      }
+      if (book.volumeInfo != undefined && book.volumeInfo.imageLinks != undefined) {
+        thumbnail.small = book.volumeInfo.imageLinks.smallThumbnail != undefined ? book.volumeInfo.imageLinks.smallThumbnail : null;
+        thumbnail.normal = book.volumeInfo.imageLinks.thumbnail != undefined ? book.volumeInfo.imageLinks.thumbnail : null;
+      }
+      let bookObject = {
+        id: book.id,
+        title: book.volumeInfo.title,
+        authors: book.volumeInfo.authors,
+        isbn: book.volumeInfo.industryIdentifiers,
+        raw: book,
+        smallThumbnail: thumbnail.small,
+        thumbnail: thumbnail.normal, 
+      }
+      return (
+        <TouchableHighlight onPress={() => this.onBookSelectionPress(bookObject)}>
+          <View>
+            <Text>{bookObject.title} by {bookObject.authors}</Text>
+          </View>
+        </TouchableHighlight>
+    )
+  }
+
+  onBookSelectionPress = book => {
+    console.log(book.title);
+  }
+
 
 
   render() {
     return (
       <SafeAreaView style={styles.container}>
         <View style={styles.headLineContainer}>
-          <Text style={styles.createHeadlineText}>Create A New BookClub Event</Text>
+          <Text style={styles.createHeadlineText}>
+            Create A New BookClub Event
+          </Text>
           <TextInput
             style={styles.textInput}
             autoCapitalize="none"
             placeholder="Type a Book Title"
-            onChangeText={bookTitle => this.setState({bookTitle})}
-            value={this.state.email}
+            onChangeText={text => this.setState({searchTitle: text})}
+            value={this.state.searchTitle}
+          />
+          { this.state.showcontainer ? 
+            <View>
+              <FlatList
+                data={this.state.googleBooks}
+                keyExtractor={(item, index) => index.toString()}
+                renderItem={book => this.renderGoogleBooks(book.item)}
+              />
+            </View> : <View />}
+
+          <Button
+            title="Look For Book"
+            type="outline"
+            onPress={() => this.onSearchBooks(this.state.searchTitle)}
           />
         </View>
       </SafeAreaView>
@@ -50,7 +113,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   headLineContainer: {
-    top: windowHeight * 0.3,
+    // top: windowHeight * 0.1,
     marginBottom: 10,
     alignItems: 'center',
   },
@@ -62,6 +125,9 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     marginTop: 8,
     paddingLeft: 10,
+  },
+  listOfSearchedBooks: {
+    padding: 10,
   },
 });
 

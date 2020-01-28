@@ -18,6 +18,7 @@
     "react-native": "0.61.5",
     "react-native-dotenv": "^0.2.0",
     "react-native-elements": "^1.2.7",
+    "react-native-google-books": "^1.0.4",
     "react-native-vector-icons": "^6.6.0",
     "react-native-view-more-text": "^2.1.0",
     "react-native-xml2js": "^1.0.3",

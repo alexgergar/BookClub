@@ -14,6 +14,7 @@ import EventDetails from '../components/EventDetails';
 import BookDetails from '../components/BookDetails';
 import {Button} from 'react-native-elements';
 
+
 export default class MainEvent extends Component {
   state = {
     showEventDetail: true,
