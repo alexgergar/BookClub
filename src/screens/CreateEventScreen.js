@@ -9,90 +9,127 @@ import {
   Dimensions,
   FlatList,
   TouchableHighlight,
+  Animated,
+  Easing,
 } from 'react-native';
 import axios from 'axios';
 import {Button} from 'react-native-elements';
 import {GOOGLE_BOOKS_API_KEY} from 'react-native-dotenv';
 import urlFor from '../utils/urlFor';
 
-export default class MainEvent extends Component {
+export default class CreateEvent extends Component {
   state = {
     searchTitle: null,
     showcontainer: false,
     googleBooks: [],
+    backgroundHeightAnimation: new Animated.Value(0),
   };
-
 
   onSearchBooks = text => {
     let search = encodeURI(text);
     axios
-      .get(`https://www.googleapis.com/books/v1/volumes?q=${search}&maxResults=10&orderBy=relevance&key=${GOOGLE_BOOKS_API_KEY}`)
-      .then(response => this.setState({ googleBooks: response.data.items, showcontainer: true}))
+      .get(
+        `https://www.googleapis.com/books/v1/volumes?q=${search}&maxResults=10&orderBy=relevance&key=${GOOGLE_BOOKS_API_KEY}`,
+      )
+      .then(response =>
+        this.setState({googleBooks: response.data.items, showcontainer: true}),
+      )
       .catch(error => console.log(error));
   };
 
   renderGoogleBooks = book => {
-      let thumbnail = {
-        small: '',
-        normal: '',
-      }
-      if (book.volumeInfo != undefined && book.volumeInfo.imageLinks != undefined) {
-        thumbnail.small = book.volumeInfo.imageLinks.smallThumbnail != undefined ? book.volumeInfo.imageLinks.smallThumbnail : null;
-        thumbnail.normal = book.volumeInfo.imageLinks.thumbnail != undefined ? book.volumeInfo.imageLinks.thumbnail : null;
-      }
-      let bookObject = {
-        id: book.id,
-        title: book.volumeInfo.title,
-        authors: book.volumeInfo.authors,
-        isbn: book.volumeInfo.industryIdentifiers,
-        raw: book,
-        smallThumbnail: thumbnail.small,
-        thumbnail: thumbnail.normal, 
-      }
-      return (
-        <TouchableHighlight onPress={() => this.onBookSelectionPress(bookObject)}>
-          <View>
-            <Text>{bookObject.title} by {bookObject.authors}</Text>
-          </View>
-        </TouchableHighlight>
-    )
-  }
+    let thumbnail = {
+      small: '',
+      normal: '',
+    };
+    if (
+      book.volumeInfo !== undefined &&
+      book.volumeInfo.imageLinks !== undefined
+    ) {
+      thumbnail.small =
+        book.volumeInfo.imageLinks.smallThumbnail !== undefined
+          ? book.volumeInfo.imageLinks.smallThumbnail
+          : null;
+      thumbnail.normal =
+        book.volumeInfo.imageLinks.thumbnail !== undefined
+          ? book.volumeInfo.imageLinks.thumbnail
+          : null;
+    }
+    let bookObject = {
+      id: book.id,
+      title: book.volumeInfo.title,
+      authors: book.volumeInfo.authors,
+      isbn: book.volumeInfo.industryIdentifiers,
+      raw: book,
+      smallThumbnail: thumbnail.small,
+      thumbnail: thumbnail.normal,
+    };
+    return (
+      <TouchableHighlight onPress={() => this.onBookSelectionPress(bookObject)}>
+        <View>
+          <Text>
+            {bookObject.title} by {bookObject.authors}
+          </Text>
+        </View>
+      </TouchableHighlight>
+    );
+  };
 
   onBookSelectionPress = book => {
     console.log(book.title);
-  }
+  };
 
-
+  onTextInputPress = () => {
+    console.log('on text input press');
+    Animated.timing(this.state.backgroundHeightAnimation, {
+      toValue: 1,
+      duration: 300,
+      easing: Easing.bezier(0.25, 0.1, 0.25, 1),
+    }).start();
+  };
 
   render() {
+    const heightForWhiteBackground = this.state.backgroundHeightAnimation.interpolate({
+      inputRange: [0,1],
+      outputRange: ['30%', '90%'],
+    })
     return (
       <SafeAreaView style={styles.container}>
-        <View style={styles.headLineContainer}>
-          <Text style={styles.createHeadlineText}>
-            Create A New BookClub Event
-          </Text>
-          <TextInput
-            style={styles.textInput}
-            autoCapitalize="none"
-            placeholder="Type a Book Title"
-            onChangeText={text => this.setState({searchTitle: text})}
-            value={this.state.searchTitle}
-          />
-          { this.state.showcontainer ? 
-            <View>
-              <FlatList
-                data={this.state.googleBooks}
-                keyExtractor={(item, index) => index.toString()}
-                renderItem={book => this.renderGoogleBooks(book.item)}
+        <Animated.View
+          style={[styles.backgroundContentContainer, {height: heightForWhiteBackground}]}>
+          <View style={styles.informationContentContainer}>
+            <View style={styles.headLineContainer}>
+              <Text style={styles.createHeadlineText}>
+                Create A New BookClub Event
+              </Text>
+              <TextInput
+                style={styles.textInput}
+                autoCapitalize="none"
+                placeholder="Type a Book Title"
+                onChangeText={text => this.setState({searchTitle: text})}
+                value={this.state.searchTitle}
+                onFocus={this.onTextInputPress}
               />
-            </View> : <View />}
+              {this.state.showcontainer ? (
+                <View>
+                  <FlatList
+                    data={this.state.googleBooks}
+                    keyExtractor={(item, index) => index.toString()}
+                    renderItem={book => this.renderGoogleBooks(book.item)}
+                  />
+                </View>
+              ) : (
+                <View />
+              )}
 
-          <Button
-            title="Look For Book"
-            type="outline"
-            onPress={() => this.onSearchBooks(this.state.searchTitle)}
-          />
-        </View>
+              <Button
+                title="Look For Book"
+                type="outline"
+                onPress={() => this.onSearchBooks(this.state.searchTitle)}
+              />
+            </View>
+          </View>
+        </Animated.View>
       </SafeAreaView>
     );
   }
@@ -101,30 +138,43 @@ export default class MainEvent extends Component {
 // This is to get the window width and height for styling
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
-const bookPlaceholderImageWidth = windowWidth * 0.3;
-const bookPlaceholderImageHeight = bookPlaceholderImageWidth * 1.6;
-const starterHeightPositionForInformationTextUnderBookImage =
-  bookPlaceholderImageHeight + 40 - windowHeight * 0.2;
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    flexGrow: 1,
     backgroundColor: '#E3E4E6',
     alignItems: 'center',
+    flexDirection: 'column-reverse',
+  },
+  backgroundContentContainer: {
+    // flex: 1,
+    backgroundColor: 'white',
+    // marginTop: windowHeight * 0.7,
+    borderTopLeftRadius: 15,
+    borderTopRightRadius: 15,
+    marginBottom: 0,
+    width: '90%',
+    height: '30%',
+    zIndex: 10,
+  },
+  informationContentContainer: {
+    flexGrow: 1,
+    padding: 10,
+    position: 'relative',
   },
   headLineContainer: {
-    // top: windowHeight * 0.1,
     marginBottom: 10,
     alignItems: 'center',
   },
   createHeadlineText: {},
   textInput: {
     height: 40,
-    width: windowWidth * 0.9,
+    width: '90%',
     borderColor: 'gray',
     borderWidth: 1,
-    marginTop: 8,
+    marginVertical: 8,
     paddingLeft: 10,
+    borderRadius: 10,
   },
   listOfSearchedBooks: {
     padding: 10,
