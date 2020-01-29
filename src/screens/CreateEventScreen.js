@@ -11,6 +11,7 @@ import {
   TouchableHighlight,
   Animated,
   Easing,
+  Keyboard,
 } from 'react-native';
 import axios from 'axios';
 import {Button} from 'react-native-elements';
@@ -29,6 +30,7 @@ export default class CreateEvent extends Component {
   };
 
   onSearchBooks = text => {
+    Keyboard.dismiss();
     let search = encodeURI(text);
     axios
       .get(
@@ -69,10 +71,16 @@ export default class CreateEvent extends Component {
     };
     return (
       <TouchableHighlight onPress={() => this.onBookSelectionPress(bookObject)}>
-        <View>
-          <Text>
-            {bookObject.title} by {bookObject.authors}
-          </Text>
+        <View style={styles.flatListRowContainer}>
+          <Image 
+            style={styles.bookListImage}
+            source={{uri: bookObject.thumbnail}}
+            resizeMode={'cover'}
+          />
+          <View style={styles.titleAuthorTextContainer}>
+            <Text style={styles.titleText}>{bookObject.title}</Text>
+            <Text style={styles.authorText}>{bookObject.authors}</Text>
+          </View>
         </View>
       </TouchableHighlight>
     );
@@ -177,6 +185,10 @@ export default class CreateEvent extends Component {
 // This is to get the window width and height for styling
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
+const flatListRowHeight = windowHeight * 0.15;
+const flatListBookImageHeight = flatListRowHeight - 20;
+const flatListBookImageWidth = flatListBookImageHeight / 1.6;
+
 
 const styles = StyleSheet.create({
   container: {
@@ -242,8 +254,28 @@ const styles = StyleSheet.create({
   searchButtonStyle: {
     backgroundColor: '#55707b',
   },
-  listOfSearchedBooks: {
+  flatListRowContainer: {
     padding: 10,
+    height: flatListRowHeight,
+    flexDirection: 'row',
+    justifyContent: 'flex-start',
+  },
+  titleAuthorTextContainer: {
+    flexDirection: 'column',
+    justifyContent: 'flex-end',
+    paddingHorizontal: 20,
+  },
+  titleText: {
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  authorText: {
+    fontSize: 14,
+  },
+  bookListImage: {
+    width: flatListBookImageWidth,
+    height: flatListBookImageHeight,
+    borderRadius: 5,
   },
 });
 
