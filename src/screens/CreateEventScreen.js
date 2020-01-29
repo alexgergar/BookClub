@@ -23,6 +23,9 @@ export default class CreateEvent extends Component {
     showcontainer: false,
     googleBooks: [],
     backgroundHeightAnimation: new Animated.Value(0),
+    bookImageOpacity: new Animated.Value(0),
+    showBookListImage: false,
+    bookListImageOpacity: new Animated.Value(0),
   };
 
   onSearchBooks = text => {
@@ -32,7 +35,7 @@ export default class CreateEvent extends Component {
         `https://www.googleapis.com/books/v1/volumes?q=${search}&maxResults=10&orderBy=relevance&key=${GOOGLE_BOOKS_API_KEY}`,
       )
       .then(response =>
-        this.setState({googleBooks: response.data.items, showcontainer: true}),
+        this.setState({ googleBooks: response.data.items, showcontainer: true, showBookListImage: false}),
       )
       .catch(error => console.log(error));
   };
@@ -80,28 +83,53 @@ export default class CreateEvent extends Component {
   };
 
   onTextInputPress = () => {
-    console.log('on text input press');
-    Animated.timing(this.state.backgroundHeightAnimation, {
-      toValue: 1,
-      duration: 300,
-      easing: Easing.bezier(0.25, 0.1, 0.25, 1),
-    }).start();
+    this.setState({ showBookListImage: true });
+    Animated.parallel([
+      Animated.timing(this.state.backgroundHeightAnimation, {
+        toValue: 1,
+        duration: 300,
+        easing: Easing.bezier(0.25, 0.1, 0.25, 1),
+      }),
+      Animated.timing(this.state.bookImageOpacity, {
+        toValue: 1,
+        duration: 100,
+        easing: Easing.bezier(0.25, 0.1, 0.25, 1),
+      }),
+      Animated.timing(this.state.bookListImageOpacity, {
+        toValue: 1,
+        durration: 100,
+        easing: Easing.bezier(0.25, 0.1, 0.25, 1), 
+      })
+    ])
+    .start();
   };
+
+
 
   render() {
     const heightForWhiteBackground = this.state.backgroundHeightAnimation.interpolate({
-      inputRange: [0,1],
+      inputRange: [0, 1],
       outputRange: ['30%', '90%'],
+    })
+    const opacticyForBackgroundImage = this.state.bookImageOpacity.interpolate({
+      inputRange: [0, 1],
+      outputRange: [1, 0],
+    })
+    const opacticyForBookListImage = this.state.bookListImageOpacity.interpolate({
+      inputRange: [0, 1],
+      outputRange: [0, 1],
     })
     return (
       <SafeAreaView style={styles.container}>
+        <Animated.Image
+          style={[styles.backgroundStarterImage, {opacity: opacticyForBackgroundImage}]}
+          source={require('../utils/createEventBookBackground.png')}
+          resizeMode={'contain'}
+        />
         <Animated.View
           style={[styles.backgroundContentContainer, {height: heightForWhiteBackground}]}>
           <View style={styles.informationContentContainer}>
-            <View style={styles.headLineContainer}>
-              <Text style={styles.createHeadlineText}>
-                Create A New BookClub Event
-              </Text>
+            <View style={styles.searchAndListContainer}>
               <TextInput
                 style={styles.textInput}
                 autoCapitalize="none"
@@ -110,6 +138,7 @@ export default class CreateEvent extends Component {
                 value={this.state.searchTitle}
                 onFocus={this.onTextInputPress}
               />
+              
               {this.state.showcontainer ? (
                 <View>
                   <FlatList
@@ -119,16 +148,26 @@ export default class CreateEvent extends Component {
                   />
                 </View>
               ) : (
-                <View />
+                <View/>
               )}
 
               <Button
-                title="Look For Book"
-                type="outline"
+                title="Search For Book" 
+                containerStyle={styles.searchButtonContainer}
+                buttonStyle={styles.searchButtonStyle}
                 onPress={() => this.onSearchBooks(this.state.searchTitle)}
               />
+              {this.state.showBookListImage && <Animated.Image
+                style={[styles.listBackgroundBookImage, { opacity: opacticyForBookListImage}]}
+                source={require('../utils/createEventBookListImage.png')}
+                resizeMode={'contain'}
+              />}
             </View>
           </View>
+        </Animated.View>
+        <Animated.View style={[styles.backgroundTextView, { opacity: opacticyForBackgroundImage }]}>
+          <Text style={styles.backgroundTextH1}>Hello</Text>
+          <Text style={styles.backgroundTextH2}>Ready to host your next BookClub?</Text>
         </Animated.View>
       </SafeAreaView>
     );
@@ -147,9 +186,7 @@ const styles = StyleSheet.create({
     flexDirection: 'column-reverse',
   },
   backgroundContentContainer: {
-    // flex: 1,
     backgroundColor: 'white',
-    // marginTop: windowHeight * 0.7,
     borderTopLeftRadius: 15,
     borderTopRightRadius: 15,
     marginBottom: 0,
@@ -157,16 +194,32 @@ const styles = StyleSheet.create({
     height: '30%',
     zIndex: 10,
   },
-  informationContentContainer: {
-    flexGrow: 1,
-    padding: 10,
-    position: 'relative',
+  backgroundStarterImage: {
+    zIndex: 5,
+    top: 50,
+    height: '100%',
+    position: 'absolute',
   },
-  headLineContainer: {
+  backgroundTextView: {
+    zIndex: 10,
+    marginBottom: 5,
+    width: '88%',
+  },
+  backgroundTextH1: {
+    fontSize: 48,
+  },
+  backgroundTextH2: {
+    fontSize: 23,
+  },
+  informationContentContainer: {
+    padding: 10,
+    paddingTop: 20,
+    zIndex: 10,
+  },
+  searchAndListContainer: {
     marginBottom: 10,
     alignItems: 'center',
   },
-  createHeadlineText: {},
   textInput: {
     height: 40,
     width: '90%',
@@ -175,6 +228,19 @@ const styles = StyleSheet.create({
     marginVertical: 8,
     paddingLeft: 10,
     borderRadius: 10,
+  },
+  listBackgroundBookImage: {
+    zIndex: 5,
+    top: 40,
+    height: '50%',
+    paddingLeft: 20,
+  },
+  searchButtonContainer: {
+    margin: 10,
+    width: '50%',
+  },
+  searchButtonStyle: {
+    backgroundColor: '#55707b',
   },
   listOfSearchedBooks: {
     padding: 10,
