@@ -21,6 +21,12 @@ export default class MainEvent extends Component {
     bookData: null,
   };
 
+  componentDidMount() {
+    console.log('in main event screen')
+    const user = this.context;
+    console.log(user);
+  }
+
 
   getBookInfoFromISBNfromGoogle = isbn => {
     axios

@@ -8,18 +8,41 @@ import {
   StatusBar,
 } from 'react-native';
 import {firebase} from '@react-native-firebase/auth';
-
-import {
-  Header,
-  LearnMoreLinks,
-  Colors,
-  DebugInstructions,
-  ReloadInstructions,
-} from 'react-native/Libraries/NewAppScreen';
+import 'react-native-gesture-handler';
 import MainEventScreen from './src/screens/MainEventScreen';
 import LoginScreen from './src/screens/LoginScreen';
+import SignUpScreen from './src/screens/SignUpScreen';
+import SignUpLoginScreen from './src/screens/SignUpLoginScreen';
+import LoadingAuthScreen from './src/screens/LoadingAuthScreen';
 import CreateEventScreen from './src/screens/CreateEventScreen';
 import UserContext from './src/context/UserContext';
+import {createStackNavigator} from 'react-navigation-stack';
+import {createAppContainer, createSwitchNavigator} from 'react-navigation';
+
+const MainStack = createStackNavigator(
+  {
+    SignUpLogin: SignUpLoginScreen,
+    MainEvent: MainEventScreen,
+    CreateEvent: CreateEventScreen,
+  },
+  {
+    initialRouteName: 'CreateEvent',
+  },
+);
+
+const AuthStack = createStackNavigator(
+  {
+    SignUpLogin: SignUpLoginScreen,
+  },
+  {
+    initialRouteName: 'SignUpLogin',
+  },
+);
+
+const AppNavigator = createSwitchNavigator({
+  Auth: AuthStack,
+  MainStack: MainStack,
+});
 
 function App() {
   const [initializing, setInitializing] = useState(true);
@@ -38,16 +61,16 @@ function App() {
   });
 
   if (!user) {
-    return <CreateEventScreen />;
+    return <SignUpLoginScreen />;
   }
-
 
   return (
     <UserContext.Provider value={user}>
-      <CreateEventScreen />
+      <AppContainer />
     </UserContext.Provider>
   );
-};
+}
 
+const AppContainer = createAppContainer(AppNavigator);
 
 export default App;

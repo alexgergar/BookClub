@@ -16,6 +16,7 @@ import {
 import axios from 'axios';
 import {Button} from 'react-native-elements';
 import {GOOGLE_BOOKS_API_KEY} from 'react-native-dotenv';
+import MainEventScreen from './MainEventScreen';
 import urlFor from '../utils/urlFor';
 
 export default class CreateEvent extends Component {
@@ -37,7 +38,11 @@ export default class CreateEvent extends Component {
         `https://www.googleapis.com/books/v1/volumes?q=${search}&maxResults=10&orderBy=relevance&key=${GOOGLE_BOOKS_API_KEY}`,
       )
       .then(response =>
-        this.setState({ googleBooks: response.data.items, showcontainer: true, showBookListImage: false}),
+        this.setState({
+          googleBooks: response.data.items,
+          showcontainer: true,
+          showBookListImage: false,
+        }),
       )
       .catch(error => console.log(error));
   };
@@ -70,9 +75,11 @@ export default class CreateEvent extends Component {
       thumbnail: thumbnail.normal,
     };
     return (
-      <TouchableHighlight onPress={() => this.onBookSelectionPress(bookObject)}>
+      <TouchableHighlight
+        underlayColor="white"
+        onPress={() => this.onBookSelectionPress(bookObject)}>
         <View style={styles.flatListRowContainer}>
-          <Image 
+          <Image
             style={styles.bookListImage}
             source={{uri: bookObject.thumbnail}}
             resizeMode={'cover'}
@@ -87,11 +94,13 @@ export default class CreateEvent extends Component {
   };
 
   onBookSelectionPress = book => {
-    console.log(book.title);
+    // there needs to be a  way to bring up module or review screen to add this book... need navigation added with main title, authors, description.
+    // then either you like it or you go back --- so the navigation has to be a stack and it needs to go in order
+    // then add additional details... location, book club attendees, and additional details
   };
 
   onTextInputPress = () => {
-    this.setState({ showBookListImage: true });
+    this.setState({showBookListImage: true});
     Animated.parallel([
       Animated.timing(this.state.backgroundHeightAnimation, {
         toValue: 1,
@@ -106,36 +115,43 @@ export default class CreateEvent extends Component {
       Animated.timing(this.state.bookListImageOpacity, {
         toValue: 1,
         durration: 100,
-        easing: Easing.bezier(0.25, 0.1, 0.25, 1), 
-      })
-    ])
-    .start();
+        easing: Easing.bezier(0.25, 0.1, 0.25, 1),
+      }),
+    ]).start();
   };
 
-
-
   render() {
-    const heightForWhiteBackground = this.state.backgroundHeightAnimation.interpolate({
-      inputRange: [0, 1],
-      outputRange: ['30%', '90%'],
-    })
+    const heightForWhiteBackground = this.state.backgroundHeightAnimation.interpolate(
+      {
+        inputRange: [0, 1],
+        outputRange: ['30%', '90%'],
+      },
+    );
     const opacticyForBackgroundImage = this.state.bookImageOpacity.interpolate({
       inputRange: [0, 1],
       outputRange: [1, 0],
-    })
-    const opacticyForBookListImage = this.state.bookListImageOpacity.interpolate({
-      inputRange: [0, 1],
-      outputRange: [0, 1],
-    })
+    });
+    const opacticyForBookListImage = this.state.bookListImageOpacity.interpolate(
+      {
+        inputRange: [0, 1],
+        outputRange: [0, 1],
+      },
+    );
     return (
       <SafeAreaView style={styles.container}>
         <Animated.Image
-          style={[styles.backgroundStarterImage, {opacity: opacticyForBackgroundImage}]}
+          style={[
+            styles.backgroundStarterImage,
+            {opacity: opacticyForBackgroundImage},
+          ]}
           source={require('../utils/createEventBookBackground.png')}
           resizeMode={'contain'}
         />
         <Animated.View
-          style={[styles.backgroundContentContainer, {height: heightForWhiteBackground}]}>
+          style={[
+            styles.backgroundContentContainer,
+            {height: heightForWhiteBackground},
+          ]}>
           <View style={styles.informationContentContainer}>
             <View style={styles.searchAndListContainer}>
               <TextInput
@@ -146,7 +162,7 @@ export default class CreateEvent extends Component {
                 value={this.state.searchTitle}
                 onFocus={this.onTextInputPress}
               />
-              
+
               {this.state.showcontainer ? (
                 <View>
                   <FlatList
@@ -156,26 +172,37 @@ export default class CreateEvent extends Component {
                   />
                 </View>
               ) : (
-                <View/>
+                <View />
               )}
 
               <Button
-                title="Search For Book" 
+                title="Search For Book"
                 containerStyle={styles.searchButtonContainer}
                 buttonStyle={styles.searchButtonStyle}
                 onPress={() => this.onSearchBooks(this.state.searchTitle)}
               />
-              {this.state.showBookListImage && <Animated.Image
-                style={[styles.listBackgroundBookImage, { opacity: opacticyForBookListImage}]}
-                source={require('../utils/createEventBookListImage.png')}
-                resizeMode={'contain'}
-              />}
+              {this.state.showBookListImage && (
+                <Animated.Image
+                  style={[
+                    styles.listBackgroundBookImage,
+                    {opacity: opacticyForBookListImage},
+                  ]}
+                  source={require('../utils/createEventBookListImage.png')}
+                  resizeMode={'contain'}
+                />
+              )}
             </View>
           </View>
         </Animated.View>
-        <Animated.View style={[styles.backgroundTextView, { opacity: opacticyForBackgroundImage }]}>
+        <Animated.View
+          style={[
+            styles.backgroundTextView,
+            {opacity: opacticyForBackgroundImage},
+          ]}>
           <Text style={styles.backgroundTextH1}>Hello</Text>
-          <Text style={styles.backgroundTextH2}>Ready to host your next BookClub?</Text>
+          <Text style={styles.backgroundTextH2}>
+            Ready to host your next BookClub?
+          </Text>
         </Animated.View>
       </SafeAreaView>
     );
@@ -188,7 +215,6 @@ const windowHeight = Dimensions.get('window').height;
 const flatListRowHeight = windowHeight * 0.15;
 const flatListBookImageHeight = flatListRowHeight - 20;
 const flatListBookImageWidth = flatListBookImageHeight / 1.6;
-
 
 const styles = StyleSheet.create({
   container: {
