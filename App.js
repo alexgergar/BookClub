@@ -1,20 +1,12 @@
 import React, {useState, useEffect} from 'react';
-import {
-  SafeAreaView,
-  StyleSheet,
-  ScrollView,
-  View,
-  Text,
-  StatusBar,
-} from 'react-native';
-import {firebase} from '@react-native-firebase/auth';
+import auth from '@react-native-firebase/auth';
 import 'react-native-gesture-handler';
 import MainEventScreen from './src/screens/MainEventScreen';
-import LoginScreen from './src/screens/LoginScreen';
-import SignUpScreen from './src/screens/SignUpScreen';
 import SignUpLoginScreen from './src/screens/SignUpLoginScreen';
 import LoadingAuthScreen from './src/screens/LoadingAuthScreen';
 import CreateEventScreen from './src/screens/CreateEventScreen';
+import HomeScreen from './src/screens/HomeScreen';
+import SignOutScreen from './src/screens/SignOutScreen';
 import UserContext from './src/context/UserContext';
 import {createStackNavigator} from 'react-navigation-stack';
 import {createAppContainer, createSwitchNavigator} from 'react-navigation';
@@ -22,27 +14,42 @@ import {createAppContainer, createSwitchNavigator} from 'react-navigation';
 const MainStack = createStackNavigator(
   {
     SignUpLogin: SignUpLoginScreen,
+    Home: HomeScreen,
     MainEvent: MainEventScreen,
     CreateEvent: CreateEventScreen,
+    SignOut: SignOutScreen,
   },
   {
-    initialRouteName: 'CreateEvent',
+    initialRouteName: 'SignUpLogin',
+    header: null,
+    headerMode: 'none',
   },
 );
 
 const AuthStack = createStackNavigator(
   {
     SignUpLogin: SignUpLoginScreen,
+    SignOut: SignOutScreen,
+    Home: HomeScreen,
   },
   {
     initialRouteName: 'SignUpLogin',
+    header: null,
+    headerMode: 'none', 
   },
 );
 
-const AppNavigator = createSwitchNavigator({
-  Auth: AuthStack,
-  MainStack: MainStack,
-});
+const AppNavigator = createSwitchNavigator(
+  {
+    MainStack: MainStack,
+    Auth: AuthStack,
+  },
+  {
+    initialRouteName: 'MainStack',
+    header: null,
+    headerMode: 'none',
+  },
+);
 
 function App() {
   const [initializing, setInitializing] = useState(true);
@@ -56,9 +63,9 @@ function App() {
   }
 
   useEffect(() => {
-    const subscribe = firebase.auth().onAuthStateChanged(onChange);
-    return subscribe();
-  });
+    const subscriber = auth().onAuthStateChanged(onChange);
+    return subscriber();
+  }, []);
 
   if (!user) {
     return <SignUpLoginScreen />;
