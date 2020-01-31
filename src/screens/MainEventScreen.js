@@ -13,6 +13,7 @@ import {bookClubEvent} from '../utils/testInfo';
 import EventDetails from '../components/EventDetails';
 import BookDetails from '../components/BookDetails';
 import {Button} from 'react-native-elements';
+import UserContext from '../context/UserContext';
 
 
 export default class MainEvent extends Component {

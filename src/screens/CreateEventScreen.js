@@ -18,8 +18,12 @@ import {Button} from 'react-native-elements';
 import {GOOGLE_BOOKS_API_KEY} from 'react-native-dotenv';
 import MainEventScreen from './MainEventScreen';
 import urlFor from '../utils/urlFor';
+import UserContext from '../context/UserContext';
+
 
 export default class CreateEvent extends Component {
+  static contextType = UserContext
+  
   state = {
     searchTitle: null,
     showcontainer: false,
@@ -29,6 +33,11 @@ export default class CreateEvent extends Component {
     showBookListImage: false,
     bookListImageOpacity: new Animated.Value(0),
   };
+
+  componentDidMount() {
+    const user = this.context;
+    console.log(user);
+  }
 
   onSearchBooks = text => {
     Keyboard.dismiss();
@@ -177,6 +186,7 @@ export default class CreateEvent extends Component {
 
               <Button
                 title="Search For Book"
+                titleStyle={{ fontFamily: 'Montserrat-SemiBold'}}
                 containerStyle={styles.searchButtonContainer}
                 buttonStyle={styles.searchButtonStyle}
                 onPress={() => this.onSearchBooks(this.state.searchTitle)}
@@ -245,9 +255,11 @@ const styles = StyleSheet.create({
   },
   backgroundTextH1: {
     fontSize: 48,
+    fontFamily: 'Karla-Bold',
   },
   backgroundTextH2: {
-    fontSize: 23,
+    fontSize: 20,
+    fontFamily: 'Montserrat-Regular',
   },
   informationContentContainer: {
     padding: 10,
@@ -293,10 +305,13 @@ const styles = StyleSheet.create({
   },
   titleText: {
     fontSize: 16,
+    fontFamily: 'Montserrat-Bold',
     fontWeight: 'bold',
   },
   authorText: {
     fontSize: 14,
+    fontFamily: 'Montserrat-Regular',
+
   },
   bookListImage: {
     width: flatListBookImageWidth,

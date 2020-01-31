@@ -20,7 +20,7 @@ const MainStack = createStackNavigator(
     SignOut: SignOutScreen,
   },
   {
-    initialRouteName: 'SignUpLogin',
+    initialRouteName: 'CreateEvent',
     header: null,
     headerMode: 'none',
   },
@@ -35,7 +35,7 @@ const AuthStack = createStackNavigator(
   {
     initialRouteName: 'SignUpLogin',
     header: null,
-    headerMode: 'none', 
+    headerMode: 'none',
   },
 );
 
