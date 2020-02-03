@@ -2,6 +2,9 @@
 <Workspace
    version = "1.0">
    <FileRef
+      location = "group:../node_modules/@react-native-community/cameraroll/ios/RNCCameraRoll.xcodeproj">
+   </FileRef>
+   <FileRef
       location = "group:BookClub.xcodeproj">
    </FileRef>
    <FileRef

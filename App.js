@@ -22,10 +22,9 @@ const MainStack = createStackNavigator(
     MainEvent: MainEventScreen,
     CreateEvent: CreateEventScreen,
     SignOut: SignOutScreen,
-    
   },
   {
-    initialRouteName: 'OnboardingOneProfile',
+    initialRouteName: 'OnboardingTwoAvatar',
     header: null,
     headerMode: 'none',
   },

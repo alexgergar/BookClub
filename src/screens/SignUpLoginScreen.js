@@ -79,9 +79,7 @@ export default class SignUpLogin extends React.Component {
     const {email, password} = this.state;
     await auth()
       .signInWithEmailAndPassword(email, password)
-      .then(() => {
-        this.props.navigation.navigate('Home');
-      })
+      .then(() => this.props.navigation.navigate('Home'))
       .catch(error => this.setState({errorMessage: error.message}));
   };
 
