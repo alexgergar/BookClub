@@ -8,6 +8,7 @@ import CreateEventScreen from './src/screens/CreateEventScreen';
 import HomeScreen from './src/screens/HomeScreen';
 import SignOutScreen from './src/screens/SignOutScreen';
 import OnboardingOneProfileScreen from './src/screens/OnboardingOneProfileScreen';
+import OnboardingTwoAvatarScreen from './src/screens/OnboardingTwoAvatarScreen';
 import UserContext from './src/context/UserContext';
 import {createStackNavigator} from 'react-navigation-stack';
 import {createAppContainer, createSwitchNavigator} from 'react-navigation';
@@ -16,6 +17,7 @@ const MainStack = createStackNavigator(
   {
     SignUpLogin: SignUpLoginScreen,
     OnboardingOneProfile: OnboardingOneProfileScreen,
+    OnboardingTwoAvatar: OnboardingTwoAvatarScreen,
     Home: HomeScreen,
     MainEvent: MainEventScreen,
     CreateEvent: CreateEventScreen,

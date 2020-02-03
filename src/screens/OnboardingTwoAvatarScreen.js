@@ -11,55 +11,15 @@ import {
 import { Input, Button } from 'react-native-elements';
 
 
-export default class OnboardingOneProfile extends Component {
-  state= {
-    firstName: '',
-    lastName: '',
-    phone: '',
-  }
-
-  handleContinue = () => {
-    this.props.navigation.navigate('OnboardingTwoAvatar', {
-      firstName: this.state.firstName,
-      lastName: this.state.lastName,
-      phone: this.state.phone,
-    })
+export default class OnboardingTwoAvatar extends Component {
+  state = {
   }
 
   render() {
     return (
       <SafeAreaView style={styles.safeAreaViewContainer}>
         <View style={styles.topContainer}>
-          <Text style={styles.profileTitleTexth1}>Create Your Profile</Text>
-          <View style={styles.detailsContainer}>
-            <Input
-              containerStyle={styles.inputContainer}
-              inputContainerStyle={styles.placeholderInputContainer}
-              placeholder="First Name"
-              onChangeText={firstName => this.setState({ firstName })}
-              value={this.state.firstName}
-              errorStyle={{ color: 'red' }}
-              errorMessage={this.state.errorMessage}
-            />
-            <Input
-              containerStyle={styles.inputContainer}
-              inputContainerStyle={styles.placeholderInputContainer}
-              placeholder="Last Name"
-              onChangeText={lastName => this.setState({ lastName })}
-              value={this.state.lastName}
-              errorStyle={{ color: 'red' }}
-              errorMessage={this.state.errorMessage}
-            />
-            <Input
-              containerStyle={styles.inputContainer}
-              inputContainerStyle={styles.placeholderInputContainer}
-              placeholder="Phone Number"
-              onChangeText={phone => this.setState({ phone })}
-              value={this.state.phone}
-              errorStyle={{ color: 'red' }}
-              errorMessage={this.state.errorMessage}
-            />
-          </View>
+          <Text style={styles.titleTexth1}>Pick Your Avatar</Text>
         </View>
         <View style={styles.middleContainer}>
           <Image
@@ -73,7 +33,7 @@ export default class OnboardingOneProfile extends Component {
             buttonStyle={styles.continueButtonViewContainer}
             titleStyle={styles.continueTitleButtonStyle}
             title='Continue'
-            onPress={this.handleContinue}
+            onPress={this.handleSubmit}
           />
         </View>
       </SafeAreaView>
@@ -97,7 +57,7 @@ const styles = StyleSheet.create({
   detailsContainer: {
     top: windowHeight * .05,
   },
-  profileTitleTexth1: {
+  titleTexth1: {
     fontFamily: 'Montserrat-Regular',
     fontSize: 26,
   },
