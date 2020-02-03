@@ -89,7 +89,7 @@ export default class SignUpLogin extends React.Component {
     const {email, password} = this.state;
     await auth()
       .createUserWithEmailAndPassword(email, password)
-      .then(() => this.props.navigation.navigate('Home'))
+      .then(() => this.props.navigation.navigate('OnboardingOneProfile'))
       .catch(error => this.setState({errorMessage: error.message}));
   };
 
@@ -142,7 +142,7 @@ export default class SignUpLogin extends React.Component {
                 ]}>
                 {this.state.showSignUp && (
                   <>
-                    <View style={{flexDirection: 'row'}}>
+                    <View style={{flexDirection: 'row', alignItems: 'center'}}>
                       <Text style={styles.headlineOne}>Hello </Text>
                       <Text style={styles.bold}>Reader,</Text>
                     </View>
@@ -246,17 +246,17 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
   },
   authOptionsInActiveText: {
-    fontSize: 24,
+    fontFamily: 'Karla-Regular',
+    fontSize: 26,
     color: '#848B91',
-    fontWeight: 'normal',
   },
   signUpText: {
     marginLeft: windowWidth * 0.1,
   },
   authOptionsActiveText: {
-    fontSize: 24,
+    fontFamily: 'Karla-Bold',
+    fontSize: 25,
     color: '#0D161C',
-    fontWeight: '500',
   },
   authOptionsActiveLine: {
     borderBottomWidth: 3,
@@ -278,10 +278,11 @@ const styles = StyleSheet.create({
     height: windowHeight * 0.2,
   },
   headlineOne: {
+    fontFamily: 'Montserrat-Regular',
     fontSize: 40,
   },
   bold: {
-    fontWeight: 'bold',
+    fontFamily: 'Montserrat-Bold',
     fontSize: 40,
   },
   headlineTwo: {
@@ -289,6 +290,7 @@ const styles = StyleSheet.create({
     height: windowHeight * 0.07,
   },
   signUpBelowText: {
+    fontFamily: 'Karla-Regular',
     fontSize: 14,
     paddingRight: windowWidth * 0.35,
   },
@@ -314,6 +316,7 @@ const styles = StyleSheet.create({
     paddingLeft: paddingForContent,
   },
   passwordButton: {
+    fontFamily: 'Montserrat-Regular',
     color: '#0D161C',
     fontSize: 14,
     fontWeight: '300',

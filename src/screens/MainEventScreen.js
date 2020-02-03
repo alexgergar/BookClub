@@ -146,7 +146,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   backgroundContentContainer: {
-    // zIndex: 1,
     backgroundColor: 'white',
     marginTop: windowHeight * 0.2,
     borderTopLeftRadius: 15,
@@ -154,13 +153,11 @@ const styles = StyleSheet.create({
     bottom: 0,
     width: '90%',
     paddingBottom: 100,
-    // bottom: starterHeightPositionForInformationTextUnderBookImage,
   },
   informationContentContainer: {
     flexGrow: 1,
     padding: 10,
     position: 'relative',
-    // zIndex: 10,
     top: starterHeightPositionForInformationTextUnderBookImage,
   },
   bookImageView: {

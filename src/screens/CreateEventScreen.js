@@ -103,6 +103,7 @@ export default class CreateEvent extends Component {
   };
 
   onBookSelectionPress = book => {
+    
     // there needs to be a  way to bring up module or review screen to add this book... need navigation added with main title, authors, description.
     // then either you like it or you go back --- so the navigation has to be a stack and it needs to go in order
     // then add additional details... location, book club attendees, and additional details
