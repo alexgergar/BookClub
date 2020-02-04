@@ -9,9 +9,11 @@ import {
   Dimensions,
 } from 'react-native';
 import { Button } from 'react-native-elements';
-
+import UserContext from '../context/UserContext';
+import auth from '@react-native-firebase/auth';
 
 export default class Home extends Component {
+  static contextType = UserContext;
 
   render() {
     return (

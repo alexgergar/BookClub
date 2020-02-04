@@ -20,10 +20,9 @@ import MainEventScreen from './MainEventScreen';
 import urlFor from '../utils/urlFor';
 import UserContext from '../context/UserContext';
 
-
 export default class CreateEvent extends Component {
-  static contextType = UserContext
-  
+  static contextType = UserContext;
+
   state = {
     searchTitle: null,
     showcontainer: false,
@@ -32,12 +31,8 @@ export default class CreateEvent extends Component {
     bookImageOpacity: new Animated.Value(0),
     showBookListImage: false,
     bookListImageOpacity: new Animated.Value(0),
+    selectedBook: null,
   };
-
-  componentDidMount() {
-    const user = this.context;
-    console.log(user);
-  }
 
   onSearchBooks = text => {
     Keyboard.dismiss();
@@ -82,6 +77,11 @@ export default class CreateEvent extends Component {
       raw: book,
       smallThumbnail: thumbnail.small,
       thumbnail: thumbnail.normal,
+      pageCount: book.volumeInfo.pageCount,
+      language: book.volumeInfo.language,
+      averageRating: book.volumeInfo.averageRating,
+      ratingsCount: book.volumeInfo.ratingsCount,
+      description: book.volumeInfo.description,
     };
     return (
       <TouchableHighlight
@@ -102,8 +102,10 @@ export default class CreateEvent extends Component {
     );
   };
 
-  onBookSelectionPress = book => {
-    
+  onBookSelectionPress = selectedBook => {
+    this.props.navigation.navigate('SelectedBook', {
+      selectedBook: selectedBook,
+    });
     // there needs to be a  way to bring up module or review screen to add this book... need navigation added with main title, authors, description.
     // then either you like it or you go back --- so the navigation has to be a stack and it needs to go in order
     // then add additional details... location, book club attendees, and additional details
@@ -187,7 +189,7 @@ export default class CreateEvent extends Component {
 
               <Button
                 title="Search For Book"
-                titleStyle={{ fontFamily: 'Montserrat-SemiBold'}}
+                titleStyle={{fontFamily: 'Montserrat-SemiBold'}}
                 containerStyle={styles.searchButtonContainer}
                 buttonStyle={styles.searchButtonStyle}
                 onPress={() => this.onSearchBooks(this.state.searchTitle)}
@@ -312,7 +314,6 @@ const styles = StyleSheet.create({
   authorText: {
     fontSize: 14,
     fontFamily: 'Montserrat-Regular',
-
   },
   bookListImage: {
     width: flatListBookImageWidth,

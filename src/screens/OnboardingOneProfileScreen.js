@@ -9,20 +9,21 @@ import {
   Dimensions,
 } from 'react-native';
 import { Input, Button } from 'react-native-elements';
-
+import UserContext from '../context/UserContext';
 
 export default class OnboardingOneProfile extends Component {
-  state= {
+  static contextType = UserContext;
+  state = {
     firstName: '',
     lastName: '',
-    phone: '',
+    phoneNumber: '',
   }
 
   handleContinue = () => {
     this.props.navigation.navigate('OnboardingTwoAvatar', {
       firstName: this.state.firstName,
       lastName: this.state.lastName,
-      phone: this.state.phone,
+      phoneNumber: this.state.phoneNumber,
     })
   }
 
@@ -54,8 +55,8 @@ export default class OnboardingOneProfile extends Component {
               containerStyle={styles.inputContainer}
               inputContainerStyle={styles.placeholderInputContainer}
               placeholder="Phone Number"
-              onChangeText={phone => this.setState({ phone })}
-              value={this.state.phone}
+              onChangeText={phoneNumber => this.setState({ phoneNumber })}
+              value={this.state.phoneNumber}
               errorStyle={{ color: 'red' }}
               errorMessage={this.state.errorMessage}
             />

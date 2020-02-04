@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, {Component} from 'react';
 import {
   Text,
   View,
@@ -10,26 +10,58 @@ import {
   FlatList,
 } from 'react-native';
 import CameraRoll from '@react-native-community/cameraroll';
-import { Button, Avatar } from 'react-native-elements';
+import {Button, Avatar} from 'react-native-elements';
 import {avatarImages} from '../utils/listOfAvatars';
-
+import auth from '@react-native-firebase/auth';
+import UserContext from '../context/UserContext';
 
 export default class OnboardingTwoAvatar extends Component {
+  static contextType = UserContext;
   state = {
     showImageAdd: true,
     avatarSelected: false,
     idSelection: null,
+    selectedAvatarData: null,
+  };
+
+  componentDidMount() {
+   const {
+     firstName,
+     lastName,
+     phoneNumber,
+   } = this.props.navigation.state.params;
+   console.log(phoneNumber);
+   console.log(firstName)
+   console.log(lastName);
+
   }
 
   handleAvatarAddPress = avatar => {
-    console.log(avatar.id)
-    this.setState({avatarSelected: true, idSelection: avatar.id});
-  }
+    console.log(avatar.id);
+    this.setState({
+      avatarSelected: true,
+      idSelection: avatar.id,
+      selectedAvatarData: avatar,
+    });
+  };
+
+  handleUpdateToProfile = async () => {
+    const {firstName, lastName, phoneNumber} = this.props.navigation.state.params;
+    const update = {
+      displayName: `${firstName} ${lastName}`,
+      // phoneNumber: phoneNumber,
+      // photoURL: this.state.selectedAvatarData.id,
+    };
+    console.log(update);
+    await auth()
+      .currentUser.updateProfile(update)
+      .then(() => this.props.navigation.navigate('Home'))
+      .catch(error => console.log(error));
+  };
 
   handleContinuePress = () => {
-    
-  }
-
+    this.handleUpdateToProfile();
+  };
 
   render() {
     return (
@@ -48,6 +80,15 @@ export default class OnboardingTwoAvatar extends Component {
           </View>
         </View>
         <View style={styles.middleContainer}>
+          {this.state.avatarSelected && (
+            <View style={styles.selectedAvatarView}>
+              <Image
+                resizeMode={'contain'}
+                source={this.state.selectedAvatarData.src}
+                style={[styles.avatarSelectedView]}
+              />
+            </View>
+          )}
           <View style={styles.listView}>
             <FlatList
               data={avatarImages}
@@ -55,7 +96,14 @@ export default class OnboardingTwoAvatar extends Component {
                 <TouchableHighlight
                   style={{flex: 1}}
                   onPress={() => this.handleAvatarAddPress(item)}>
-                  <View style={{borderWidth: this.state.avatarSelected && this.state.idSelection === item.id ? 1 : 0}}>
+                  <View
+                    style={{
+                      borderWidth:
+                        this.state.avatarSelected &&
+                        this.state.idSelection === item.id
+                          ? 1
+                          : 0,
+                    }}>
                     <Image source={item.src} style={[styles.galleryImage]} />
                   </View>
                 </TouchableHighlight>
@@ -76,7 +124,6 @@ export default class OnboardingTwoAvatar extends Component {
       </SafeAreaView>
     );
   }
-
 }
 
 const windowWidth = Dimensions.get('window').width;
@@ -113,13 +160,22 @@ const styles = StyleSheet.create({
   middleContainer: {
     flex: 1,
   },
+  selectedAvatarView: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  avatarSelectedView: {
+    height: '100%',
+    width: '100%',
+  },
   listView: {
+    flex: 1,
     padding: 10,
   },
   galleryImage: {
     height: windowHeight * 0.15,
     width: windowHeight * 0.15,
-    // borderWidth: 1,
   },
   addPhotoText: {
     paddingTop: 10,
@@ -142,4 +198,3 @@ const styles = StyleSheet.create({
     fontFamily: 'Montserrat-Regular',
   },
 });
-

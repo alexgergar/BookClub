@@ -12,8 +12,11 @@ import {Input, Button} from 'react-native-elements';
 import {TouchableHighlight} from 'react-native-gesture-handler';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import validateEmail from '../utils/validateEmail';
+import UserContext from '../context/UserContext';
+import HomeScreen from './HomeScreen';
 
 export default class SignUpLogin extends React.Component {
+  static contextType = UserContext;
   state = {
     email: '',
     password: '',
@@ -79,7 +82,7 @@ export default class SignUpLogin extends React.Component {
     const {email, password} = this.state;
     await auth()
       .signInWithEmailAndPassword(email, password)
-      .then(() => this.props.navigation.navigate('Home'))
+      .then(() => this.props.navigation.navigate('OnboardingOneProfile'))
       .catch(error => this.setState({errorMessage: error.message}));
   };
 
