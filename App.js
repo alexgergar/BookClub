@@ -11,6 +11,7 @@ import OnboardingTwoAvatarScreen from './src/screens/OnboardingTwoAvatarScreen';
 import LoadingAuthScreen from './src/screens/LoadingAuthScreen';
 import SelectedBookScreen from './src/screens/SelectedBookScreen';
 import CreateEventAddDetailsScreen from './src/screens/CreateEventAddDetailsScreen';
+import CreateEventAddAttendeesScreen from './src/screens/CreateEventAddAttendeesScreen';
 import UserContext from './src/context/UserContext';
 import {createStackNavigator} from 'react-navigation-stack';
 import {createAppContainer, createSwitchNavigator} from 'react-navigation';
@@ -22,10 +23,11 @@ const MainStack = createStackNavigator(
     CreateEvent: CreateEventScreen,
     SelectedBook: SelectedBookScreen,
     CreateEventAddDetails: CreateEventAddDetailsScreen,
+    CreateEventAddAttendees: CreateEventAddAttendeesScreen,
     SignOut: SignOutScreen,
   },
   {
-    initialRouteName: 'Home',
+    initialRouteName: 'CreateEventAddAttendees',
     header: null,
     headerMode: 'none',
   },

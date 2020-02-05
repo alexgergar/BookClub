@@ -9,7 +9,6 @@ import {
   Keyboard,
 } from 'react-native';
 import {Button, Input} from 'react-native-elements';
-import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import UserContext from '../context/UserContext';
 
 export default class CreateEventAddDetails extends Component {
@@ -19,6 +18,8 @@ export default class CreateEventAddDetails extends Component {
     state: null,
     zipcode: null,
     detailsForLocation: null,
+    hideContinueButton: false,
+    showTitle: true,
   };
 
   componentDidMount() {
@@ -34,41 +35,70 @@ export default class CreateEventAddDetails extends Component {
 
   _keyboardDidHide = () => {
     this.setState({
-      showBottomBar: true,
+      showTitle: true,
     });
   };
+
+  toggleShowTitle = () => {
+    this.setState(prevState => ({showTitle: !prevState.showTitle}));
+  }
+
+  handleContinuePress = () => {
+    const {selectedBook} = this.props.navigation.state.params;
+    this.props.navigation.navigate('CreateEventAddAttendees', {
+      selectedBook: selectedBook,
+      streetAddress: this.state.streetAddress,
+      city: this.state.city,
+      state: this.state.state,
+      zipcode: this.state.zipcode,
+      detailsForLocation: this.state.detailsForLocation,
+    });
+  }
 
   render() {
     return (
       <SafeAreaView style={styles.container}>
         <View style={styles.whiteBackgroundBox}>
-          <Text style={styles.headlineTitleText}>Event Details</Text>
-          <View style={styles.addressView}>
-            <Text style={styles.addressTitleText}>Address:</Text>
-            {/* <KeyboardAwareScrollView> */}
-            <View>
+          <View>
+            {this.state.showTitle && (
+              <Text style={styles.headlineTitleText}>Event Details</Text>
+            )}
+            <View style={styles.addressView}>
+              <Text style={styles.addressTitleText}>Address:</Text>
               <Input
                 placeholder="Street Address"
                 onChangeText={streetAddress => this.setState({streetAddress})}
                 value={this.state.streetAddress}
-                multiline={true}
-                dataDetectorTypes="address"
+                inputStyle={styles.inputTextStyle}
+                containerStyle={styles.singleLineContainerStyle}
+                inputContainerStyle={styles.inputContainerStyle}
               />
               <Input
                 placeholder="City"
                 onChangeText={city => this.setState({city})}
                 value={this.state.city}
+                inputStyle={styles.inputTextStyle}
+                containerStyle={styles.singleLineContainerStyle}
+                inputContainerStyle={styles.inputContainerStyle}
               />
-              <Input
-                placeholder="State"
-                onChangeText={state => this.setState({state})}
-                value={this.state.state}
-              />
-              <Input
-                placeholder="Zipcode"
-                onChangeText={zipcode => this.setState({zipcode})}
-                value={this.state.zipcode}
-              />
+              <View style={{flexDirection: 'row'}}>
+                <Input
+                  placeholder="State"
+                  onChangeText={state => this.setState({state})}
+                  value={this.state.state}
+                  inputStyle={styles.inputTextStyle}
+                  containerStyle={styles.twoLineContainerStyle}
+                  inputContainerStyle={styles.inputContainerStyle}
+                />
+                <Input
+                  placeholder="Zip Code"
+                  onChangeText={zipcode => this.setState({zipcode})}
+                  value={this.state.zipcode}
+                  inputStyle={styles.inputTextStyle}
+                  containerStyle={styles.twoLineContainerStyle}
+                  inputContainerStyle={styles.inputContainerStyle}
+                />
+              </View>
               <Input
                 placeholder="Details for Location"
                 onChangeText={detailsForLocation =>
@@ -76,10 +106,27 @@ export default class CreateEventAddDetails extends Component {
                 }
                 value={this.state.detailsForLocation}
                 multiline={true}
+                inputStyle={styles.inputTextStyle}
+                containerStyle={styles.multiLineContainerStyle}
+                inputContainerStyle={[
+                  styles.inputContainerStyle,
+                  styles.multiLineInputContainerStyle,
+                ]}
+                maxLength={400}
+                onFocus={this.toggleShowTitle}
+                onBlur={this.toggleShowTitle}
               />
             </View>
-            {/* </KeyboardAwareScrollView> */}
           </View>
+            <View>
+              <Button
+                title="Continue"
+                containerStyle={styles.continueButtonContainerStyle}
+                buttonStyle={styles.continueButtonStyle}
+                titleStyle={styles.continueTitleButtonStyle}
+                onPress={this.handleContinuePress}
+              />
+            </View>
         </View>
       </SafeAreaView>
     );
@@ -101,13 +148,60 @@ const styles = StyleSheet.create({
     borderTopLeftRadius: 15,
     borderTopRightRadius: 15,
     width: '90%',
-    flexGrow: 1,
-    top: windowHeight * 0.05,
     padding: windowWidth * 0.05,
+    justifyContent: 'space-between',
+    height: windowHeight * .95,
   },
   headlineTitleText: {
     fontFamily: 'Montserrat-Regular',
     fontSize: 26,
+  },
+  addressView: {
+    paddingTop: windowHeight * 0.02,
+  },
+  addressTitleText: {
+    fontFamily: 'Montserrat-Regular',
+    fontSize: 16,
+  },
+  inputContainerStyle: {
+    borderWidth: 1,
+    borderRadius: 15,
+    borderColor: '#DBDBDB',
+    paddingHorizontal: windowWidth * 0.02,
+  },
+  inputTextStyle: {
+    fontFamily: 'Montserrat-Regular',
+    fontSize: 14,
+    color: '#14212B',
+    alignSelf: 'flex-start',
+  },
+  singleLineContainerStyle: {
+    height: windowHeight * 0.1,
+    paddingVertical: windowHeight * 0.01,
+  },
+  twoLineContainerStyle: {
+    width: '50%',
+    paddingVertical: windowHeight * 0.01,
+  },
+  multiLineContainerStyle: {
+    paddingTop: windowHeight * 0.01,
+  },
+  multiLineInputContainerStyle: {
+    height: windowHeight * 0.1,
+  },
+  continueButtonStyle: {
+    backgroundColor: '#1E3342',
+    borderRadius: 5,
+    width: '100%',
+    justifyContent: 'center',
+    alignSelf: 'center',
+  },
+  continueButtonContainerStyle: {
+    width: '82%',
+    alignSelf: 'center',
+  },
+  continueTitleButtonStyle: {
+    fontFamily: 'Montserrat-SemiBold',
   },
 });
 
