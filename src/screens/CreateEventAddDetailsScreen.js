@@ -20,9 +20,14 @@ export default class CreateEventAddDetails extends Component {
     detailsForLocation: null,
     hideContinueButton: false,
     showTitle: true,
+    flexDirection: 'column-reverse',
   };
 
   componentDidMount() {
+    this.keyboardDidShowListener = Keyboard.addListener(
+      'keyboardDidShow',
+      this._keyboardDidShow,
+    );
     this.keyboardDidHideListener = Keyboard.addListener(
       'keyboardDidHide',
       this._keyboardDidHide,
@@ -30,12 +35,20 @@ export default class CreateEventAddDetails extends Component {
   }
 
   componentWillUnmount() {
+    this.keyboardDidShowListener.remove();
     this.keyboardDidHideListener.remove();
+  }
+
+  _keyboardDidShow = () => {
+    this.setState({
+      flexDirection: 'column',
+    });
   }
 
   _keyboardDidHide = () => {
     this.setState({
       showTitle: true,
+      flexDirection: 'column-reverse',
     });
   };
 
@@ -57,7 +70,7 @@ export default class CreateEventAddDetails extends Component {
 
   render() {
     return (
-      <SafeAreaView style={styles.container}>
+      <SafeAreaView style={[styles.container, {flexDirection: this.state.flexDirection}]}>
         <View style={styles.whiteBackgroundBox}>
           <View>
             {this.state.showTitle && (

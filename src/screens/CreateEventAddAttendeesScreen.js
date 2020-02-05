@@ -7,13 +7,39 @@ import {
   Image,
   Dimensions,
   Keyboard,
+  FlatList,
 } from 'react-native';
 import {Button, Input} from 'react-native-elements';
 import UserContext from '../context/UserContext';
+import firestore from '@react-native-firebase/firestore';
 
 export default class CreateEventAddAttendees extends Component {
+  static contextType = UserContext;
   state = {
   };
+
+  componentDidMount() {
+    let user = this.context;
+    console.log(user.uid);
+  }
+
+  getAllUserInfo = async () => {
+    let user = this.context;
+    // const documentSnapshot = await firestore()
+    //   .collection('users')
+    //   .doc('user.uid')
+    //   .get();
+
+    // console.log('User data', documentSnapshot.data());
+    // const userInfo = firestore()
+    //   .collection('users')
+    //   .doc(user.uid)
+    // await userInfo.get()
+    //   .then(doc => console.log(doc))
+    //   .catch(err => {
+    //     console.log(`Error getting document: ${err}`);
+    //   });
+  } 
 
 
   handleContinuePress = () => {
@@ -34,6 +60,9 @@ export default class CreateEventAddAttendees extends Component {
         <View style={styles.whiteBackgroundBox}>
           <View>
             <Text style={styles.headlineTitleText}>Attendees</Text>
+            <FlatList 
+
+            />
           </View>
           <View>
             <Button

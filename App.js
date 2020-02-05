@@ -27,7 +27,7 @@ const MainStack = createStackNavigator(
     SignOut: SignOutScreen,
   },
   {
-    initialRouteName: 'CreateEventAddAttendees',
+    initialRouteName: 'Home',
     header: null,
     headerMode: 'none',
   },
