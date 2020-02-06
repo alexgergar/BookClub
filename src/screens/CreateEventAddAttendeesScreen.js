@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import React, {Component} from 'react';
 import {
   Text,
@@ -9,38 +10,50 @@ import {
   Keyboard,
   FlatList,
 } from 'react-native';
-import {Button, Input} from 'react-native-elements';
+import {Button, Icon} from 'react-native-elements';
 import UserContext from '../context/UserContext';
 import firestore from '@react-native-firebase/firestore';
+import {TouchableHighlight} from 'react-native-gesture-handler';
 
 export default class CreateEventAddAttendees extends Component {
   static contextType = UserContext;
   state = {
+    listOfAttendeeOptions: [
+      {
+        id: '1',
+        name: 'create new club',
+        createNewClub: true,
+      },
+    ],
   };
 
   componentDidMount() {
     let user = this.context;
-    console.log(user.uid);
+    this.getAllUserInfo();
   }
 
   getAllUserInfo = async () => {
     let user = this.context;
-    // const documentSnapshot = await firestore()
-    //   .collection('users')
-    //   .doc('user.uid')
-    //   .get();
-
-    // console.log('User data', documentSnapshot.data());
-    // const userInfo = firestore()
-    //   .collection('users')
-    //   .doc(user.uid)
-    // await userInfo.get()
-    //   .then(doc => console.log(doc))
-    //   .catch(err => {
-    //     console.log(`Error getting document: ${err}`);
-    //   });
-  } 
-
+    const userInfo = firestore()
+      .collection('users')
+      .doc(user.uid);
+    await userInfo
+      .get()
+      .then(doc => {
+        doc.data().bookClubs.forEach(bookclub => {
+          const club = {
+            id: bookclub.id,
+            name: bookclub.name,
+          };
+          this.setState(prevState => ({
+            listOfAttendeeOptions: [...prevState.listOfAttendeeOptions, club],
+          }));
+        });
+      })
+      .catch(err => {
+        console.log(`Error getting document: ${err}`);
+      });
+  };
 
   handleContinuePress = () => {
     const {selectedBook} = this.props.navigation.state.params;
@@ -54,24 +67,60 @@ export default class CreateEventAddAttendees extends Component {
     // });
   };
 
+  onListItemPress = item => {
+    if (item.createNewClub) {
+      console.log('true');
+    } else {
+      console.log('false');
+    }
+  };
+
   render() {
     return (
-      <SafeAreaView style={styles.container}>
-        <View style={styles.whiteBackgroundBox}>
-          <View>
+      <SafeAreaView>
+        <View style={styles.container}>
+          <View style={styles.whiteBackgroundContainer}>
             <Text style={styles.headlineTitleText}>Attendees</Text>
-            <FlatList 
-
+            <FlatList
+              numColumns={2}
+              data={this.state.listOfAttendeeOptions}
+              keyExtractor={item => item.id.toString()}
+              renderItem={({ item }) => (
+                <TouchableHighlight onPress={() => this.onListItemPress(item)}>
+                  <View
+                    style={[
+                      styles.optionsContainer,
+                      item.createNewClub
+                        ? styles.backgroundOne
+                        : styles.backgroundTwo,
+                    ]}>
+                    {item.createNewClub && (
+                      <>
+                        <Icon name="group-add" type="material" color="white" />
+                        <Text
+                          style={[styles.createNewClubText, { color: 'white' }]}>
+                          {item.name}
+                        </Text>
+                      </>
+                    )}
+                    {!item.createNewClub && (
+                      <Text style={styles.createNewClubText}>{item.name}</Text>
+                    )}
+                  </View>
+                </TouchableHighlight>
+              )}
+              columnWrapperStyle={styles.flatListColumnWrapper}
             />
-          </View>
-          <View>
-            <Button
-              title="Continue"
-              containerStyle={styles.continueButtonContainerStyle}
-              buttonStyle={styles.continueButtonStyle}
-              titleStyle={styles.continueTitleButtonStyle}
-              onPress={this.handleContinuePress}
-            />
+            <View style={styles.bottomButtonView}>
+              <Button
+                title="Continue"
+                containerStyle={styles.continueButtonContainerStyle}
+                buttonStyle={styles.continueButtonStyle}
+                titleStyle={styles.continueTitleButtonStyle}
+                onPress={this.handleContinuePress}
+              />
+            </View>
+            
           </View>
         </View>
       </SafeAreaView>
@@ -87,32 +136,57 @@ const styles = StyleSheet.create({
   container: {
     backgroundColor: '#E3E4E6',
     alignItems: 'center',
-    flex: 1,
+    height: '100%',
     justifyContent: 'flex-end',
   },
-  whiteBackgroundBox: {
+  whiteBackgroundContainer: {
     backgroundColor: 'white',
+    width: '90%',
+    height: '95%',
     borderTopLeftRadius: 15,
     borderTopRightRadius: 15,
-    width: '90%',
-    padding: windowWidth * 0.05,
-    justifyContent: 'space-between',
-    height: windowHeight * 0.95,
+    paddingHorizontal: '5%',
   },
   headlineTitleText: {
     fontFamily: 'Montserrat-Regular',
     fontSize: 26,
+    marginBottom: 10,
+    marginTop: '5%',
+  },
+  optionsContainer: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: windowWidth * 0.35,
+    height: windowWidth * 0.35,
+    marginBottom: 10,
+    borderRadius: 10,
+    padding: 15,
+  },
+  backgroundOne: {
+    backgroundColor: '#3A5673',
+  },
+  backgroundTwo: {
+    backgroundColor: '#EBE2CD',
+  },
+  createNewClubText: {
+    fontFamily: 'Montserrat-Regular',
+    fontSize: 16,
+    textAlign: 'center',
+  },
+  flatListColumnWrapper: {
+    justifyContent: 'space-around',
+  },
+  bottomButtonView: {
+    marginVertical: '3%',
+  },
+  continueButtonContainerStyle: {
+    borderRadius: 20,
+    width: '85%',
+    alignSelf: 'center',
   },
   continueButtonStyle: {
     backgroundColor: '#1E3342',
     borderRadius: 5,
-    width: '100%',
-    justifyContent: 'center',
-    alignSelf: 'center',
-  },
-  continueButtonContainerStyle: {
-    width: '82%',
-    alignSelf: 'center',
   },
   continueTitleButtonStyle: {
     fontFamily: 'Montserrat-SemiBold',

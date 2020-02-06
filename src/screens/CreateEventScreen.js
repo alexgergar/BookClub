@@ -16,7 +16,6 @@ import {
 import axios from 'axios';
 import {Button} from 'react-native-elements';
 import {GOOGLE_BOOKS_API_KEY} from 'react-native-dotenv';
-import MainEventScreen from './MainEventScreen';
 import urlFor from '../utils/urlFor';
 import UserContext from '../context/UserContext';
 
