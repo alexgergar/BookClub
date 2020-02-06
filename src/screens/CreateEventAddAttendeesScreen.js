@@ -9,20 +9,57 @@ import {
   Dimensions,
   Keyboard,
   FlatList,
+  TouchableWithoutFeedback,
 } from 'react-native';
-import {Button, Icon} from 'react-native-elements';
+import { Button, Icon, ListItem, Input, Avatar, } from 'react-native-elements';
 import UserContext from '../context/UserContext';
+import FlatListGroupOptions from '../components/FlatListGroupOptions';
 import firestore from '@react-native-firebase/firestore';
-import {TouchableHighlight} from 'react-native-gesture-handler';
 
 export default class CreateEventAddAttendees extends Component {
   static contextType = UserContext;
   state = {
+    isSelectedID: null,
+    onFirstSection: true,
     listOfAttendeeOptions: [
       {
         id: '1',
-        name: 'create new club',
+        name: 'Create New Club',
         createNewClub: true,
+      },
+    ],
+    bookClubMembersList: [
+      {
+        displayName: 'Tester tester',
+        uid: '90shjsdj02n9dsj',
+      },
+      {
+        displayName: 'Anner tester',
+        uid: 'hw5jstbh9dsj',
+      },
+      {
+        displayName: 'Tim tester',
+        uid: 'ojqer9gijvaj',
+      },
+      {
+        displayName: 'tester tester',
+        uid: '90oijf0asgeh9dsj',
+      },
+      {
+        displayName: 'step tester',
+        uid: '90svarbwrvdsj',
+      },
+      {
+        displayName: 'greg tester',
+        uid: '90osdfavdj02n9dsj',
+      },
+      {
+        displayName: 'priya tester',
+        uid: 'asadsvwe2n9dsj',
+      },
+      {
+        displayName: 'ray tester',
+        uid: '9sbawgj02n9dsj',
       },
     ],
   };
@@ -55,8 +92,36 @@ export default class CreateEventAddAttendees extends Component {
       });
   };
 
-  handleContinuePress = () => {
-    const {selectedBook} = this.props.navigation.state.params;
+  getBookClubInfo = async () => {
+    let user = this.context;
+    const bookClubInfo = firestore()
+      .collection('bookclubs')
+      .doc(this.state.isSelectedID);
+    await bookClubInfo
+      .get()
+      .then(doc => { doc.data().members.forEach(member => {
+        const person = {
+          displayName: member.displayName,
+          uid: member.uid,
+        };
+        this.setState(prevState => ({
+          bookClubMembersList: [...prevState.bookClubMembersList, person],
+        }));
+      })})
+      .catch(err => {
+        console.log(`Error getting document: ${err}`);
+      });
+  };
+
+  handleContinuePress = item => {
+    const {selectedBook, streetAddress, city, state, zipcode, detailsForLocation} = this.props.navigation.state.params;
+    this.setState({onFirstSection: false});
+    if (this.state.isSelectedID === '1') {
+      console.log('create a new club');
+    } else {
+      console.log('start from a group');
+      this.getBookClubInfo();
+    };
     // this.props.navigation.navigate('CreateEventAddAttendees', {
     //   selectedBook: selectedBook,
     //   streetAddress: this.state.streetAddress,
@@ -67,13 +132,47 @@ export default class CreateEventAddAttendees extends Component {
     // });
   };
 
-  onListItemPress = item => {
-    if (item.createNewClub) {
-      console.log('true');
-    } else {
-      console.log('false');
-    }
+  handleGetInitials = fullName => {
+    return fullName
+      .toUpperCase()
+      .split(' ')
+      .map(name => name[0])
+      .join('')
   };
+
+  onListItemPress = item => {
+    this.setState({isSelectedID: item.id})
+  };
+
+  renderSeparator = () => {
+    return (
+      <View
+        style={{
+          height: 1,
+          width: "84%",
+          backgroundColor: "#CED0CE",
+          marginLeft: "14%"
+        }}
+      />
+    );
+  };
+
+  renderBookClubMembers = ({item}) => (
+    <View style={styles.memberListItemRowView}>
+      {item.avatar ? (
+        <Avatar
+          rounded
+          source={{uri: item.avatar,}}
+        />
+      ) : (
+        <Avatar
+          rounded
+          title={this.handleGetInitials(item.displayName)}
+        />
+      )}
+      <Text style={styles.bookClubMembersNamesInRow}>{item.displayName}</Text>
+    </View>
+  )
 
   render() {
     return (
@@ -81,45 +180,55 @@ export default class CreateEventAddAttendees extends Component {
         <View style={styles.container}>
           <View style={styles.whiteBackgroundContainer}>
             <Text style={styles.headlineTitleText}>Attendees</Text>
-            <FlatList
-              numColumns={2}
-              data={this.state.listOfAttendeeOptions}
-              keyExtractor={item => item.id.toString()}
-              renderItem={({ item }) => (
-                <TouchableHighlight onPress={() => this.onListItemPress(item)}>
-                  <View
-                    style={[
-                      styles.optionsContainer,
-                      item.createNewClub
-                        ? styles.backgroundOne
-                        : styles.backgroundTwo,
-                    ]}>
-                    {item.createNewClub && (
-                      <>
-                        <Icon name="group-add" type="material" color="white" />
-                        <Text
-                          style={[styles.createNewClubText, { color: 'white' }]}>
-                          {item.name}
-                        </Text>
-                      </>
-                    )}
-                    {!item.createNewClub && (
-                      <Text style={styles.createNewClubText}>{item.name}</Text>
-                    )}
+            {this.state.onFirstSection ? ( 
+              <>
+            <Text style={styles.subHeadLineText}>Select a starting point for your event.</Text>
+            <FlatListGroupOptions 
+              listOfAttendeeOptions={this.state.listOfAttendeeOptions}
+              isSelectedID={this.state.isSelectedID}
+              onListItemPress={this.onListItemPress} />
+              {this.state.isSelectedID && <View style={styles.bottomButtonView}>
+                <Button
+                  title={this.state.isSelectedID === '1' ? 'Create New Club' : 'See Club Members'}
+                  containerStyle={styles.continueButtonContainerStyle}
+                  buttonStyle={styles.continueButtonStyle}
+                  titleStyle={styles.continueTitleButtonStyle}
+                  onPress={this.handleContinuePress}
+                />
+              </View>}
+            </>
+            ) : (
+              <>
+                  <View>
+                    <Input
+                      placeholder='Add a Person to Your BookClub'
+                      leftIcon={{ type: 'material', name: 'search' }}
+                      leftIconContainerStyle={{ paddingRight: 5, paddingLeft: 0 }}
+                      inputStyle={styles.inputTextStyle}
+                      containerStyle={styles.singleLineContainerStyle}
+                      inputContainerStyle={styles.inputContainerStyle}
+                    />
                   </View>
-                </TouchableHighlight>
-              )}
-              columnWrapperStyle={styles.flatListColumnWrapper}
-            />
-            <View style={styles.bottomButtonView}>
-              <Button
-                title="Continue"
-                containerStyle={styles.continueButtonContainerStyle}
-                buttonStyle={styles.continueButtonStyle}
-                titleStyle={styles.continueTitleButtonStyle}
-                onPress={this.handleContinuePress}
-              />
-            </View>
+                  
+                  <FlatList
+                    data={this.state.bookClubMembersList}
+                    keyExtractor={item => item.uid.toString()}
+                    renderItem={this.renderBookClubMembers}
+                    ItemSeparatorComponent={this.renderSeparator}
+                  />
+                  <View style={styles.bottomButtonView}>
+                    <Button
+                      title="Continue"
+                      containerStyle={styles.continueButtonContainerStyle}
+                      buttonStyle={styles.continueButtonStyle}
+                      titleStyle={styles.continueTitleButtonStyle}
+                      onPress={this.handleContinuePress}
+                    />
+                  </View>
+              </>
+            )}
+            
+            
             
           </View>
         </View>
@@ -146,12 +255,18 @@ const styles = StyleSheet.create({
     borderTopLeftRadius: 15,
     borderTopRightRadius: 15,
     paddingHorizontal: '5%',
+    // justifyContent: 'space-between',
   },
   headlineTitleText: {
     fontFamily: 'Montserrat-Regular',
     fontSize: 26,
     marginBottom: 10,
     marginTop: '5%',
+  },
+  subHeadLineText: {
+    fontFamily: 'Montserrat-Regular',
+    fontSize: 16,
+    marginBottom: 10,
   },
   optionsContainer: {
     justifyContent: 'center',
@@ -163,10 +278,13 @@ const styles = StyleSheet.create({
     padding: 15,
   },
   backgroundOne: {
-    backgroundColor: '#3A5673',
+    backgroundColor: '#A5ADB5',
   },
   backgroundTwo: {
     backgroundColor: '#EBE2CD',
+  },
+  selectedView: {
+    borderWidth: 2,
   },
   createNewClubText: {
     fontFamily: 'Montserrat-Regular',
@@ -190,6 +308,31 @@ const styles = StyleSheet.create({
   },
   continueTitleButtonStyle: {
     fontFamily: 'Montserrat-SemiBold',
+  },
+  inputTextStyle: {
+    fontFamily: 'Montserrat-Regular',
+    fontSize: 14,
+    color: '#14212B',
+  },
+  singleLineContainerStyle: {
+    height: windowHeight * 0.1,
+  },
+  inputContainerStyle: {
+    borderWidth: 1,
+    borderRadius: 15,
+    borderColor: '#DBDBDB',
+  },
+  memberListItemRowView: {
+    flexDirection: 'row',
+    // justifyContent: 'center',
+    alignContent: 'center',
+    paddingVertical: 10,
+  },
+  bookClubMembersNamesInRow: {
+    paddingVertical: 10,
+    fontFamily: 'Montserrat-Regular',
+    fontSize: 14,
+    paddingLeft: 20,
   },
 });
 
