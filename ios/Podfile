@@ -35,6 +35,7 @@ target 'BookClub' do
   pod 'Folly', :podspec => '../node_modules/react-native/third-party-podspecs/Folly.podspec'
   pod 'RNVectorIcons', :path => '../node_modules/react-native-vector-icons'
   pod 'RNFBFirestore', :path => '../node_modules/@react-native-firebase/firestore'
+  pod 'react-native-contacts', :path => '../node_modules/react-native-contacts'
 
   pod 'react-native-cameraroll', :path => '../node_modules/@react-native-community/cameraroll'
 

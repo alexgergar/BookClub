@@ -19,6 +19,7 @@
     "dotenv": "^8.2.0",
     "react": "16.9.0",
     "react-native": "0.61.5",
+    "react-native-contacts": "^5.0.7",
     "react-native-dotenv": "^0.2.0",
     "react-native-elements": "^1.2.7",
     "react-native-gesture-handler": "^1.5.3",

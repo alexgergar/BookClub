@@ -10,17 +10,23 @@ import {
   Keyboard,
   FlatList,
   TouchableWithoutFeedback,
+  PermissionsAndroid,
+  Platform
 } from 'react-native';
 import { Button, Icon, ListItem, Input, Avatar, } from 'react-native-elements';
 import UserContext from '../context/UserContext';
 import FlatListGroupOptions from '../components/FlatListGroupOptions';
 import firestore from '@react-native-firebase/firestore';
+import Contacts from 'react-native-contacts';
 
 export default class CreateEventAddAttendees extends Component {
   static contextType = UserContext;
   state = {
     isSelectedID: null,
     onFirstSection: true,
+    userPhoneContacts: null,
+    searchContactsCount: 0,
+    searchContact: null,
     listOfAttendeeOptions: [
       {
         id: '1',
@@ -119,7 +125,6 @@ export default class CreateEventAddAttendees extends Component {
     if (this.state.isSelectedID === '1') {
       console.log('create a new club');
     } else {
-      console.log('start from a group');
       this.getBookClubInfo();
     };
     // this.props.navigation.navigate('CreateEventAddAttendees', {
@@ -144,18 +149,16 @@ export default class CreateEventAddAttendees extends Component {
     this.setState({isSelectedID: item.id})
   };
 
-  renderSeparator = () => {
-    return (
-      <View
-        style={{
-          height: 1,
-          width: "84%",
-          backgroundColor: "#CED0CE",
-          marginLeft: "14%"
-        }}
-      />
-    );
-  };
+  renderSeparator = () => (
+    <View
+      style={{
+        height: 1,
+        width: "84%",
+        backgroundColor: "#CED0CE",
+        marginLeft: "14%"
+      }}
+    />
+  )
 
   renderBookClubMembers = ({item}) => (
     <View style={styles.memberListItemRowView}>
@@ -173,6 +176,37 @@ export default class CreateEventAddAttendees extends Component {
       <Text style={styles.bookClubMembersNamesInRow}>{item.displayName}</Text>
     </View>
   )
+
+  setStateForContactCount = () => {
+    this.setState(prevState => ({
+      searchContactsCount: prevState + 1,
+    }));
+  }
+
+  onSearchContactInputPress = () => {
+    this.getPermissionForAndroid();
+      
+    }
+
+  getList = () => {
+    Contacts.getAll((err, userPhoneContacts) => {
+      if (err === 'denied') {
+        console.log('cannot access');
+      } else {
+        this.setState({userPhoneContacts});
+        console.log(userPhoneContacts);
+      }
+    });
+  }
+
+  getPermissionForAndroid = () => {
+    PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.READ_CONTACTS, {
+      title: 'Contacts',
+      message: 'This app would like to view your contacts.',
+    }).then(() => {
+      this.getList();
+    }).catch(error => console.log(`there was an error: ${error}`));
+  }
 
   render() {
     return (
@@ -207,6 +241,9 @@ export default class CreateEventAddAttendees extends Component {
                       inputStyle={styles.inputTextStyle}
                       containerStyle={styles.singleLineContainerStyle}
                       inputContainerStyle={styles.inputContainerStyle}
+                      onChangeText={text => this.setState({searchContact: text})}
+                      value={this.state.searchContact}
+                      onFocus={this.onSearchContactInputPress}
                     />
                   </View>
                   
