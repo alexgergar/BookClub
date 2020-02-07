@@ -434,22 +434,8 @@ const styles = StyleSheet.create({
   continueTitleButtonStyle: {
     fontFamily: 'Montserrat-SemiBold',
   },
-  inputTextStyle: {
-    fontFamily: 'Montserrat-Regular',
-    fontSize: 14,
-    color: '#14212B',
-  },
-  singleLineContainerStyle: {
-    height: windowHeight * 0.1,
-  },
-  inputContainerStyle: {
-    borderWidth: 1,
-    borderRadius: 15,
-    borderColor: '#DBDBDB',
-  },
   memberListItemRowView: {
     flexDirection: 'row',
-    // justifyContent: 'center',
     alignContent: 'center',
     paddingVertical: 10,
   },

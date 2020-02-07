@@ -1,5 +1,5 @@
-import React, { Component } from "react";
-import PropTypes from "prop-types";
+import React, {Component} from 'react';
+import PropTypes from 'prop-types';
 import {
   View,
   TextInput,
@@ -10,8 +10,9 @@ import {
   TouchableOpacity,
   TouchableWithoutFeedback,
   Text,
-  StyleSheet
-} from "react-native";
+  StyleSheet,
+} from 'react-native';
+import {Icon} from 'react-native-elements';
 
 class SearchBar extends Component {
   static propTypes = {
@@ -19,15 +20,15 @@ class SearchBar extends Component {
     onClear: PropTypes.func,
     onFocus: PropTypes.func,
     onBlur: PropTypes.func,
-    onChangeText: PropTypes.func
+    onChangeText: PropTypes.func,
   };
 
   static defaultProps = {
-    searchPlaceholder: "Search",
+    searchPlaceholder: 'Search',
     onClear: () => null,
     onFocus: () => null,
     onBlur: () => null,
-    onChangeText: () => null
+    onChangeText: () => null,
   };
 
   constructor(props) {
@@ -36,7 +37,7 @@ class SearchBar extends Component {
     this.state = {
       hasFocus: false,
       isEmpty: true,
-      showLoader: false
+      showLoader: false,
     };
   }
 
@@ -50,7 +51,7 @@ class SearchBar extends Component {
 
   clear = () => {
     this.input.clear();
-    this.onChangeText("");
+    this.onChangeText('');
     this.props.onClear();
   };
 
@@ -60,13 +61,13 @@ class SearchBar extends Component {
 
   showLoader = () => {
     this.setState({
-      showLoader: true
+      showLoader: true,
     });
   };
 
   hideLoader = () => {
     this.setState({
-      showLoader: false
+      showLoader: false,
     });
   };
 
@@ -75,7 +76,7 @@ class SearchBar extends Component {
     this.props.getPermissionForAndroid();
     if (UIManager.configureNextLayoutAnimation) LayoutAnimation.easeInEaseOut();
     this.setState({
-      hasFocus: true
+      hasFocus: true,
     });
   };
 
@@ -83,13 +84,13 @@ class SearchBar extends Component {
     this.props.onBlur();
     if (UIManager.configureNextLayoutAnimation) LayoutAnimation.easeInEaseOut();
     this.setState({
-      hasFocus: false
+      hasFocus: false,
     });
   };
 
   onChangeText = text => {
     this.props.onChangeText(text);
-    this.setState({ isEmpty: text === "" });
+    this.setState({isEmpty: text === ''});
   };
 
   render() {
@@ -99,22 +100,22 @@ class SearchBar extends Component {
       leftIconStyle,
       rightContainer,
       rightIconStyle,
-      activityIndicator
+      activityIndicator,
     } = styles;
 
-    const { style, placeholder } = this.props;
+    const {style, placeholder} = this.props;
 
-    const { hasFocus, isEmpty, showLoader } = this.state;
+    const {hasFocus, isEmpty, showLoader} = this.state;
 
     const inputStyleCollection = [inputStyle];
 
-    if (hasFocus) inputStyleCollection.push({ flex: 1 });
+    if (hasFocus) inputStyleCollection.push({flex: 1});
 
     return (
       <TouchableWithoutFeedback onPress={this.focus} style={style}>
         <Animated.View style={container}>
           <View style={leftIconStyle}>
-            <Text>🔍</Text>
+            <Icon type='material' name='search' />
           </View>
           <TextInput
             onFocus={this.onFocus}
@@ -122,31 +123,27 @@ class SearchBar extends Component {
             onChangeText={this.onChangeText}
             placeholder={placeholder}
             style={inputStyleCollection}
-            placeholderTextColor="#515151"
+            placeholderTextColor='#8F8F8F'
             autoCorrect={false}
             ref={ref => {
               this.input = ref;
             }}
           />
           <View style={rightContainer}>
-            {hasFocus && showLoader ? (
+            {(hasFocus && showLoader) && (
               <ActivityIndicator
                 key="loading"
                 style={activityIndicator}
-                color="#515151"
+                color='#8F8F8F'
               />
-            ) : (
-                <View />
-              )}
-            {hasFocus && !isEmpty ? (
+            )}
+            {(hasFocus && !isEmpty) && (
               <TouchableOpacity onPress={this.clear}>
                 <View style={rightIconStyle}>
-                  <Text>ⅹ</Text>
+                  <Icon type='material' name='close' color='#8F8F8F' size={16} />
                 </View>
               </TouchableOpacity>
-            ) : (
-                <View />
-              )}
+            )}
           </View>
         </Animated.View>
       </TouchableWithoutFeedback>
@@ -157,40 +154,42 @@ class SearchBar extends Component {
 const styles = StyleSheet.create({
   container: {
     height: 40,
-    borderRadius: 5,
-    backgroundColor: "#ddd",
+    borderWidth: 1,
+    borderRadius: 15,
+    borderColor: '#DBDBDB',
     marginLeft: 10,
     marginRight: 10,
     marginBottom: 5,
     marginTop: 5,
-    flexDirection: "row",
-    alignItems: "center",
-    // justifyContent: "center"
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   inputStyle: {
-    alignSelf: "center",
+    alignSelf: 'center',
     marginLeft: 5,
     height: 40,
-    fontSize: 14
+    fontFamily: 'Montserrat-Regular',
+    fontSize: 14,
+    width: '100%',
   },
   leftIconStyle: {
     height: 30,
-    justifyContent: "center",
-    alignItems: "center",
-    marginLeft: 8
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginLeft: 8,
   },
   rightContainer: {
-    flexDirection: "row"
+    flexDirection: 'row',
   },
   rightIconStyle: {
-    height: 30,
-    justifyContent: "center",
-    alignItems: "center",
-    marginRight: 8
+    height: 10,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 8,
   },
   activityIndicator: {
-    marginRight: 5
-  }
+    marginRight: 5,
+  },
 });
 
 export default SearchBar;
