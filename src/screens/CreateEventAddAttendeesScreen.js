@@ -13,8 +13,9 @@ import {
   PermissionsAndroid,
   Platform
 } from 'react-native';
-import { Button, Icon, ListItem, Input, Avatar, } from 'react-native-elements';
+import { Button, Icon, ListItem, Input, Avatar, Badge} from 'react-native-elements';
 import UserContext from '../context/UserContext';
+import SearchBar from '../components/SearchBar';
 import FlatListGroupOptions from '../components/FlatListGroupOptions';
 import firestore from '@react-native-firebase/firestore';
 import Contacts from 'react-native-contacts';
@@ -24,9 +25,11 @@ export default class CreateEventAddAttendees extends Component {
   state = {
     isSelectedID: null,
     onFirstSection: true,
-    userPhoneContacts: null,
-    searchContactsCount: 0,
-    searchContact: null,
+    contacts: [],
+    askedContactPermission: false,
+    searchContacts: [],
+    showContinueButton: true,
+    keyboardHeightView: windowHeight,
     listOfAttendeeOptions: [
       {
         id: '1',
@@ -73,7 +76,33 @@ export default class CreateEventAddAttendees extends Component {
   componentDidMount() {
     let user = this.context;
     this.getAllUserInfo();
+    this.keyboardDidShowListener = Keyboard.addListener(
+      'keyboardDidShow',
+      this._keyboardDidShow,
+    );
+    this.keyboardDidHideListener = Keyboard.addListener(
+      'keyboardDidHide',
+      this._keyboardDidHide,
+    );
   }
+
+  componentWillUnmount() {
+    this.keyboardDidShowListener.remove();
+    this.keyboardDidHideListener.remove();
+  }
+
+  _keyboardDidShow = event => {
+    this.setState({
+      showContinueButton: false,
+      keyboardHeightView: windowHeight - event.endCoordinates.height
+    });
+  }
+
+  _keyboardDidHide = () => {
+    this.setState({
+      showContinueButton: true,
+    });
+  };
 
   getAllUserInfo = async () => {
     let user = this.context;
@@ -173,40 +202,73 @@ export default class CreateEventAddAttendees extends Component {
           title={this.handleGetInitials(item.displayName)}
         />
       )}
-      <Text style={styles.bookClubMembersNamesInRow}>{item.displayName}</Text>
+      <Text style={[styles.bookClubMembersNamesInRow, styles.listItemFont]}>{item.displayName}</Text>
     </View>
   )
 
-  setStateForContactCount = () => {
-    this.setState(prevState => ({
-      searchContactsCount: prevState + 1,
-    }));
-  }
-
-  onSearchContactInputPress = () => {
-    this.getPermissionForAndroid();
+  renderBookClubMembersHortizontal = ({item}) => (
+    <View style={{marginLeft: 10}}>
+      <Badge 
+        value={<Text style={[styles.listItemFont]}>{item.displayName}</Text>}
+        badgeStyle={styles.badgeStyleBookClubListItemHortizontal} />
       
-    }
+    </View>
+  )
 
-  getList = () => {
-    Contacts.getAll((err, userPhoneContacts) => {
-      if (err === 'denied') {
-        console.log('cannot access');
-      } else {
-        this.setState({userPhoneContacts});
-        console.log(userPhoneContacts);
-      }
-    });
-  }
+  renderContactSearchList = ({item}) => (
+    <View style={styles.listItemContactSearchView}>
+      <Text style={styles.listItemFont}>{item.displayName}</Text>
+      <Text style={styles.listItemSubtitleFont}>{item.emailAddresses[0].email}</Text>
+    </View>
+  )
 
   getPermissionForAndroid = () => {
-    PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.READ_CONTACTS, {
-      title: 'Contacts',
-      message: 'This app would like to view your contacts.',
-    }).then(() => {
-      this.getList();
-    }).catch(error => console.log(`there was an error: ${error}`));
+    if (!this.state.askedContactPermission && Platform.OS === "android") {
+      PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.READ_CONTACTS, {
+        title: 'Contacts',
+        message: 'This app would like to view your contacts.',
+      }).then(() => {
+        this.setState({ askedContactPermission: true });
+        this.loadContacts();
+      }).catch(error => console.log(`there was an error: ${error}`));
+    } else {
+      this.loadContacts();
+    }
   }
+
+  loadContacts() {
+    Contacts.getAll((err, contacts) => {
+      if (err === "denied") {
+        console.warn("Permission to access contacts was denied");
+      } else {
+        this.setState({ contacts }, () => console.log(this.state.contacts));
+      }
+    });
+    console.log('before get count');
+  }
+
+  search(text) {
+    const phoneNumberRegex = /\b[\+]?[(]?[0-9]{2,6}[)]?[-\s\.]?[-\s\/\.0-9]{3,15}\b/m;
+    const emailAddressRegex = /^(([^<>()[\].,;:\s@"]+(\.[^<>()[\].,;:\s@"]+)*)|(".+"))@(([^<>()[\].,;:\s@"]+\.)+[^<>()[\].,;:\s@"]{2,})$/i;
+    console.log(text);
+    if (text === "" || text === null) {
+      this.loadContacts();
+    } else if (phoneNumberRegex.test(text)) {
+      Contacts.getContactsByPhoneNumber(text, (err, searchContacts) => {
+        this.setState({ searchContacts }, () => console.log(this.state.contacts));
+      });
+    } else if (emailAddressRegex.test(text)) {
+      Contacts.getContactsByEmailAddress(text, (err, searchContacts) => {
+        this.setState({ searchContacts }, () => console.log(this.state.searchContacts));
+      });
+    } else {
+      Contacts.getContactsMatchingString(text, (err, searchContacts) => {
+        this.setState({ searchContacts }, () => console.log(this.state.searchContacts));
+      });
+    }
+  }
+
+  
 
   render() {
     return (
@@ -234,34 +296,60 @@ export default class CreateEventAddAttendees extends Component {
             ) : (
               <>
                   <View>
-                    <Input
+                    {/* <Input
                       placeholder='Add a Person to Your BookClub'
                       leftIcon={{ type: 'material', name: 'search' }}
                       leftIconContainerStyle={{ paddingRight: 5, paddingLeft: 0 }}
                       inputStyle={styles.inputTextStyle}
                       containerStyle={styles.singleLineContainerStyle}
                       inputContainerStyle={styles.inputContainerStyle}
-                      onChangeText={text => this.setState({searchContact: text})}
+                      onChangeText={() => this.search}
                       value={this.state.searchContact}
-                      onFocus={this.onSearchContactInputPress}
+                      onFocus={() => this.getPermissionForAndroid}
+                    /> */}
+                    <SearchBar
+                      placeholder='Add a Person to Your BookClub'
+                      onChangeText={text => this.search(text)}
+                      getPermissionForAndroid={this.getPermissionForAndroid}
                     />
                   </View>
-                  
-                  <FlatList
+                  {this.state.showContinueButton ? 
+                   <FlatList
                     data={this.state.bookClubMembersList}
                     keyExtractor={item => item.uid.toString()}
                     renderItem={this.renderBookClubMembers}
                     ItemSeparatorComponent={this.renderSeparator}
                   />
-                  <View style={styles.bottomButtonView}>
-                    <Button
-                      title="Continue"
-                      containerStyle={styles.continueButtonContainerStyle}
-                      buttonStyle={styles.continueButtonStyle}
-                      titleStyle={styles.continueTitleButtonStyle}
-                      onPress={this.handleContinuePress}
-                    />
-                  </View>
+                  : (
+                    <>
+                      <View style={{flex: 3, marginBottom: 5 }}>
+                        <FlatList
+                          data={this.state.searchContacts}
+                          keyExtractor={item => item.recordID.toString()}
+                          renderItem={this.renderContactSearchList}
+                        />
+                      </View>
+                      <View style={{flex: 1}}>
+                        <FlatList
+                          horizontal={true}
+                          data={this.state.bookClubMembersList}
+                          keyExtractor={item => item.uid.toString()}
+                          renderItem={this.renderBookClubMembersHortizontal}
+                        />
+                      </View>
+                    </>
+                    )}
+
+                  {this.state.showContinueButton && 
+                    <View style={styles.bottomButtonView}>
+                      <Button
+                        title="Continue"
+                        containerStyle={styles.continueButtonContainerStyle}
+                        buttonStyle={styles.continueButtonStyle}
+                        titleStyle={styles.continueTitleButtonStyle}
+                        onPress={this.handleContinuePress}
+                      />
+                    </View>}
               </>
             )}
             
@@ -365,11 +453,26 @@ const styles = StyleSheet.create({
     alignContent: 'center',
     paddingVertical: 10,
   },
-  bookClubMembersNamesInRow: {
-    paddingVertical: 10,
+  listItemFont: {
     fontFamily: 'Montserrat-Regular',
     fontSize: 14,
+  },
+  bookClubMembersNamesInRow: {
+    paddingVertical: 10,
     paddingLeft: 20,
+  },
+  badgeStyleBookClubListItemHortizontal: {
+    padding: 20,
+    backgroundColor: '#EBE2CD',
+  },
+  listItemContactSearchView: {
+    padding: 10,
+    paddingHorizontal: 20,
+  },
+  listItemSubtitleFont: {
+    fontFamily: 'Montserrat-Regular',
+    fontSize: 13,
+    color: '#A3A3A3',
   },
 });
 
