@@ -15,7 +15,7 @@ const FlatListGroupOptions = props => (
     data={props.listOfAttendeeOptions}
     keyExtractor={item => item.id.toString()}
     columnWrapperStyle={{justifyContent: 'space-around'}}
-    renderItem={({ item }) => (
+    renderItem={({item}) => (
       <TouchableWithoutFeedback onPress={() => props.onListItemPress(item)}>
         <View
           style={[

@@ -9,9 +9,9 @@ import {
   Dimensions,
   Keyboard,
   FlatList,
-  TouchableWithoutFeedback,
   PermissionsAndroid,
-  Platform
+  Platform,
+  Modal,
 } from 'react-native';
 import { Button, Icon, ListItem, Input, Avatar, Badge} from 'react-native-elements';
 import UserContext from '../context/UserContext';
@@ -19,6 +19,7 @@ import SearchBar from '../components/SearchBar';
 import FlatListGroupOptions from '../components/FlatListGroupOptions';
 import firestore from '@react-native-firebase/firestore';
 import Contacts from 'react-native-contacts';
+import { TouchableHighlight } from 'react-native-gesture-handler';
 
 export default class CreateEventAddAttendees extends Component {
   static contextType = UserContext;
@@ -30,6 +31,10 @@ export default class CreateEventAddAttendees extends Component {
     searchContacts: [],
     showContinueButton: true,
     keyboardHeightView: windowHeight,
+    selectedBookClubName: null,
+    showAddNewContactInput: false,
+    searchItemPressed: false,
+    searchItemPressedID: null,
     listOfAttendeeOptions: [
       {
         id: '1',
@@ -37,40 +42,8 @@ export default class CreateEventAddAttendees extends Component {
         createNewClub: true,
       },
     ],
-    bookClubMembersList: [
-      {
-        displayName: 'Tester tester',
-        uid: '90shjsdj02n9dsj',
-      },
-      {
-        displayName: 'Anner tester',
-        uid: 'hw5jstbh9dsj',
-      },
-      {
-        displayName: 'Tim tester',
-        uid: 'ojqer9gijvaj',
-      },
-      {
-        displayName: 'tester tester',
-        uid: '90oijf0asgeh9dsj',
-      },
-      {
-        displayName: 'step tester',
-        uid: '90svarbwrvdsj',
-      },
-      {
-        displayName: 'greg tester',
-        uid: '90osdfavdj02n9dsj',
-      },
-      {
-        displayName: 'priya tester',
-        uid: 'asadsvwe2n9dsj',
-      },
-      {
-        displayName: 'ray tester',
-        uid: '9sbawgj02n9dsj',
-      },
-    ],
+    bookClubMembersList: [],
+    originalBookClubMembersList: [],
   };
 
   componentDidMount() {
@@ -141,6 +114,7 @@ export default class CreateEventAddAttendees extends Component {
         };
         this.setState(prevState => ({
           bookClubMembersList: [...prevState.bookClubMembersList, person],
+          originalBookClubMembersList: [...prevState.originalBookClubMembersList, person]
         }));
       })})
       .catch(err => {
@@ -148,23 +122,33 @@ export default class CreateEventAddAttendees extends Component {
       });
   };
 
-  handleContinuePress = item => {
-    const {selectedBook, streetAddress, city, state, zipcode, detailsForLocation} = this.props.navigation.state.params;
+  handleFirstSectionContinuePress = item => {
     this.setState({onFirstSection: false});
     if (this.state.isSelectedID === '1') {
-      console.log('create a new club');
-    } else {
+      this.setState({ bookClubMembersList: [] });
+    }
+    if (this.state.isSelectedID !== '1') {
       this.getBookClubInfo();
-    };
-    // this.props.navigation.navigate('CreateEventAddAttendees', {
-    //   selectedBook: selectedBook,
-    //   streetAddress: this.state.streetAddress,
-    //   city: this.state.city,
-    //   state: this.state.state,
-    //   zipcode: this.state.zipcode,
-    //   detailsForLocation: this.state.detailsForLocation,
-    // });
+    }
   };
+
+  handleSecondSectionContinuePress = () => {
+    const { selectedBook, streetAddress, city, state, zipcode, detailsForLocation } = this.props.navigation.state.params;
+    if (this.state.originalBookClubMembersList.length === this.state.bookClubMembersList.length && this.state.originalBookClubMembersList.every((value, index) => value === this.state.bookClubMembersList[index])) {
+      console.log('this is the same list');
+      this.props.navigation.navigate('CreateEventVerifyInfo', {
+        selectedBook: selectedBook,
+        streetAddress: streetAddress,
+        city: city,
+        state: state,
+        zipcode: zipcode,
+        detailsForLocation: detailsForLocation,
+        bookClubMembers: this.state.bookClubMembersList,
+      });
+    } else {
+      console.log('not the same')
+    }
+  }
 
   handleGetInitials = fullName => {
     return fullName
@@ -175,7 +159,10 @@ export default class CreateEventAddAttendees extends Component {
   };
 
   onListItemPress = item => {
-    this.setState({isSelectedID: item.id})
+    this.setState({
+      isSelectedID: item.id,
+      selectedBookClubName: item.name
+    })
   };
 
   renderSeparator = () => (
@@ -204,23 +191,53 @@ export default class CreateEventAddAttendees extends Component {
       )}
       <Text style={[styles.bookClubMembersNamesInRow, styles.listItemFont]}>{item.displayName}</Text>
     </View>
-  )
+  );
 
   renderBookClubMembersHortizontal = ({item}) => (
     <View style={{marginLeft: 10}}>
       <Badge 
         value={<Text style={[styles.listItemFont]}>{item.displayName}</Text>}
         badgeStyle={styles.badgeStyleBookClubListItemHortizontal} />
-      
     </View>
-  )
+  );
+
+  onSearchListItemPress = item => {
+    let person = {
+      displayName: item.displayName,
+      email: item.email,
+      phone: item.phone,
+      uid: '',
+    };
+    this.setState(prevState => ({
+      bookClubMembersList: [person, ...prevState.bookClubMembersList],
+      searchContacts: [],
+    }));
+  }
+
+  onSearchListItemPressIn = item => {
+    this.setState({searchItemPressed: true, searchItemPressedID: item.recordID});
+  }
+
+  onSearchListItemPressOut = item => {
+    this.setState({searchItemPressed: false, searchItemPressedID: null});
+  }
 
   renderContactSearchList = ({item}) => (
-    <View style={styles.listItemContactSearchView}>
-      <Text style={styles.listItemFont}>{item.displayName}</Text>
-      <Text style={styles.listItemSubtitleFont}>{item.emailAddresses[0].email}</Text>
-    </View>
-  )
+    <TouchableHighlight 
+      onPressIn={() => this.onSearchListItemPressIn(item)}
+      onPressOut={() => this.onSearchListItemPressOut(item)}
+      onPress={() => this.onSearchListItemPress(item)}
+      underlayColor='0'
+      >
+      <View style={[styles.searchListRowView]}>
+        <View style={styles.listItemContactSearchView}>
+          <Text style={styles.listItemFont}>{item.displayName}</Text>
+          <Text style={styles.listItemSubtitleFont}>{item.emailAddresses[0].email}</Text>
+        </View>
+        <Icon type='feather' name='plus' color={this.state.searchItemPressedID === item.recordID ? '#F8B787' : 'black'}/>
+      </View>
+    </TouchableHighlight>
+  );
 
   getPermissionForAndroid = () => {
     if (!this.state.askedContactPermission && Platform.OS === "android") {
@@ -241,29 +258,27 @@ export default class CreateEventAddAttendees extends Component {
       if (err === "denied") {
         console.warn("Permission to access contacts was denied");
       } else {
-        this.setState({ contacts }, () => console.log(this.state.contacts));
+        this.setState({ contacts });
       }
     });
-    console.log('before get count');
   }
 
   search(text) {
     const phoneNumberRegex = /\b[\+]?[(]?[0-9]{2,6}[)]?[-\s\.]?[-\s\/\.0-9]{3,15}\b/m;
     const emailAddressRegex = /^(([^<>()[\].,;:\s@"]+(\.[^<>()[\].,;:\s@"]+)*)|(".+"))@(([^<>()[\].,;:\s@"]+\.)+[^<>()[\].,;:\s@"]{2,})$/i;
-    console.log(text);
     if (text === "" || text === null) {
       this.loadContacts();
     } else if (phoneNumberRegex.test(text)) {
       Contacts.getContactsByPhoneNumber(text, (err, searchContacts) => {
-        this.setState({ searchContacts }, () => console.log(this.state.contacts));
+        this.setState({ searchContacts });
       });
     } else if (emailAddressRegex.test(text)) {
       Contacts.getContactsByEmailAddress(text, (err, searchContacts) => {
-        this.setState({ searchContacts }, () => console.log(this.state.searchContacts));
+        this.setState({ searchContacts });
       });
     } else {
       Contacts.getContactsMatchingString(text, (err, searchContacts) => {
-        this.setState({ searchContacts }, () => console.log(this.state.searchContacts));
+        this.setState({ searchContacts });
       });
     }
   }
@@ -289,72 +304,63 @@ export default class CreateEventAddAttendees extends Component {
                   containerStyle={styles.continueButtonContainerStyle}
                   buttonStyle={styles.continueButtonStyle}
                   titleStyle={styles.continueTitleButtonStyle}
-                  onPress={this.handleContinuePress}
+                  onPress={this.handleFirstSectionContinuePress}
                 />
               </View>}
             </>
             ) : (
               <>
-                  <View>
-                    {/* <Input
-                      placeholder='Add a Person to Your BookClub'
-                      leftIcon={{ type: 'material', name: 'search' }}
-                      leftIconContainerStyle={{ paddingRight: 5, paddingLeft: 0 }}
-                      inputStyle={styles.inputTextStyle}
-                      containerStyle={styles.singleLineContainerStyle}
-                      inputContainerStyle={styles.inputContainerStyle}
-                      onChangeText={() => this.search}
-                      value={this.state.searchContact}
-                      onFocus={() => this.getPermissionForAndroid}
-                    /> */}
-                    <SearchBar
-                      placeholder='Add a Person to Your BookClub'
-                      onChangeText={text => this.search(text)}
-                      getPermissionForAndroid={this.getPermissionForAndroid}
+              <View>
+                <SearchBar
+                  placeholder='Add a Person From Your Contacts'
+                  onChangeText={text => this.search(text)}
+                  getPermissionForAndroid={this.getPermissionForAndroid}
+                />
+              </View>
+              {this.state.showContinueButton ? 
+              <>
+              <View style={{alignItems: 'center'}}>
+                <Text style={styles.selectedBookClubTitle}>{this.state.selectedBookClubName}</Text>
+              </View>
+              <FlatList
+                data={this.state.bookClubMembersList}
+                keyExtractor={item => item.uid.toString()}
+                renderItem={this.renderBookClubMembers}
+                ItemSeparatorComponent={this.renderSeparator}
+              />
+              </>
+              : (
+                <>
+                  <View style={{flex: 3, marginBottom: 5 }}>
+                    <FlatList
+                      data={this.state.searchContacts}
+                      keyExtractor={(item, index) => index.toString()}
+                      renderItem={this.renderContactSearchList}
                     />
                   </View>
-                  {this.state.showContinueButton ? 
-                   <FlatList
-                    data={this.state.bookClubMembersList}
-                    keyExtractor={item => item.uid.toString()}
-                    renderItem={this.renderBookClubMembers}
-                    ItemSeparatorComponent={this.renderSeparator}
-                  />
-                  : (
-                    <>
-                      <View style={{flex: 3, marginBottom: 5 }}>
-                        <FlatList
-                          data={this.state.searchContacts}
-                          keyExtractor={item => item.recordID.toString()}
-                          renderItem={this.renderContactSearchList}
-                        />
-                      </View>
-                      <View style={{flex: 1}}>
-                        <FlatList
-                          horizontal={true}
-                          data={this.state.bookClubMembersList}
-                          keyExtractor={item => item.uid.toString()}
-                          renderItem={this.renderBookClubMembersHortizontal}
-                        />
-                      </View>
-                    </>
-                    )}
+                  <View style={{flex: 1}}>
+                    <FlatList
+                      horizontal={true}
+                      data={this.state.bookClubMembersList}
+                      keyExtractor={(item, index) => index.toString()}
+                      renderItem={this.renderBookClubMembersHortizontal}
+                    />
+                  </View>
+                </>
+                )}
 
-                  {this.state.showContinueButton && 
-                    <View style={styles.bottomButtonView}>
-                      <Button
-                        title="Continue"
-                        containerStyle={styles.continueButtonContainerStyle}
-                        buttonStyle={styles.continueButtonStyle}
-                        titleStyle={styles.continueTitleButtonStyle}
-                        onPress={this.handleContinuePress}
-                      />
-                    </View>}
-              </>
-            )}
-            
-            
-            
+              {this.state.showContinueButton && 
+                <View style={styles.bottomButtonView}>
+                  <Button
+                    title="Continue"
+                    containerStyle={styles.continueButtonContainerStyle}
+                    buttonStyle={styles.continueButtonStyle}
+                    titleStyle={styles.continueTitleButtonStyle}
+                    onPress={this.handleSecondSectionContinuePress}
+                  />
+                </View>}
+          </>
+        )}
           </View>
         </View>
       </SafeAreaView>
@@ -459,6 +465,15 @@ const styles = StyleSheet.create({
     fontFamily: 'Montserrat-Regular',
     fontSize: 13,
     color: '#A3A3A3',
+  },
+  selectedBookClubTitle: {
+    fontFamily: 'Montserrat-Bold',
+    fontSize: 18,
+  },
+  searchListRowView: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
   },
 });
 
