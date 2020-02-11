@@ -6,11 +6,14 @@ const EditInfoBlock = props => (
   <View style={styles.container}>
     <View style={styles.topRowView}>
       <Text style={styles.headlineTitleText}>{props.headline}</Text>
-      <Icon type="feather" name="edit-2" size={18} />
+      <Icon
+        type="feather"
+        name="edit-2"
+        size={18}
+        onPress={() => props.onEditPress()}
+      />
     </View>
-    <View style={styles.mainContentView}>
-      {props.children}
-    </View>
+    <View style={styles.mainContentView}>{props.children}</View>
   </View>
 );
 

@@ -73,7 +73,6 @@ class SearchBar extends Component {
 
   onFocus = () => {
     this.props.onFocus();
-    this.props.getPermissionForAndroid();
     if (UIManager.configureNextLayoutAnimation) LayoutAnimation.easeInEaseOut();
     this.setState({
       hasFocus: true,

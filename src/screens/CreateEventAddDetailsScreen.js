@@ -1,15 +1,7 @@
 import React, {Component} from 'react';
-import {
-  Text,
-  View,
-  StyleSheet,
-  SafeAreaView,
-  Image,
-  Dimensions,
-  Keyboard,
-} from 'react-native';
-import {Button, Input} from 'react-native-elements';
-import UserContext from '../context/UserContext';
+import {Text, View, StyleSheet, Dimensions, Keyboard} from 'react-native';
+import {Input} from 'react-native-elements';
+import GreyWhiteBackgroundBottomButton from '../components/GreyWhiteBackgroundBottomButton';
 
 export default class CreateEventAddDetails extends Component {
   state = {
@@ -18,43 +10,7 @@ export default class CreateEventAddDetails extends Component {
     state: null,
     zipcode: null,
     detailsForLocation: null,
-    hideContinueButton: false,
-    showTitle: true,
-    flexDirection: 'column-reverse',
   };
-
-  componentDidMount() {
-    this.keyboardDidShowListener = Keyboard.addListener(
-      'keyboardDidShow',
-      this._keyboardDidShow,
-    );
-    this.keyboardDidHideListener = Keyboard.addListener(
-      'keyboardDidHide',
-      this._keyboardDidHide,
-    );
-  }
-
-  componentWillUnmount() {
-    this.keyboardDidShowListener.remove();
-    this.keyboardDidHideListener.remove();
-  }
-
-  _keyboardDidShow = () => {
-    this.setState({
-      flexDirection: 'column',
-    });
-  }
-
-  _keyboardDidHide = () => {
-    this.setState({
-      showTitle: true,
-      flexDirection: 'column-reverse',
-    });
-  };
-
-  toggleShowTitle = () => {
-    this.setState(prevState => ({showTitle: !prevState.showTitle}));
-  }
 
   handleContinuePress = () => {
     const {selectedBook} = this.props.navigation.state.params;
@@ -66,82 +22,91 @@ export default class CreateEventAddDetails extends Component {
       zipcode: this.state.zipcode,
       detailsForLocation: this.state.detailsForLocation,
     });
-  }
+  };
+
+  handleUpdate = () => {
+    const {
+      selectedBook,
+      membersForBookClub,
+    } = this.props.navigation.state.params;
+    this.props.navigation.navigate('CreateEventVerifyInfo', {
+      selectedBook: selectedBook,
+      streetAddress: this.state.streetAddress,
+      city: this.state.city,
+      state: this.state.state,
+      zipcode: this.state.zipcode,
+      detailsForLocation: this.state.detailsForLocation,
+      bookClubMembers: membersForBookClub,
+    });
+  };
 
   render() {
+    const {onUpdate} = this.props.navigation.state.params;
+    const buttonTitle = onUpdate ? 'Update Information' : 'Continue';
+    const onPressButton = onUpdate
+      ? this.handleUpdate
+      : this.handleContinuePress;
     return (
-      <SafeAreaView style={[styles.container, {flexDirection: this.state.flexDirection}]}>
-        <View style={styles.whiteBackgroundBox}>
-          <View>
-            {this.state.showTitle && (
-              <Text style={styles.headlineTitleText}>Event Details</Text>
-            )}
-            <View style={styles.addressView}>
-              <Text style={styles.addressTitleText}>Address:</Text>
-              <Input
-                placeholder="Street Address"
-                onChangeText={streetAddress => this.setState({streetAddress})}
-                value={this.state.streetAddress}
-                inputStyle={styles.inputTextStyle}
-                containerStyle={styles.singleLineContainerStyle}
-                inputContainerStyle={styles.inputContainerStyle}
-              />
-              <Input
-                placeholder="City"
-                onChangeText={city => this.setState({city})}
-                value={this.state.city}
-                inputStyle={styles.inputTextStyle}
-                containerStyle={styles.singleLineContainerStyle}
-                inputContainerStyle={styles.inputContainerStyle}
-              />
-              <View style={{flexDirection: 'row'}}>
-                <Input
-                  placeholder="State"
-                  onChangeText={state => this.setState({state})}
-                  value={this.state.state}
-                  inputStyle={styles.inputTextStyle}
-                  containerStyle={styles.twoLineContainerStyle}
-                  inputContainerStyle={styles.inputContainerStyle}
-                />
-                <Input
-                  placeholder="Zip Code"
-                  onChangeText={zipcode => this.setState({zipcode})}
-                  value={this.state.zipcode}
-                  inputStyle={styles.inputTextStyle}
-                  containerStyle={styles.twoLineContainerStyle}
-                  inputContainerStyle={styles.inputContainerStyle}
-                />
-              </View>
-              <Input
-                placeholder="Details for Location"
-                onChangeText={detailsForLocation =>
-                  this.setState({detailsForLocation})
-                }
-                value={this.state.detailsForLocation}
-                multiline={true}
-                inputStyle={styles.inputTextStyle}
-                containerStyle={styles.multiLineContainerStyle}
-                inputContainerStyle={[
-                  styles.inputContainerStyle,
-                  styles.multiLineInputContainerStyle,
-                ]}
-                maxLength={400}
-                onFocus={this.toggleShowTitle}
-                onBlur={this.toggleShowTitle}
-              />
-            </View>
-          </View>
-            <View>
-              <Button
-                title="Continue"
-                containerStyle={styles.continueButtonContainerStyle}
-                buttonStyle={styles.continueButtonStyle}
-                titleStyle={styles.continueTitleButtonStyle}
-                onPress={this.handleContinuePress}
-              />
-            </View>
+      <GreyWhiteBackgroundBottomButton
+        headline="Event Details"
+        subHeadline="Address:"
+        continueButtonOnPress={onPressButton}
+        buttonTitle={buttonTitle}>
+        <Input
+          placeholder="Street Address"
+          onChangeText={streetAddress => this.setState({streetAddress})}
+          value={this.state.streetAddress}
+          inputStyle={styles.inputTextStyle}
+          containerStyle={styles.singleLineContainerStyle}
+          inputContainerStyle={styles.inputContainerStyle}
+        />
+        <Input
+          placeholder="City"
+          onChangeText={city => this.setState({city})}
+          value={this.state.city}
+          inputStyle={styles.inputTextStyle}
+          containerStyle={styles.singleLineContainerStyle}
+          inputContainerStyle={styles.inputContainerStyle}
+        />
+        <View style={{flexDirection: 'row'}}>
+          <Input
+            placeholder="State"
+            onChangeText={state => this.setState({state})}
+            value={this.state.state}
+            inputStyle={styles.inputTextStyle}
+            containerStyle={styles.twoLineContainerStyle}
+            inputContainerStyle={styles.inputContainerStyle}
+          />
+          <Input
+            placeholder="Zip Code"
+            onChangeText={zipcode => this.setState({zipcode})}
+            value={this.state.zipcode}
+            inputStyle={styles.inputTextStyle}
+            containerStyle={styles.twoLineContainerStyle}
+            inputContainerStyle={styles.inputContainerStyle}
+          />
         </View>
-      </SafeAreaView>
+        <Input
+          placeholder="Details for Location"
+          onChangeText={detailsForLocation =>
+            this.setState({detailsForLocation})
+          }
+          value={this.state.detailsForLocation}
+          multiline={true}
+          inputStyle={styles.inputTextStyle}
+          containerStyle={[
+            styles.multiLineContainerStyle,
+            styles.bottomContainerStyle,
+          ]}
+          inputContainerStyle={[
+            styles.inputContainerStyle,
+            styles.multiLineInputContainerStyle,
+          ]}
+          maxLength={400}
+          onFocus={this.toggleShowTitle}
+          onBlur={this.toggleShowTitle}
+        />
+      </GreyWhiteBackgroundBottomButton>
     );
   }
 }
@@ -151,31 +116,6 @@ const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
 
 const styles = StyleSheet.create({
-  container: {
-    backgroundColor: '#E3E4E6',
-    alignItems: 'center',
-    flex: 1,
-  },
-  whiteBackgroundBox: {
-    backgroundColor: 'white',
-    borderTopLeftRadius: 15,
-    borderTopRightRadius: 15,
-    width: '90%',
-    padding: windowWidth * 0.05,
-    justifyContent: 'space-between',
-    height: windowHeight * .95,
-  },
-  headlineTitleText: {
-    fontFamily: 'Montserrat-Regular',
-    fontSize: 26,
-  },
-  addressView: {
-    paddingTop: windowHeight * 0.02,
-  },
-  addressTitleText: {
-    fontFamily: 'Montserrat-Regular',
-    fontSize: 16,
-  },
   inputContainerStyle: {
     borderWidth: 1,
     borderRadius: 15,
@@ -202,19 +142,8 @@ const styles = StyleSheet.create({
   multiLineInputContainerStyle: {
     height: windowHeight * 0.1,
   },
-  continueButtonStyle: {
-    backgroundColor: '#1E3342',
-    borderRadius: 5,
-    width: '100%',
-    justifyContent: 'center',
-    alignSelf: 'center',
-  },
-  continueButtonContainerStyle: {
-    width: '82%',
-    alignSelf: 'center',
-  },
-  continueTitleButtonStyle: {
-    fontFamily: 'Montserrat-SemiBold',
+  bottomContainerStyle: {
+    paddingBottom: windowHeight * 0.01,
   },
 });
 

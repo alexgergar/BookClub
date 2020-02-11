@@ -15,8 +15,10 @@ import {
 } from 'react-native';
 import { Button, Icon, ListItem, Input, Avatar, Badge } from 'react-native-elements';
 import UserContext from '../context/UserContext';
-import GreyWhiteBackgroundContinueButton from '../components/GreyWhiteBackgroundContinueButton';
+import GreyWhiteBackgroundBottomButton from '../components/GreyWhiteBackgroundBottomButton';
+
 import EditInfoBlock from '../components/EditInfoBlock';
+import BadgeListItem from '../components/BadgeListItem';
 import TextRow from '../components/TextRow';
 import firestore from '@react-native-firebase/firestore';
 import { TouchableHighlight } from 'react-native-gesture-handler';
@@ -34,23 +36,51 @@ export default class CreateEventVerifyInfo extends Component {
   }
 
   handleContinueButtonPress = () => {
+      const { selectedBook, streetAddress, city, state, zipcode, detailsForLocation, bookClubMembers } = this.props.navigation.state.params;
     console.log('continue button pressed on verfiy info screen')
   }
 
+  onEditLocationPress = () => {
+    const {selectedBook, bookClubMembers} = this.props.navigation.state.params;
+    this.props.navigation.navigate('CreateEventAddDetails', {
+      onUpdate: true,
+      selectedBook: selectedBook,
+      membersForBookClub: bookClubMembers,
+    });
+  }
+
+  onEditBookSelectionPress = () => {
+    const { streetAddress, city, state, zipcode, detailsForLocation, bookClubMembers } = this.props.navigation.state.params;
+    this.props.navigation.navigate('CreateEvent', {
+      onUpdate: true,
+      streetAddress: streetAddress,
+      city: city,
+      state: state,
+      zipcode: zipcode,
+      detailsForLocation: detailsForLocation,
+      membersForBookClub: bookClubMembers,
+    });
+  }
+
+  onEditInvitedMembersPress = () => {
+    const {bookClubMembers} = this.props.navigation.state.params;
+    console.log('in on members edit press');
+  }
+
+  
 
   render() {
     let user = this.context;
     const { selectedBook, streetAddress, city, state, zipcode, detailsForLocation, bookClubMembers } = this.props.navigation.state.params;
     return (
-      <GreyWhiteBackgroundContinueButton
+      <GreyWhiteBackgroundBottomButton
         headline='Verify Informtion'
         subHeadline='Make sure everything looks good'
         continueButtonOnPress={this.handleContinueButtonPress}>
-        <ScrollView>
           <View>
             <Text style={styles.headline3}>Host: {user.displayName}</Text>
           </View>
-          <EditInfoBlock headline='Location'>
+        <EditInfoBlock headline='Location' onEditPress={this.onEditLocationPress}>
             <Text style={styles.headline3}>Address:</Text>
             <View style={{ paddingHorizontal: '5%' }}>
               <Text style={styles.textNormal}>{streetAddress}</Text>
@@ -61,7 +91,7 @@ export default class CreateEventVerifyInfo extends Component {
               <Text style={styles.textNormal}>{detailsForLocation}</Text>
             </View>
           </EditInfoBlock>
-          <EditInfoBlock headline='Book Details'>
+        <EditInfoBlock headline='Book Details' onEditPress={this.onEditBookSelectionPress}>
             <View style={styles.bookDetailsView}>
               <Image
                 style={styles.bookImageView}
@@ -74,12 +104,17 @@ export default class CreateEventVerifyInfo extends Component {
               </View>
             </View>
           </EditInfoBlock>
-          <EditInfoBlock headline='Invited Members'>
-        
+        <EditInfoBlock headline='Invited Members' onEditPress={this.onEditInvitedMembersPress}>
+            <View style={styles.invitedMembersListView}>
+              {bookClubMembers.map((member, index) => (
+                <BadgeListItem 
+                  key={index}
+                  avatar={member.avatar}
+                  displayName={member.displayName} /> 
+              ))}
+            </View>
           </EditInfoBlock>
-        </ScrollView>
-        
-      </GreyWhiteBackgroundContinueButton>
+      </GreyWhiteBackgroundBottomButton>
     );
   }
 }
@@ -107,7 +142,7 @@ const styles = StyleSheet.create({
   },
   bookDetailsView: {
     flexDirection: 'row',
-    paddingHorizontal: '10%',
+    // paddingHorizontal: '3%',
   },
   bookImageView: {
     borderRadius: 5,
@@ -117,7 +152,15 @@ const styles = StyleSheet.create({
   bookDetails: {
     paddingLeft: '5%',
     justifyContent: 'center',
-  }
+    width: 0,
+    flexGrow: 1,
+    flex: 1,
+  },
+  invitedMembersListView: {
+    flexWrap: 'wrap',
+    flexDirection: 'row',
+  },
+  
 });
 
 /* Color Theme Swatches in Hex

@@ -16,6 +16,7 @@ import {
 import axios from 'axios';
 import {Button} from 'react-native-elements';
 import {GOOGLE_BOOKS_API_KEY} from 'react-native-dotenv';
+import SearchBar from '../components/SearchBar';
 import urlFor from '../utils/urlFor';
 import UserContext from '../context/UserContext';
 
@@ -102,12 +103,23 @@ export default class CreateEvent extends Component {
   };
 
   onBookSelectionPress = selectedBook => {
-    this.props.navigation.navigate('SelectedBook', {
-      selectedBook: selectedBook,
-    });
-    // there needs to be a  way to bring up module or review screen to add this book... need navigation added with main title, authors, description.
-    // then either you like it or you go back --- so the navigation has to be a stack and it needs to go in order
-    // then add additional details... location, book club attendees, and additional details
+    if (this.props.navigation.state.params) {
+      const { onUpdate, streetAddress, city, state, zipcode, detailsForLocation, membersForBookClub } = this.props.navigation.state.params;
+      this.props.navigation.navigate('SelectedBook', {
+        onUpdate: onUpdate,
+        selectedBook: selectedBook,
+        streetAddress: streetAddress,
+        city: city,
+        state: state,
+        zipcode: zipcode,
+        detailsForLocation: detailsForLocation,
+        membersForBookClub: membersForBookClub,
+      })
+    } else {
+      this.props.navigation.navigate('SelectedBook', {
+        selectedBook: selectedBook,
+      });
+    }
   };
 
   onTextInputPress = () => {
@@ -135,7 +147,7 @@ export default class CreateEvent extends Component {
     const heightForWhiteBackground = this.state.backgroundHeightAnimation.interpolate(
       {
         inputRange: [0, 1],
-        outputRange: ['30%', '90%'],
+        outputRange: ['30%', '95%'],
       },
     );
     const opacticyForBackgroundImage = this.state.bookImageOpacity.interpolate({
@@ -165,15 +177,13 @@ export default class CreateEvent extends Component {
           ]}>
           <View style={styles.informationContentContainer}>
             <View style={styles.searchAndListContainer}>
-              <TextInput
-                style={styles.textInput}
-                autoCapitalize="none"
-                placeholder="Type a Book Title"
-                onChangeText={text => this.setState({searchTitle: text})}
-                value={this.state.searchTitle}
-                onFocus={this.onTextInputPress}
-              />
-
+              <View style={{width: '100%'}}>
+                <SearchBar
+                  placeholder='Find a Book by Title'
+                  onChangeText={text => this.setState({ searchTitle: text })}
+                  onFocus={this.onTextInputPress}
+                />
+              </View>
               {this.state.showcontainer ? (
                 <View>
                   <FlatList

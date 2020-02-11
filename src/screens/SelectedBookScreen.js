@@ -13,8 +13,12 @@ import ViewMoreText from 'react-native-view-more-text';
 
 export default class SelectedBook extends Component {
   renderViewMore = onPress => {
-    return <Text style={styles.viewMore} onPress={onPress}>+ View more</Text>;
-  }
+    return (
+      <Text style={styles.viewMore} onPress={onPress}>
+        + View more
+      </Text>
+    );
+  };
 
   renderViewLess = onPress => {
     return (
@@ -22,17 +26,36 @@ export default class SelectedBook extends Component {
         - View less
       </Text>
     );
-  }
+  };
 
   handlePickButtonPress = () => {
-    const {selectedBook} = this.props.navigation.state.params;
-    this.props.navigation.navigate('CreateEventAddDetails', {
-      selectedBook: selectedBook,
-    });
-  }
+    const {
+      onUpdate,
+      streetAddress,
+      city,
+      state,
+      zipcode,
+      detailsForLocation,
+      membersForBookClub,
+      selectedBook,
+    } = this.props.navigation.state.params;
+    onUpdate
+      ? this.props.navigation.navigate('CreateEventVerifyInfo', {
+          selectedBook: selectedBook,
+          streetAddress: streetAddress,
+          city: city,
+          state: state,
+          zipcode: zipcode,
+          detailsForLocation: detailsForLocation,
+          bookClubMembers: membersForBookClub,
+        })
+      : this.props.navigation.navigate('CreateEventAddDetails', {
+          selectedBook: selectedBook,
+        });
+  };
 
   render() {
-    const {selectedBook} = this.props.navigation.state.params;
+    const {selectedBook, onUpdate} = this.props.navigation.state.params;
     return (
       <SafeAreaView>
         <ScrollView contentContainerStyle={styles.container}>
@@ -86,13 +109,13 @@ export default class SelectedBook extends Component {
               </View>
               <View style={styles.descriptionView}>
                 <Text style={styles.descriptionTitle}>Description</Text>
-                  <ViewMoreText
-                    numberOfLines={4}
-                    renderViewMore={this.renderViewMore}
-                    renderViewLess={this.renderViewLess}
-                    textStyle={styles.descriptionBodyText}>
-                    <Text>{selectedBook.description}</Text>
-                  </ViewMoreText>
+                <ViewMoreText
+                  numberOfLines={4}
+                  renderViewMore={this.renderViewMore}
+                  renderViewLess={this.renderViewLess}
+                  textStyle={styles.descriptionBodyText}>
+                  <Text>{selectedBook.description}</Text>
+                </ViewMoreText>
               </View>
             </View>
           </View>
@@ -125,7 +148,7 @@ const styles = StyleSheet.create({
   container: {
     backgroundColor: '#E3E4E6',
     alignItems: 'center',
-    paddingBottom: windowHeight * .22,
+    paddingBottom: windowHeight * 0.22,
   },
   backgroundContentContainer: {
     backgroundColor: 'white',

@@ -13,6 +13,7 @@ import SelectedBookScreen from './src/screens/SelectedBookScreen';
 import CreateEventAddDetailsScreen from './src/screens/CreateEventAddDetailsScreen';
 import CreateEventVerifyInfoScreen from './src/screens/CreateEventVerifyInfoScreen';
 import CreateEventAddAttendeesScreen from './src/screens/CreateEventAddAttendeesScreen';
+import CreateEventEditAttendeesListScreen from './src/screens/CreateEventEditAttendeesListScreen';
 import UserContext from './src/context/UserContext';
 import {createStackNavigator} from 'react-navigation-stack';
 import {createAppContainer, createSwitchNavigator} from 'react-navigation';
@@ -26,6 +27,7 @@ const MainStack = createStackNavigator(
     CreateEventAddDetails: CreateEventAddDetailsScreen,
     CreateEventAddAttendees: CreateEventAddAttendeesScreen,
     CreateEventVerifyInfo: CreateEventVerifyInfoScreen,
+    CreateEventEditAttendeesList: CreateEventEditAttendeesListScreen,
     SignOut: SignOutScreen,
   },
   {

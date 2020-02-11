@@ -1,16 +1,18 @@
 import React from 'react';
-import {Text, View, StyleSheet, SafeAreaView} from 'react-native';
+import {Text, View, StyleSheet, SafeAreaView, ScrollView} from 'react-native';
 import {Button} from 'react-native-elements';
 
 const GreyWhiteBackgroundContinueButton = props => (
   <SafeAreaView>
     <View style={styles.container}>
       <View style={styles.whiteBackgroundContainer}>
-        <View style={props.headerView}>
-          <Text style={styles.headlineTitleText}>{props.headline}</Text>
-          <Text style={styles.subHeadLineText}>{props.subHeadline}</Text>
-          <View style={props.middleContainer}>{props.children}</View>
-        </View>
+        <ScrollView>
+          <View style={props.headerView}>
+            <Text style={styles.headlineTitleText}>{props.headline}</Text>
+            <Text style={styles.subHeadLineText}>{props.subHeadline}</Text>
+            <View style={props.middleContainer}>{props.children}</View>
+          </View>
+        </ScrollView>
         <View style={styles.bottomButtonView}>
           <Button
             title="Continue"

@@ -1,5 +1,5 @@
 /* eslint-disable prettier/prettier */
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import {
   Text,
   View,
@@ -13,7 +13,7 @@ import {
   Platform,
   Modal,
 } from 'react-native';
-import { Button, Icon, ListItem, Input, Avatar, Badge} from 'react-native-elements';
+import { Button, Icon, ListItem, Input, Avatar, Badge } from 'react-native-elements';
 import UserContext from '../context/UserContext';
 import SearchBar from '../components/SearchBar';
 import FlatListGroupOptions from '../components/FlatListGroupOptions';
@@ -21,7 +21,7 @@ import firestore from '@react-native-firebase/firestore';
 import Contacts from 'react-native-contacts';
 import { TouchableHighlight } from 'react-native-gesture-handler';
 
-export default class CreateEventAddAttendees extends Component {
+export default class CreateEventEditAttendeesList extends Component {
   static contextType = UserContext;
   state = {
     isSelectedID: null,
@@ -107,23 +107,25 @@ export default class CreateEventAddAttendees extends Component {
       .doc(this.state.isSelectedID);
     await bookClubInfo
       .get()
-      .then(doc => { doc.data().members.forEach(member => {
-        const person = {
-          displayName: member.displayName,
-          uid: member.uid,
-        };
-        this.setState(prevState => ({
-          bookClubMembersList: [...prevState.bookClubMembersList, person],
-          originalBookClubMembersList: [...prevState.originalBookClubMembersList, person]
-        }));
-      })})
+      .then(doc => {
+        doc.data().members.forEach(member => {
+          const person = {
+            displayName: member.displayName,
+            uid: member.uid,
+          };
+          this.setState(prevState => ({
+            bookClubMembersList: [...prevState.bookClubMembersList, person],
+            originalBookClubMembersList: [...prevState.originalBookClubMembersList, person]
+          }));
+        })
+      })
       .catch(err => {
         console.log(`Error getting document: ${err}`);
       });
   };
 
   handleFirstSectionContinuePress = item => {
-    this.setState({onFirstSection: false});
+    this.setState({ onFirstSection: false });
     if (this.state.isSelectedID === '1') {
       this.setState({ bookClubMembersList: [] });
     }
@@ -176,26 +178,26 @@ export default class CreateEventAddAttendees extends Component {
     />
   )
 
-  renderBookClubMembers = ({item}) => (
+  renderBookClubMembers = ({ item }) => (
     <View style={styles.memberListItemRowView}>
       {item.avatar ? (
         <Avatar
           rounded
-          source={{uri: item.avatar,}}
+          source={{ uri: item.avatar, }}
         />
       ) : (
-        <Avatar
-          rounded
-          title={this.handleGetInitials(item.displayName)}
-        />
-      )}
+          <Avatar
+            rounded
+            title={this.handleGetInitials(item.displayName)}
+          />
+        )}
       <Text style={[styles.bookClubMembersNamesInRow, styles.listItemFont]}>{item.displayName}</Text>
     </View>
   );
 
-  renderBookClubMembersHortizontal = ({item}) => (
-    <View style={{marginLeft: 10}}>
-      <Badge 
+  renderBookClubMembersHortizontal = ({ item }) => (
+    <View style={{ marginLeft: 10 }}>
+      <Badge
         value={<Text style={[styles.listItemFont]}>{item.displayName}</Text>}
         badgeStyle={styles.badgeStyleBookClubListItemHortizontal} />
     </View>
@@ -215,26 +217,26 @@ export default class CreateEventAddAttendees extends Component {
   }
 
   onSearchListItemPressIn = item => {
-    this.setState({searchItemPressed: true, searchItemPressedID: item.recordID});
+    this.setState({ searchItemPressed: true, searchItemPressedID: item.recordID });
   }
 
   onSearchListItemPressOut = item => {
-    this.setState({searchItemPressed: false, searchItemPressedID: null});
+    this.setState({ searchItemPressed: false, searchItemPressedID: null });
   }
 
-  renderContactSearchList = ({item}) => (
-    <TouchableHighlight 
+  renderContactSearchList = ({ item }) => (
+    <TouchableHighlight
       onPressIn={() => this.onSearchListItemPressIn(item)}
       onPressOut={() => this.onSearchListItemPressOut(item)}
       onPress={() => this.onSearchListItemPress(item)}
       underlayColor='0'
-      >
+    >
       <View style={[styles.searchListRowView]}>
         <View style={styles.listItemContactSearchView}>
           <Text style={styles.listItemFont}>{item.displayName}</Text>
           <Text style={styles.listItemSubtitleFont}>{item.emailAddresses[0].email}</Text>
         </View>
-        <Icon type='feather' name='plus' color={this.state.searchItemPressedID === item.recordID ? '#F8B787' : 'black'}/>
+        <Icon type='feather' name='plus' color={this.state.searchItemPressedID === item.recordID ? '#F8B787' : 'black'} />
       </View>
     </TouchableHighlight>
   );
@@ -283,7 +285,7 @@ export default class CreateEventAddAttendees extends Component {
     }
   }
 
-  
+
 
   render() {
     const { onUpdate } = this.props.navigation.state.params;
@@ -292,77 +294,76 @@ export default class CreateEventAddAttendees extends Component {
         <View style={styles.container}>
           <View style={styles.whiteBackgroundContainer}>
             <Text style={styles.headlineTitleText}>Attendees</Text>
-            {this.state.onFirstSection && !onUpdate ? ( 
+            {this.state.onFirstSection && !onUpdate ? (
               <>
-            <Text style={styles.subHeadLineText}>Select a starting point for your event.</Text>
-            <FlatListGroupOptions 
-              listOfAttendeeOptions={this.state.listOfAttendeeOptions}
-              isSelectedID={this.state.isSelectedID}
-              onListItemPress={this.onListItemPress} />
-              {this.state.isSelectedID && <View style={styles.bottomButtonView}>
-                <Button
-                  title={this.state.isSelectedID === '1' ? 'Create New Club' : 'See Club Members'}
-                  containerStyle={styles.continueButtonContainerStyle}
-                  buttonStyle={styles.continueButtonStyle}
-                  titleStyle={styles.continueTitleButtonStyle}
-                  onPress={this.handleFirstSectionContinuePress}
-                />
-              </View>}
-            </>
-            ) : (
-              <>
-              <View>
-                <SearchBar
-                  placeholder='Add a Person From Your Contacts'
-                  onChangeText={text => this.search(text)}
-                  onFocus={this.getPermissionForAndroid}
-
-                />
-              </View>
-              {this.state.showContinueButton ? 
-              <>
-              <View style={{alignItems: 'center'}}>
-                <Text style={styles.selectedBookClubTitle}>{this.state.selectedBookClubName}</Text>
-              </View>
-              <FlatList
-                data={this.state.bookClubMembersList}
-                keyExtractor={item => item.uid.toString()}
-                renderItem={this.renderBookClubMembers}
-                ItemSeparatorComponent={this.renderSeparator}
-              />
-              </>
-              : (
-                <>
-                  <View style={{flex: 3, marginBottom: 5 }}>
-                    <FlatList
-                      data={this.state.searchContacts}
-                      keyExtractor={(item, index) => index.toString()}
-                      renderItem={this.renderContactSearchList}
-                    />
-                  </View>
-                  <View style={{flex: 1}}>
-                    <FlatList
-                      horizontal={true}
-                      data={this.state.bookClubMembersList}
-                      keyExtractor={(item, index) => index.toString()}
-                      renderItem={this.renderBookClubMembersHortizontal}
-                    />
-                  </View>
-                </>
-                )}
-
-              {this.state.showContinueButton && 
-                <View style={styles.bottomButtonView}>
+                <Text style={styles.subHeadLineText}>Select a starting point for your event.</Text>
+                <FlatListGroupOptions
+                  listOfAttendeeOptions={this.state.listOfAttendeeOptions}
+                  isSelectedID={this.state.isSelectedID}
+                  onListItemPress={this.onListItemPress} />
+                {this.state.isSelectedID && <View style={styles.bottomButtonView}>
                   <Button
-                    title="Continue"
+                    title={this.state.isSelectedID === '1' ? 'Create New Club' : 'See Club Members'}
                     containerStyle={styles.continueButtonContainerStyle}
                     buttonStyle={styles.continueButtonStyle}
                     titleStyle={styles.continueTitleButtonStyle}
-                    onPress={this.handleSecondSectionContinuePress}
+                    onPress={this.handleFirstSectionContinuePress}
                   />
                 </View>}
-          </>
-        )}
+              </>
+            ) : (
+                <>
+                  <View>
+                    <SearchBar
+                      placeholder='Add a Person From Your Contacts'
+                      onChangeText={text => this.search(text)}
+                      getPermissionForAndroid={this.getPermissionForAndroid}
+                    />
+                  </View>
+                  {this.state.showContinueButton ?
+                    <>
+                      <View style={{ alignItems: 'center' }}>
+                        <Text style={styles.selectedBookClubTitle}>{this.state.selectedBookClubName}</Text>
+                      </View>
+                      <FlatList
+                        data={this.state.bookClubMembersList}
+                        keyExtractor={item => item.uid.toString()}
+                        renderItem={this.renderBookClubMembers}
+                        ItemSeparatorComponent={this.renderSeparator}
+                      />
+                    </>
+                    : (
+                      <>
+                        <View style={{ flex: 3, marginBottom: 5 }}>
+                          <FlatList
+                            data={this.state.searchContacts}
+                            keyExtractor={(item, index) => index.toString()}
+                            renderItem={this.renderContactSearchList}
+                          />
+                        </View>
+                        <View style={{ flex: 1 }}>
+                          <FlatList
+                            horizontal={true}
+                            data={this.state.bookClubMembersList}
+                            keyExtractor={(item, index) => index.toString()}
+                            renderItem={this.renderBookClubMembersHortizontal}
+                          />
+                        </View>
+                      </>
+                    )}
+
+                  {this.state.showContinueButton &&
+                    <View style={styles.bottomButtonView}>
+                      <Button
+                        title="Continue"
+                        containerStyle={styles.continueButtonContainerStyle}
+                        buttonStyle={styles.continueButtonStyle}
+                        titleStyle={styles.continueTitleButtonStyle}
+                        onPress={this.handleSecondSectionContinuePress}
+                      />
+                    </View>}
+                </>
+              )}
           </View>
         </View>
       </SafeAreaView>
