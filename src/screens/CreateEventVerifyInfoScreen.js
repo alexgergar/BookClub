@@ -63,8 +63,10 @@ export default class CreateEventVerifyInfo extends Component {
   }
 
   onEditInvitedMembersPress = () => {
-    const {bookClubMembers} = this.props.navigation.state.params;
-    console.log('in on members edit press');
+    const { streetAddress, city, state, zipcode, detailsForLocation, bookClubMembers, selectedBook } = this.props.navigation.state.params;
+    this.props.navigation.navigate('CreateEventEditAttendeesList', {
+      streetAddress, city, state, zipcode, detailsForLocation, bookClubMembers, selectedBook
+    });
   }
 
   

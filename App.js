@@ -11,6 +11,7 @@ import OnboardingTwoAvatarScreen from './src/screens/OnboardingTwoAvatarScreen';
 import LoadingAuthScreen from './src/screens/LoadingAuthScreen';
 import SelectedBookScreen from './src/screens/SelectedBookScreen';
 import CreateEventAddDetailsScreen from './src/screens/CreateEventAddDetailsScreen';
+import CreateEventAttendeesScreen from './src/screens/CreateEventAttendeesScreen';
 import CreateEventVerifyInfoScreen from './src/screens/CreateEventVerifyInfoScreen';
 import CreateEventAddAttendeesScreen from './src/screens/CreateEventAddAttendeesScreen';
 import CreateEventEditAttendeesListScreen from './src/screens/CreateEventEditAttendeesListScreen';
@@ -26,6 +27,7 @@ const MainStack = createStackNavigator(
     SelectedBook: SelectedBookScreen,
     CreateEventAddDetails: CreateEventAddDetailsScreen,
     CreateEventAddAttendees: CreateEventAddAttendeesScreen,
+    CreateEventAttendees: CreateEventAttendeesScreen,
     CreateEventVerifyInfo: CreateEventVerifyInfoScreen,
     CreateEventEditAttendeesList: CreateEventEditAttendeesListScreen,
     SignOut: SignOutScreen,

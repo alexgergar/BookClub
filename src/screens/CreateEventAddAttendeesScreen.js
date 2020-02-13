@@ -16,6 +16,7 @@ import {
 import { Button, Icon, ListItem, Input, Avatar, Badge} from 'react-native-elements';
 import UserContext from '../context/UserContext';
 import SearchBar from '../components/SearchBar';
+import GreyWhiteBackgroundBottomButton from '../components/GreyWhiteBackgroundBottomButton';
 import FlatListGroupOptions from '../components/FlatListGroupOptions';
 import firestore from '@react-native-firebase/firestore';
 import Contacts from 'react-native-contacts';

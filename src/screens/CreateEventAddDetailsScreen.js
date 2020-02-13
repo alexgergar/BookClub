@@ -14,7 +14,7 @@ export default class CreateEventAddDetails extends Component {
 
   handleContinuePress = () => {
     const {selectedBook} = this.props.navigation.state.params;
-    this.props.navigation.navigate('CreateEventAddAttendees', {
+    this.props.navigation.navigate('CreateEventAttendees', {
       selectedBook: selectedBook,
       streetAddress: this.state.streetAddress,
       city: this.state.city,

@@ -1,40 +1,69 @@
 import React, {Component} from 'react';
 import {Text, View, StyleSheet, SafeAreaView, ScrollView} from 'react-native';
-import {Button, Input} from 'react-native-elements';
-import UserContext from '../context/UserContext';
+import {Button} from 'react-native-elements';
+
+const HeadlineSection = props => (
+  <View style={props.headerView}>
+    <Text style={styles.headlineTitleText}>{props.headline}</Text>
+    {props.subHeadline && (
+      <>
+        <Text style={styles.subHeadLineText}>{props.subHeadline}</Text>
+      </>
+    )}
+    <View style={props.middleContainer}>{props.children}</View>
+  </View>
+);
 
 export default class GreyWhiteBackgroundBottomButton extends Component {
   static defaultProps = {
     buttonTitle: 'Continue',
+    scrollView: true,
+    showButton: true,
+    paddingHorizontal: '5%',
   };
 
   render() {
     return (
       <SafeAreaView>
         <View style={styles.container}>
-          <View style={styles.whiteBackgroundContainer}>
-            <ScrollView>
-              <View style={this.props.headerView}>
-                <Text style={styles.headlineTitleText}>
-                  {this.props.headline}
-                </Text>
-                <Text style={styles.subHeadLineText}>
-                  {this.props.subHeadline}
-                </Text>
-                <View style={this.props.middleContainer}>
-                  {this.props.children}
-                </View>
-              </View>
-            </ScrollView>
-            <View style={styles.bottomButtonView}>
-              <Button
-                title={this.props.buttonTitle}
-                containerStyle={styles.continueButtonContainerStyle}
-                buttonStyle={styles.continueButtonStyle}
-                titleStyle={styles.continueTitleButtonStyle}
-                onPress={this.props.continueButtonOnPress}
+          <View
+            style={[
+              {paddingHorizontal: this.props.paddingHorizontal},
+              styles.whiteBackgroundContainer,
+            ]}>
+            {this.props.scrollView && (
+              <ScrollView>
+                <HeadlineSection
+                  headerView={this.props.headerView}
+                  headline={this.props.headline}
+                  subHeadline={this.props.subHeadline}
+                  middleContainer={this.props.middleContainer}
+                  children={this.props.children}
+                />
+              </ScrollView>
+            )}
+            {!this.props.scrollView && (
+              <HeadlineSection
+                headerView={this.props.headerView}
+                headline={this.props.headline}
+                subHeadline={this.props.subHeadline}
+                middleContainer={this.props.middleContainer}
+                children={this.props.children}
               />
-            </View>
+            )}
+            {this.props.showButton && (
+              <>
+                <View style={styles.bottomButtonView}>
+                  <Button
+                    title={this.props.buttonTitle}
+                    containerStyle={styles.continueButtonContainerStyle}
+                    buttonStyle={styles.continueButtonStyle}
+                    titleStyle={styles.continueTitleButtonStyle}
+                    onPress={this.props.continueButtonOnPress}
+                  />
+                </View>
+              </>
+            )}
           </View>
         </View>
       </SafeAreaView>
@@ -55,7 +84,6 @@ const styles = StyleSheet.create({
     height: '95%',
     borderTopLeftRadius: 15,
     borderTopRightRadius: 15,
-    paddingHorizontal: '5%',
     justifyContent: 'space-between',
   },
   headlineTitleText: {
@@ -79,7 +107,7 @@ const styles = StyleSheet.create({
   },
   continueButtonStyle: {
     backgroundColor: '#1E3342',
-    borderRadius: 5,
+    borderRadius: 10,
   },
   continueTitleButtonStyle: {
     fontFamily: 'Montserrat-SemiBold',

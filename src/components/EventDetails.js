@@ -53,13 +53,15 @@ export default class EventDetails extends Component {
         <View style={styles.whoIsComingListContainer}>
           {listOfAttendees}
           <View>
-            <Avatar
-              size={30}
-              overlayContainerStyle={styles.avatarContainer}
-              rounded
-              icon={{name: 'more-horizontal', type: 'feather'}}
-            />
+            
             {bookClubEvent.attendees.length > 4 && (
+              <>
+              <Avatar
+                size={30}
+                overlayContainerStyle={styles.avatarContainer}
+                rounded
+                icon={{ name: 'more-horizontal', type: 'feather' }}
+              />
               <Badge
                 badgeStyle={styles.seeMoreAttendeesBadge}
                 value={
@@ -69,6 +71,7 @@ export default class EventDetails extends Component {
                 }
                 containerStyle={{position: 'absolute', top: -6, right: -6}}
               />
+              </>
             )}
           </View>
         </View>
