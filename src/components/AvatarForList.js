@@ -8,8 +8,7 @@ import {Avatar} from 'react-native-elements';
 
 export default class AvatarForLists extends Component {
   handleGetInitials = () => {
-    const fullName = this.props.displayName;
-    return fullName
+    return this.props.displayName
       .split(' ')
       .map(name => name[0])
       .join('');
