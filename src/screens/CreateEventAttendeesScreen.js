@@ -14,6 +14,7 @@ import {
   TouchableHighlight,
 } from 'react-native';
 import { Button, Icon, ListItem, Input, Avatar, Badge } from 'react-native-elements';
+import Modal from 'react-native-modal';
 import GreyWhiteBackgroundBottomButton from '../components/GreyWhiteBackgroundBottomButton';
 import SeriesOfAvatars from '../components/SeriesOfAvatars';
 import SearchBar from '../components/SearchBar';
@@ -28,7 +29,7 @@ export default class CreateEventAttendees extends Component {
   static contextType = UserContext;
   state = {
     listOfBookClubs: [],
-    isSelectedID: null,
+    selectedBookClubID: null,
     selectedBookClubName: null,
     selectedBookClubMembers: [],
     originalBookClubMembers: [],
@@ -36,6 +37,9 @@ export default class CreateEventAttendees extends Component {
     showContinueButton: true,
     contacts: [],
     searchContacts: [],
+    searchItemPressed: false,
+    searchItemPressedID: null,
+    showSearchList: false,
   };
 
   componentDidMount() {
@@ -96,11 +100,9 @@ export default class CreateEventAttendees extends Component {
     const membersOfBookclub = bookclub.members.map(member => ({
       ...member,
       key: member.uid,
-      rowTranslateAnimatedValues: new Animated.Value(0),
-      isHighlighted: false,
     }));
     this.setState({
-      isSelectedID: bookclub.bookClubID,
+      selectedBookClubID: bookclub.bookClubID,
       selectedBookClubName: bookclub.nameOfBookClub,
       originalBookClubMembers: membersOfBookclub,
       selectedBookClubMembers: membersOfBookclub,
@@ -131,7 +133,6 @@ export default class CreateEventAttendees extends Component {
   renderMember = ({item}) => (
     <ListItem
       Component={TouchableHighlight}
-      // onLongPress={() => this.onMemberInListLongPress(data)}
       title={item.displayName}
       leftAvatar={
         <AvatarForList
@@ -144,24 +145,8 @@ export default class CreateEventAttendees extends Component {
     />
   );
 
-  onMemberInListLongPress = member => {
-    console.log(member.uid);
-    member.isHighlighted = !member.isHighlighted;
-    const indexOfSelectedMember = this.state.selectedBookClubMembers.findIndex(
-      listItem => member.uid === listItem.uid,
-    );
-    let updatedMembersData = this.state.selectedBookClubMembers;
-    updatedMembersData[indexOfSelectedMember] = member;
-    this.setState({
-      selectedBookClubMembers: updatedMembersData,
-    });
-  };
-
   getPermissionForAndroid = () => {
-    if (
-      !this.state.askedContactPermission &&
-      Platform.OS === 'android'
-    ) {
+    if (Platform.OS === 'android') {
       PermissionsAndroid.request(
         PermissionsAndroid.PERMISSIONS.READ_CONTACTS,
         {
@@ -169,13 +154,12 @@ export default class CreateEventAttendees extends Component {
           message: 'This app would like to view your contacts.',
         },
       )
-        .then(() => {
-          this.setState({askedContactPermission: true});
-          this.loadContacts();
-        })
-        .catch(error =>
-          console.log(`there was an error: ${error}`),
-        );
+      .then(() => {
+        this.loadContacts();
+      })
+      .catch(error =>
+        console.log(`there was an error: ${error}`),
+      );
     } else {
       this.loadContacts();
     }
@@ -220,11 +204,125 @@ export default class CreateEventAttendees extends Component {
     }
   }
 
+   onSearchListItemPress = item => {
+    this.clearSearchText();
+    let person = {
+      displayName: item.displayName,
+      email: item.emailAddresses[0].email,
+      phone: item.phoneNumbers[0].number,
+      uid: '',
+      key: item.recordID,
+    };
+    this.setState(prevState => ({
+      showSearchList: false,
+      searchContacts: [],
+      selectedBookClubMembers: [person, ...prevState.selectedBookClubMembers],
+      searchItemPressed: false,
+      searchItemPressedID: null,
+      showContinueButton: true,
+    }));
+    
+  }
+
+  onSearchListItemPressIn = item => {
+    this.setState({searchItemPressed: true, searchItemPressedID: item.recordID});
+  }
+
+  renderContactSearchList = ({item}) => (
+    <TouchableWithoutFeedback
+      onPressIn={() => this.onSearchListItemPressIn(item)}
+      onPress={() => this.onSearchListItemPress(item)}
+      >
+      <View style={[styles.searchListRowView]}>
+        <View style={styles.listItemContactSearchView}>
+          <Text style={styles.listItemFont}>{item.displayName}</Text>
+          <Text style={styles.listItemSubtitleFont}>{item.emailAddresses[0].email}</Text>
+        </View>
+        <Icon type='feather' name='plus' color={this.state.searchItemPressedID === item.recordID ? '#F8B787' : 'black'}/>
+      </View>
+    </TouchableWithoutFeedback>
+  );
+
+  onSearchBarPressIn = () => {
+    this.getPermissionForAndroid;
+    this.setState({showSearchList: true, showContinueButton: false});
+  }
+
+  clearSearchText = () => {
+    this.refs.searchBarRef.clear();
+  }
+
+  hideSearchList = () => {
+    this.setState({showSearchList: false});
+  }
+
   handleContinueButtonPress = () => {
-    console.log('continue button press');
-  };
+    const {
+      selectedBook,
+      streetAddress,
+      city,
+      state,
+      zipcode,
+      detailsForLocation,
+    } = this.props.navigation.state.params;
+    if (
+      this.state.originalBookClubMembers.length ===
+        this.state.selectedBookClubMembers.length &&
+      this.state.originalBookClubMembers.every(
+        (value, index) => value === this.state.selectedBookClubMembers[index],
+      )
+    ) {
+      console.log('this is the same list');
+      this.props.navigation.navigate('CreateEventVerifyInfo', {
+        selectedBook: selectedBook,
+        streetAddress: streetAddress,
+        city: city,
+        state: state,
+        zipcode: zipcode,
+        detailsForLocation: detailsForLocation,
+        bookClubMembers: this.state.selectedBookClubMembers,
+        bookClubName: this.state.selectedBookClubName,
+        bookClubID: this.state.selectedBookClubID,
+        newClub: false,
+      });
+    } else {
+      console.log('not the same');
+      this.props.navigation.navigate('CreateEventNewClubName', {
+        selectedBook: selectedBook,
+        streetAddress: streetAddress,
+        city: city,
+        state: state,
+        zipcode: zipcode,
+        detailsForLocation: detailsForLocation,
+        bookClubMembers: this.state.selectedBookClubMembers,
+      });
+    }
+  }
 
   render() {
+    const displayOfList = this.state.showSearchList ? (
+      <FlatList
+        data={this.state.searchContacts}
+        keyExtractor={(item, index) => index.toString()}
+        renderItem={this.renderContactSearchList}
+      />
+    ) : (
+      <SwipeListView
+        disableRightSwipe={true}
+        data={this.state.selectedBookClubMembers}
+        renderItem={this.renderMember}
+        renderHiddenItem={(data, rowMap) => (
+          <TouchableOpacity
+            style={styles.deleteRowView}
+            onPress={() => this.deleteRow(rowMap, data.item.key)}>
+            <Icon type="feather" name="trash" size={18} color="white" />
+          </TouchableOpacity>
+        )}
+        rightOpenValue={-windowWidth * 0.8}
+        onRowDidOpen={this.onRowDidOpen}
+        friction={15}
+      />
+    )
     return (
       <GreyWhiteBackgroundBottomButton
         headline="Add Attendees"
@@ -234,15 +332,15 @@ export default class CreateEventAttendees extends Component {
         <SearchBar
           placeholder="Add a Person From Your Contacts"
           onChangeText={text => this.search(text)}
-          onFocus={this.getPermissionForAndroid}
+          onFocus={this.onSearchBarPressIn}
+          onClear={this.hideSearchList}
+          ref="searchBarRef"
         />
         {this.state.listOfBookClubs.length > 0 &&
           !this.state.showListOfMembers && (
             <>
               <View style={styles.fromBookClubContainer}>
-                <Text style={styles.headline2}>
-                  Add from Your BookClubs
-                </Text>
+                <Text style={styles.headline2}>Add from Your BookClubs</Text>
               </View>
               <FlatList
                 data={this.state.listOfBookClubs}
@@ -252,30 +350,7 @@ export default class CreateEventAttendees extends Component {
               />
             </>
           )}
-        {this.state.showListOfMembers && (
-          <SwipeListView
-            disableRightSwipe={true}
-            data={this.state.selectedBookClubMembers}
-            renderItem={this.renderMember}
-            renderHiddenItem={(data, rowMap) => (
-              <TouchableOpacity
-                style={styles.deleteRowView}
-                onPress={() =>
-                  this.deleteRow(rowMap, data.item.key)
-                }>
-                <Icon
-                  type="feather"
-                  name="trash"
-                  size={18}
-                  color="white"
-                />
-              </TouchableOpacity>
-            )}
-            rightOpenValue={-windowWidth * 0.8}
-            onRowDidOpen={this.onRowDidOpen}
-            friction={15}
-          />
-        )}
+        {this.state.showListOfMembers && displayOfList}
       </GreyWhiteBackgroundBottomButton>
     );
   }
@@ -287,6 +362,10 @@ const windowHeight = Dimensions.get('window').height;
 const styles = StyleSheet.create({
   fromBookClubContainer: {
     paddingVertical: '2%',
+  },
+  headline1: {
+    fontFamily: 'Montserrat-Bold',
+    fontSize: 20,
   },
   headline2: {
     fontFamily: 'Montserrat-SemiBold',
@@ -370,6 +449,48 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: 'row',
     justifyContent: 'flex-end',
+  },
+  modalContainer: {
+    backgroundColor: 'white',
+    padding: '10%',
+    justifyContent: 'space-between',
+  },
+  topNewClubContainer: {
+    height: '60%',
+    justifyContent: 'space-between',
+  },
+  newClubContinueButton: {
+    alignSelf: 'flex-end',
+  },
+  newClubContinueButtonContainerStyle: {
+    borderRadius: 20,
+    width: '85%',
+    alignSelf: 'center',
+  },
+  newClubContinueButtonStyle: {
+    borderRadius: 10,
+    backgroundColor: '#1E3342',
+  },
+  newClubContinueTitleButtonStyle: {
+    fontFamily: 'Montserrat-SemiBold',
+  },
+  searchListRowView: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  listItemContactSearchView: {
+    padding: 10,
+    paddingHorizontal: 20,
+  },
+  listItemSubtitleFont: {
+    fontFamily: 'Montserrat-Regular',
+    fontSize: 13,
+    color: '#A3A3A3',
+  },
+  listItemFont: {
+    fontFamily: 'Montserrat-Regular',
+    fontSize: 14,
   },
 });
 

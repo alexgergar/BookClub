@@ -16,10 +16,8 @@ import {
 import { Button, Icon, ListItem, Input, Avatar, Badge } from 'react-native-elements';
 import UserContext from '../context/UserContext';
 import GreyWhiteBackgroundBottomButton from '../components/GreyWhiteBackgroundBottomButton';
-
 import EditInfoBlock from '../components/EditInfoBlock';
 import BadgeListItem from '../components/BadgeListItem';
-import TextRow from '../components/TextRow';
 import firestore from '@react-native-firebase/firestore';
 import { TouchableHighlight } from 'react-native-gesture-handler';
 
@@ -29,28 +27,88 @@ export default class CreateEventVerifyInfo extends Component {
   };
 
   componentDidMount() {
-    const { selectedBook, streetAddress, city, state, zipcode, detailsForLocation, bookClubMembers } = this.props.navigation.state.params;
-    // console.log(selectedBook.title);
-    let user = this.context;
-
   }
 
   handleContinueButtonPress = () => {
-      const { selectedBook, streetAddress, city, state, zipcode, detailsForLocation, bookClubMembers } = this.props.navigation.state.params;
-    console.log('continue button pressed on verfiy info screen')
+    let user = this.context;
+    const {
+      selectedBook,
+      streetAddress,
+      city,
+      state,
+      zipcode,
+      detailsForLocation,
+      bookClubMembers,
+      bookClubName,
+      bookClubID,
+      newClub, } = this.props.navigation.state.params;
+    const membersOfBookClub = [];
+    bookClubMembers.forEach(member => {
+      let thisMember = {
+        displayName: member.displayName,
+        uid: member.uid,
+        email: member.email,
+        phone: member.phone,
+      };
+      membersOfBookClub.push(thisMember);
+    });
+    const thisEvent = {
+      attendees: membersOfBookClub,
+      bookForEvent: {
+        id: selectedBook.id,
+        title: selectedBook.title,
+        authors: selectedBook.authors,
+        isbn: selectedBook.isbn,
+        smallThumbnail: selectedBook.smallThumbail,
+        thumbnail: selectedBook.thumbail,
+        pageCount: selectedBook.pageCount,
+        language: selectedBook.language,
+        averageRating: selectedBook.averageRating,
+        ratingsCount: selectedBook.ratingsCount,
+        description: selectedBook.description,
+      },
+      bookClub: {
+        bookClubID: bookClubID,
+        name: bookClubName,
+      },
+      eventDate: '',
+      detailsForEvent: '',
+      eventLocation: {
+        address: {
+          streetAddress: streetAddress,
+          city: city,
+          state: state,
+          zipcode: zipcode,
+        },
+        detailsForLocation: detailsForLocation,
+      },
+      host: {
+        displayName: user.displayName,
+        email: user.email,
+        phone: user.phone,
+        uid: user.uid,
+      },
+    };
+    if (newClub) {
+      console.log(`this is a new club- add a new club`)
+    } else {
+      // const events = firestore().collection('events');
+      
+    }
   }
 
   onEditLocationPress = () => {
-    const {selectedBook, bookClubMembers} = this.props.navigation.state.params;
+    const {selectedBook, bookClubMembers, newClub} = this.props.navigation.state.params;
     this.props.navigation.navigate('CreateEventAddDetails', {
       onUpdate: true,
       selectedBook: selectedBook,
       membersForBookClub: bookClubMembers,
+      newClub: newClub,
     });
   }
 
   onEditBookSelectionPress = () => {
-    const { streetAddress, city, state, zipcode, detailsForLocation, bookClubMembers } = this.props.navigation.state.params;
+    const { streetAddress, city, state, zipcode, detailsForLocation, bookClubMembers, newClub, bookClubID, bookClubName } = this.props.navigation.state.params;
     this.props.navigation.navigate('CreateEvent', {
       onUpdate: true,
       streetAddress: streetAddress,
@@ -59,17 +117,36 @@ export default class CreateEventVerifyInfo extends Component {
       zipcode: zipcode,
       detailsForLocation: detailsForLocation,
       membersForBookClub: bookClubMembers,
+      bookClubName: bookClubName,
+      bookClubID: bookClubID,
+      newClub: newClub,
     });
   }
 
   onEditInvitedMembersPress = () => {
-    const { streetAddress, city, state, zipcode, detailsForLocation, bookClubMembers, selectedBook } = this.props.navigation.state.params;
-    this.props.navigation.navigate('CreateEventEditAttendeesList', {
-      streetAddress, city, state, zipcode, detailsForLocation, bookClubMembers, selectedBook
+    const {
+      streetAddress,
+      city,
+      state,
+      zipcode,
+      detailsForLocation,
+      bookClubMembers,
+      selectedBook,
+      bookClubID,
+      bookClubName,
+    } = this.props.navigation.state.params;
+    this.props.navigation.navigate('CreateEventAttendees', {
+      streetAddress,
+      city,
+      state,
+      zipcode,
+      detailsForLocation,
+      bookClubMembers,
+      selectedBook,
+      bookClubID,
+      bookClubName,
     });
   }
-
-  
 
   render() {
     let user = this.context;

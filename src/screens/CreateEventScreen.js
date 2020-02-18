@@ -74,7 +74,7 @@ export default class CreateEvent extends Component {
       title: book.volumeInfo.title,
       authors: book.volumeInfo.authors,
       isbn: book.volumeInfo.industryIdentifiers,
-      raw: book,
+      // raw: book,
       smallThumbnail: thumbnail.small,
       thumbnail: thumbnail.normal,
       pageCount: book.volumeInfo.pageCount,
@@ -104,7 +104,7 @@ export default class CreateEvent extends Component {
 
   onBookSelectionPress = selectedBook => {
     if (this.props.navigation.state.params) {
-      const { onUpdate, streetAddress, city, state, zipcode, detailsForLocation, membersForBookClub } = this.props.navigation.state.params;
+      const { onUpdate, streetAddress, city, state, zipcode, detailsForLocation, membersForBookClub, newClub, } = this.props.navigation.state.params;
       this.props.navigation.navigate('SelectedBook', {
         onUpdate: onUpdate,
         selectedBook: selectedBook,
@@ -114,7 +114,8 @@ export default class CreateEvent extends Component {
         zipcode: zipcode,
         detailsForLocation: detailsForLocation,
         membersForBookClub: membersForBookClub,
-      })
+        newClub: newClub,
+      });
     } else {
       this.props.navigation.navigate('SelectedBook', {
         selectedBook: selectedBook,

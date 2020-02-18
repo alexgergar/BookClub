@@ -15,6 +15,7 @@ import CreateEventAttendeesScreen from './src/screens/CreateEventAttendeesScreen
 import CreateEventVerifyInfoScreen from './src/screens/CreateEventVerifyInfoScreen';
 import CreateEventAddAttendeesScreen from './src/screens/CreateEventAddAttendeesScreen';
 import CreateEventEditAttendeesListScreen from './src/screens/CreateEventEditAttendeesListScreen';
+import CreateEventNewClubNameScreen from './src/screens/CreateEventNewClubNameScreen';
 import UserContext from './src/context/UserContext';
 import {createStackNavigator} from 'react-navigation-stack';
 import {createAppContainer, createSwitchNavigator} from 'react-navigation';
@@ -30,6 +31,7 @@ const MainStack = createStackNavigator(
     CreateEventAttendees: CreateEventAttendeesScreen,
     CreateEventVerifyInfo: CreateEventVerifyInfoScreen,
     CreateEventEditAttendeesList: CreateEventEditAttendeesListScreen,
+    CreateEventNewClubName: CreateEventNewClubNameScreen,
     SignOut: SignOutScreen,
   },
   {
