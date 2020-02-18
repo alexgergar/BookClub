@@ -27,6 +27,10 @@ export default class Home extends Component {
           title="Main Event"
           onPress={() => this.props.navigation.navigate('MainEvent')}
         />
+        <Button
+          title='Pick Date'
+          onPress={() => this.props.navigation.navigate('CreateEventPickDate')}
+          />
       </SafeAreaView>
     )
   }
