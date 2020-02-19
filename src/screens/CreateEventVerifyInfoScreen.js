@@ -27,6 +27,8 @@ export default class CreateEventVerifyInfo extends Component {
   };
 
   componentDidMount() {
+    const {date} = this.props.navigation.state.params;
+  
   }
 
   handleContinueButtonPress = () => {
@@ -41,6 +43,7 @@ export default class CreateEventVerifyInfo extends Component {
       bookClubMembers,
       bookClubName,
       bookClubID,
+      date,
       newClub, } = this.props.navigation.state.params;
     const membersOfBookClub = [];
     bookClubMembers.forEach(member => {
@@ -71,7 +74,7 @@ export default class CreateEventVerifyInfo extends Component {
         bookClubID: bookClubID,
         name: bookClubName,
       },
-      eventDate: '',
+      eventDate: date,
       detailsForEvent: '',
       eventLocation: {
         address: {
@@ -98,17 +101,27 @@ export default class CreateEventVerifyInfo extends Component {
   }
 
   onEditLocationPress = () => {
-    const {selectedBook, bookClubMembers, newClub} = this.props.navigation.state.params;
+    const {
+      selectedBook,
+      bookClubMembers,
+      newClub,
+      date,
+      bookClubID,
+      bookClubName,
+    } = this.props.navigation.state.params;
     this.props.navigation.navigate('CreateEventAddDetails', {
       onUpdate: true,
       selectedBook: selectedBook,
       membersForBookClub: bookClubMembers,
+      bookClubID: bookClubID,
+      bookClubName: bookClubName,
+      date: date,
       newClub: newClub,
     });
   }
 
   onEditBookSelectionPress = () => {
-    const { streetAddress, city, state, zipcode, detailsForLocation, bookClubMembers, newClub, bookClubID, bookClubName } = this.props.navigation.state.params;
+    const { streetAddress, city, state, zipcode, detailsForLocation, bookClubMembers, newClub, bookClubID, bookClubName, date, } = this.props.navigation.state.params;
     this.props.navigation.navigate('CreateEvent', {
       onUpdate: true,
       streetAddress: streetAddress,
@@ -120,6 +133,24 @@ export default class CreateEventVerifyInfo extends Component {
       bookClubName: bookClubName,
       bookClubID: bookClubID,
       newClub: newClub,
+      date: date,
+    });
+  }
+
+  onEditDatePress = () => {
+    const { streetAddress, city, state, zipcode, detailsForLocation, bookClubMembers, newClub, bookClubID, bookClubName, selectedBook, } = this.props.navigation.state.params;
+    this.props.navigation.navigate('CreateEventPickDate', {
+      onUpdate: true,
+      streetAddress: streetAddress,
+      city: city,
+      state: state,
+      zipcode: zipcode,
+      detailsForLocation: detailsForLocation,
+      membersForBookClub: bookClubMembers,
+      bookClubName: bookClubName,
+      bookClubID: bookClubID,
+      newClub: newClub,
+      selectedBook: selectedBook,
     });
   }
 
@@ -134,6 +165,7 @@ export default class CreateEventVerifyInfo extends Component {
       selectedBook,
       bookClubID,
       bookClubName,
+      date,
     } = this.props.navigation.state.params;
     this.props.navigation.navigate('CreateEventAttendees', {
       streetAddress,
@@ -145,54 +177,71 @@ export default class CreateEventVerifyInfo extends Component {
       selectedBook,
       bookClubID,
       bookClubName,
+      date,
     });
   }
 
   render() {
     let user = this.context;
-    const { selectedBook, streetAddress, city, state, zipcode, detailsForLocation, bookClubMembers } = this.props.navigation.state.params;
+    const { selectedBook, streetAddress, city, state, zipcode, detailsForLocation, bookClubMembers, date } = this.props.navigation.state.params;
     return (
       <GreyWhiteBackgroundBottomButton
-        headline='Verify Informtion'
-        subHeadline='Make sure everything looks good'
+        headline="Verify Informtion"
+        subHeadline="Make sure everything looks good"
         continueButtonOnPress={this.handleContinueButtonPress}>
-          <View>
-            <Text style={styles.headline3}>Host: {user.displayName}</Text>
+        <View>
+          <Text style={styles.headline3}>Host: {user.displayName}</Text>
+        </View>
+        <EditInfoBlock headline="Date" onEditPress={this.onEditDatePress}>
+          <Text style={styles.headline3}>{date.date} at {date.time}</Text>
+        </EditInfoBlock>
+        <EditInfoBlock
+          headline="Location"
+          onEditPress={this.onEditLocationPress}>
+          <Text style={styles.headline3}>Address:</Text>
+          <View style={{paddingHorizontal: '5%'}}>
+            <Text style={styles.textNormal}>{streetAddress}</Text>
+            <Text style={styles.textNormal}>
+              {city} {state}, {zipcode}
+            </Text>
           </View>
-        <EditInfoBlock headline='Location' onEditPress={this.onEditLocationPress}>
-            <Text style={styles.headline3}>Address:</Text>
-            <View style={{ paddingHorizontal: '5%' }}>
-              <Text style={styles.textNormal}>{streetAddress}</Text>
-              <Text style={styles.textNormal}>{city} {state}, {zipcode}</Text>
+          <Text style={[styles.headline3, {paddingTop: '1%'}]}>
+            Details For Location:
+          </Text>
+          <View style={{paddingHorizontal: '5%'}}>
+            <Text style={styles.textNormal}>{detailsForLocation}</Text>
+          </View>
+        </EditInfoBlock>
+        <EditInfoBlock
+          headline="Book Details"
+          onEditPress={this.onEditBookSelectionPress}>
+          <View style={styles.bookDetailsView}>
+            <Image
+              style={styles.bookImageView}
+              source={{uri: selectedBook.thumbnail}}
+              resizeMode={'cover'}
+            />
+            <View style={styles.bookDetails}>
+              <Text style={[styles.headline3, styles.semiBold]}>
+                {selectedBook.title}
+              </Text>
+              <Text style={styles.headline4}>{selectedBook.authors}</Text>
             </View>
-            <Text style={[styles.headline3, { paddingTop: '1%' }]}>Details For Location:</Text>
-            <View style={{ paddingHorizontal: '5%' }}>
-              <Text style={styles.textNormal}>{detailsForLocation}</Text>
-            </View>
-          </EditInfoBlock>
-        <EditInfoBlock headline='Book Details' onEditPress={this.onEditBookSelectionPress}>
-            <View style={styles.bookDetailsView}>
-              <Image
-                style={styles.bookImageView}
-                source={{ uri: selectedBook.thumbnail }}
-                resizeMode={'cover'}
+          </View>
+        </EditInfoBlock>
+        <EditInfoBlock
+          headline="Invited Members"
+          onEditPress={this.onEditInvitedMembersPress}>
+          <View style={styles.invitedMembersListView}>
+            {bookClubMembers.map((member, index) => (
+              <BadgeListItem
+                key={index}
+                avatar={member.avatar}
+                displayName={member.displayName}
               />
-              <View style={styles.bookDetails}>
-                <Text style={[styles.headline3, styles.semiBold]}>{selectedBook.title}</Text>
-                <Text style={styles.headline4}>{selectedBook.authors}</Text>
-              </View>
-            </View>
-          </EditInfoBlock>
-        <EditInfoBlock headline='Invited Members' onEditPress={this.onEditInvitedMembersPress}>
-            <View style={styles.invitedMembersListView}>
-              {bookClubMembers.map((member, index) => (
-                <BadgeListItem 
-                  key={index}
-                  avatar={member.avatar}
-                  displayName={member.displayName} /> 
-              ))}
-            </View>
-          </EditInfoBlock>
+            ))}
+          </View>
+        </EditInfoBlock>
       </GreyWhiteBackgroundBottomButton>
     );
   }

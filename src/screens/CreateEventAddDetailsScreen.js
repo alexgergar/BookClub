@@ -13,7 +13,7 @@ export default class CreateEventAddDetails extends Component {
   };
 
   handleContinuePress = () => {
-    const {selectedBook} = this.props.navigation.state.params;
+    const {selectedBook, date} = this.props.navigation.state.params;
     this.props.navigation.navigate('CreateEventAttendees', {
       selectedBook: selectedBook,
       streetAddress: this.state.streetAddress,
@@ -21,6 +21,7 @@ export default class CreateEventAddDetails extends Component {
       state: this.state.state,
       zipcode: this.state.zipcode,
       detailsForLocation: this.state.detailsForLocation,
+      date: date,
     });
   };
 
@@ -28,6 +29,9 @@ export default class CreateEventAddDetails extends Component {
     const {
       selectedBook,
       membersForBookClub,
+      date,
+      bookClubID,
+      bookClubName,
     } = this.props.navigation.state.params;
     this.props.navigation.navigate('CreateEventVerifyInfo', {
       selectedBook: selectedBook,
@@ -37,6 +41,9 @@ export default class CreateEventAddDetails extends Component {
       zipcode: this.state.zipcode,
       detailsForLocation: this.state.detailsForLocation,
       bookClubMembers: membersForBookClub,
+      bookClubID: bookClubID,
+      bookClubName: bookClubName,
+      date: date,
     });
   };
 

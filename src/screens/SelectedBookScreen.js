@@ -37,8 +37,11 @@ export default class SelectedBook extends Component {
       zipcode,
       detailsForLocation,
       membersForBookClub,
+      bookClubID,
+      bookClubName,
       selectedBook,
       newClub,
+      date,
     } = this.props.navigation.state.params;
     onUpdate
       ? this.props.navigation.navigate('CreateEventVerifyInfo', {
@@ -49,9 +52,12 @@ export default class SelectedBook extends Component {
           zipcode: zipcode,
           detailsForLocation: detailsForLocation,
           bookClubMembers: membersForBookClub,
+          bookClubID: bookClubID,
+          bookClubName: bookClubName,
           newClub: newClub,
+          date: date,
         })
-      : this.props.navigation.navigate('CreateEventAddDetails', {
+      : this.props.navigation.navigate('CreateEventPickDate', {
           selectedBook: selectedBook,
         });
   };

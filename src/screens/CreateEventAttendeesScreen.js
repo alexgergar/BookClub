@@ -264,6 +264,7 @@ export default class CreateEventAttendees extends Component {
       state,
       zipcode,
       detailsForLocation,
+      date,
     } = this.props.navigation.state.params;
     if (
       this.state.originalBookClubMembers.length ===
@@ -284,6 +285,7 @@ export default class CreateEventAttendees extends Component {
         bookClubName: this.state.selectedBookClubName,
         bookClubID: this.state.selectedBookClubID,
         newClub: false,
+        date: date,
       });
     } else {
       console.log('not the same');
@@ -295,6 +297,7 @@ export default class CreateEventAttendees extends Component {
         zipcode: zipcode,
         detailsForLocation: detailsForLocation,
         bookClubMembers: this.state.selectedBookClubMembers,
+        date: date,
       });
     }
   }
