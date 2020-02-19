@@ -116,11 +116,6 @@ export default class CreateEventPickDate extends Component {
         buttonTitle={this.state.headline}
         continueButtonOnPress={this.onPressButton}>
         <View style={styles.buttonView}>
-          {/* <Button
-            onPress={this.showDatepicker}
-            title="Choose a Time"
-            containerStyle={styles.buttonContainer}
-          /> */}
         </View>
         {this.state.showDatePicker && (
           <DateTimePicker

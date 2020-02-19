@@ -23,15 +23,11 @@ import { TouchableHighlight } from 'react-native-gesture-handler';
 
 export default class CreateEventVerifyInfo extends Component {
   static contextType = UserContext;
-  state = {
-  };
-
-  componentDidMount() {
-    const {date} = this.props.navigation.state.params;
-  
+  state={
+    newBookClubID: null,
   }
 
-  handleContinueButtonPress = () => {
+  handleContinueButtonPress = async () => {
     let user = this.context;
     const {
       selectedBook,
@@ -54,6 +50,13 @@ export default class CreateEventVerifyInfo extends Component {
         phone: member.phone,
       };
       membersOfBookClub.push(thisMember);
+    });
+    const membersOfBookClubUID = [];
+    bookClubMembers.forEach(member => {
+      let thisMember = {
+        uid: member.uid,
+      };
+      membersOfBookClubUID.push(thisMember);
     });
     const thisEvent = {
       attendees: membersOfBookClub,
@@ -92,12 +95,36 @@ export default class CreateEventVerifyInfo extends Component {
         uid: user.uid,
       },
     };
+    const newBookClub = {
+      members: membersOfBookClub,
+      membersUID: membersOfBookClubUID,
+      nameOfBookClub: bookClubName,
+    };
     if (newClub) {
-      console.log(`this is a new club- add a new club`)
+      console.log('after delete');
+      await firestore().collection('bookclubs').add(newBookClub).then(ref => {
+        this.setState({newBookClubID: ref.id});
+      }).catch(error => console.log(error))
+      const newBookClubInfoForThisBookClubEvent = {
+        bookClubID: this.state.newBookClubID,
+        name: bookClubName,
+      };
+      thisEvent['bookClub']['bookClubID'] = this.state.newBookClubID;
+      this.handleCreateEventInFirestore(thisEvent);
     } else {
-      // const events = firestore().collection('events');
-      
+      this.handleCreateEventInFirestore(thisEvent);
     }
+  }
+
+  handleCreateEventInFirestore = async thisEvent => {
+    console.log('in handle to send to firestoer')
+    await firestore()
+      .collection('events')
+      .add(thisEvent)
+      .then(ref => {
+        this.props.navigation.navigate('MainEventScreen', {eventID: ref.id});
+      })
+      .catch(error => console.log(error));
   }
 
   onEditLocationPress = () => {
