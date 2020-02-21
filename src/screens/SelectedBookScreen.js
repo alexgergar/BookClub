@@ -10,8 +10,59 @@ import {
 } from 'react-native';
 import {Button} from 'react-native-elements';
 import ViewMoreText from 'react-native-view-more-text';
+import axios from 'axios';
+import convert from 'xml-js';
+import {GOODREAD_API_KEY} from 'react-native-dotenv';
 
 export default class SelectedBook extends Component {
+  state = {
+    updatedSelectedBook: null,
+    hideContinueButton: true,
+  }
+
+  componentDidMount() {
+    const {selectedBook} = this.props.navigation.state.params;
+    const additionalBookInfo = {
+      ...selectedBook,
+      authorID: null,
+      authorBio: null,
+      authorImage: null,
+      otherBooksByAuthor: null,
+    };
+     axios
+      .get(
+        `https://www.goodreads.com/search/index.xml?key=${GOODREAD_API_KEY}&q=${selectedBook.isbn}` // this gets info about author from goodreads
+      )
+      .then(response => {
+        const bookDataJSON = convert.xml2js(response.data, {compact: true, spaces: 4, textKey: 'text', cdataKey: 'cdata', attributesKey: 'attributes'}); // changes xml to json
+        const authorID = bookDataJSON.GoodreadsResponse.search.results.work.best_book.author.id.text; // this gets the author ID
+        additionalBookInfo.authorID = authorID; 
+        return axios.get(`https://www.goodreads.com/author/show/176372?format=xml&key=${GOODREAD_API_KEY}`) // immediately returning a new get request to get info on author
+        }
+      )
+      .then(response => {
+        const bookDataJSON = convert.xml2js(response.data, {compact: true, spaces: 4, textKey: 'text', cdataKey: 'cdata', attributesKey: 'attributes'});
+        const authorBio = bookDataJSON.GoodreadsResponse.author.about.cdata; // this is the author bio
+        const authorImage = bookDataJSON.GoodreadsResponse.author.large_image_url.cdata || bookDataJSON.GoodreadsResponse.author.image_url.cdata; // author image
+        const authorsOtherBooksAllData = bookDataJSON.GoodreadsResponse.author.books.book; // other books by author and the below is to map through just for the info we want
+        const otherBooks = authorsOtherBooksAllData.map(book => ({
+          title: book.title.text,
+          coverArt: book.image_url.text,
+          isbn: book.isbn13.text,
+          avgRating: book.average_rating.text,
+          description: book.description.text,
+        })); 
+        additionalBookInfo.authorBio = authorBio;
+        additionalBookInfo.authorImage = authorImage;
+        additionalBookInfo.otherBooksByAuthor = otherBooks;
+        this.setState({
+          updatedSelectedBook: additionalBookInfo,
+          hideContinueButton: false,
+        }, () => console.log(this.state.updatedSelectedBook));
+      })
+      .catch(error => console.log(error));
+  }
+
   renderViewMore = onPress => {
     return (
       <Text style={styles.viewMore} onPress={onPress}>
@@ -45,7 +96,7 @@ export default class SelectedBook extends Component {
     } = this.props.navigation.state.params;
     onUpdate
       ? this.props.navigation.navigate('CreateEventVerifyInfo', {
-          selectedBook: selectedBook,
+          selectedBook: this.state.updatedSelectedBook,
           streetAddress: streetAddress,
           city: city,
           state: state,
@@ -58,12 +109,13 @@ export default class SelectedBook extends Component {
           date: date,
         })
       : this.props.navigation.navigate('CreateEventPickDate', {
-          selectedBook: selectedBook,
+          selectedBook: this.state.updatedSelectedBook,
         });
   };
 
   render() {
     const {selectedBook, onUpdate} = this.props.navigation.state.params;
+    const test = 'this is a test';
     return (
       <SafeAreaView>
         <ScrollView contentContainerStyle={styles.container}>
@@ -132,6 +184,7 @@ export default class SelectedBook extends Component {
           <View style={styles.bottonWhiteContainerView}>
             <Button
               title="Pick This Book"
+              disabled={this.state.hideContinueButton}
               containerStyle={styles.continueButtonContainerStyle}
               buttonStyle={styles.continueButtonStyle}
               titleStyle={styles.continueTitleButtonStyle}

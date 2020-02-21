@@ -46,7 +46,7 @@ export default class CreateEventNewClubName extends Component {
       zipcode: zipcode,
       detailsForLocation: detailsForLocation,
       bookClubMembers: bookClubMembers,
-      bookClubName: this.state.bookClubMembers,
+      bookClubName: this.state.bookClubName,
       newClub: true,
     });
   }

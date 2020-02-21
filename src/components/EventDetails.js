@@ -21,10 +21,11 @@ export default class EventDetails extends Component {
   }
 
   render() {
+    const {event} = this.props;
     const excludeAfterIndex = 4;
-    const listOfAttendees = bookClubEvent.attendees.reduce((shownedAttendees, attendee, index) => {
+    const listOfAttendees = event.attendees.reduce((shownedAttendees, attendee, index) => {
       if (index < excludeAfterIndex) {
-        const initialsOfName = this.handleGetInitials(attendee.guestName);
+        const initialsOfName = this.handleGetInitials(attendee.displayName);
         shownedAttendees.push(
           <Avatar
             key={index}
@@ -41,12 +42,12 @@ export default class EventDetails extends Component {
     return (
       <View>
         {/* What I need to bring to event as card with icon or if I need to pick from list - tell what i'm bringing */}
-        <View style={styles.whatToBringContainer}>
+        {/* <View style={styles.whatToBringContainer}>
           <Icon name="add-alert" type="material" />
           <Text style={styles.cardTitleStyle}>
             Bring {bookClubEvent.whatGuestsProvides[0].whatTheyAreBringing}!
           </Text>
-        </View>
+        </View> */}
         <View style={styles.headlineView}>
           <Text style={styles.headlineText}>Who is coming?</Text>
         </View>
@@ -54,7 +55,7 @@ export default class EventDetails extends Component {
           {listOfAttendees}
           <View>
             
-            {bookClubEvent.attendees.length > 4 && (
+            {event.attendees.length > 4 && (
               <>
               <Avatar
                 size={30}
@@ -66,7 +67,7 @@ export default class EventDetails extends Component {
                 badgeStyle={styles.seeMoreAttendeesBadge}
                 value={
                   <Text style={styles.badgeText}>
-                    {bookClubEvent.attendees.length - 4}
+                    {event.attendees.length - 4}
                   </Text>
                 }
                 containerStyle={{position: 'absolute', top: -6, right: -6}}
@@ -80,20 +81,24 @@ export default class EventDetails extends Component {
         </View>
         <View style={styles.importantInfoContainer}>
           <Text style={styles.eventDetailsText}>
-            {bookClubEvent.host.name} wanted you to know...
+            {event.host.displayName} wanted you to know...
           </Text>
           <Text style={styles.eventDetailsQuoteText}>
-            {bookClubEvent.detailsForLocation}
+            {event.eventLocation.detailsForLocation}
           </Text>
         </View>
-        <View style={styles.headlineView}>
-          <Text style={styles.headlineText}>Just so you know</Text>
-        </View>
-        <View style={styles.importantInfoContainer}>
-          <Text style={styles.eventDetailsText}>
-            {bookClubEvent.detailsForEvent}
-          </Text>
-        </View>
+        {event.detailsForEvent !== '' &&
+        <>
+          <View style={styles.headlineView}>
+            <Text style={styles.headlineText}>Just so you know</Text>
+          </View>
+          <View style={styles.importantInfoContainer}>
+            <Text style={styles.eventDetailsText}>
+              {bookClubEvent.detailsForEvent}
+            </Text>
+          </View>
+          </>
+        }
 
         {/* }
                     <Text>Card list of who is attending - click and it expands into more info - slice the list based on a certain number based on size of avatar then add plus sign</Text>

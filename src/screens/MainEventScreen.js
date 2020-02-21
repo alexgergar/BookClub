@@ -8,39 +8,47 @@ import {
   ScrollView,
   Dimensions,
 } from 'react-native';
-import axios from 'axios';
 import {bookClubEvent} from '../utils/testInfo';
 import EventDetails from '../components/EventDetails';
 import BookDetails from '../components/BookDetails';
 import {Button} from 'react-native-elements';
 import UserContext from '../context/UserContext';
-
+import firestore from '@react-native-firebase/firestore';
 
 export default class MainEvent extends Component {
+  static contextType = UserContext;
   state = {
     showEventDetail: true,
     bookData: null,
+    eventID: null,
+    showEvent: false,
+    event: null,
   };
 
   componentDidMount() {
-    console.log('in main event screen')
+    // const {eventID, event} = this.props.navigation.state.params;
     const user = this.context;
-    console.log(user);
+    this.getEventInfoFromFirestore('mwbdp7UdGFvp4z7ntpcN');
   }
 
-
-  getBookInfoFromISBNfromGoogle = isbn => {
-    axios
-      .get(`https://www.googleapis.com/books/v1/volumes?q=isbn:9781408890080`)
-      .then(response => {
-        this.setState(
-          {
-            bookData: response.data.items[0].volumeInfo,
-          },
-          () => console.log(this.state.bookData),
-        );
+  getEventInfoFromFirestore = async eventID => {
+    await firestore()
+      .collection('events')
+      .doc(eventID)
+      .get()
+      .then(doc => {
+        if (!doc.exists) {
+          console.log('no such document');
+        } else {
+          this.setState({
+            event: doc.data(),
+            showEvent: true,
+          });
+        }
       })
-      .catch(error => console.log(error));
+      .catch(error => {
+        console.log('Error getting document');
+      });
   };
 
   onEventDetailPress = () => {
@@ -56,75 +64,83 @@ export default class MainEvent extends Component {
   };
 
   render() {
+    const {event, showEvent} = this.state;
     return (
       <SafeAreaView>
         <ScrollView contentContainerStyle={styles.container}>
-          { (this.state.bookData === null) ? 
-            (<Image
+          {event === null ? (
+            <Image
               style={styles.bookImageView}
               source={require('../utils/bookPlaceholder.png')}
               resizeMode={'cover'}
-            />)
-          :
-            (<Image
+            />
+          ) : (
+            <Image
               style={styles.bookImageView}
               source={{
-                uri: this.state.bookData.imageLinks.thumbnail,
+                uri: event.bookForEvent.thumbnail || event.bookForEvent.smallThumbnail,
               }}
               resizeMode={'cover'}
-            />)
-          }
-          <View style={styles.backgroundContentContainer}>
-            <View style={styles.informationContentContainer}>
-              <View style={styles.textRowCenterAlign}>
-                <Text style={styles.dateText}>{bookClubEvent.date}</Text>
-                <Text style={styles.spacerText}> at </Text>
-                <Text style={styles.dateText}>{bookClubEvent.startTime}</Text>
-              </View>
-
-              {/* in the future maybe change this to a card component or a box that the user can click on to get more info on person, contact info, map, ect. see notes from 1.21.20 */}
-              <View style={{marginTop: 10}}>
-                <Text
-                  style={{
-                    fontSize: 12,
-                    textTransform: 'uppercase',
-                    textAlign: 'center',
-                  }}>
-                  {bookClubEvent.host.name}
-                </Text>
-                <Text style={styles.addressText}>
-                  {bookClubEvent.location.streetAddress}
-                </Text>
+            />
+          )}
+          {event !== null && (
+            <View style={styles.backgroundContentContainer}>
+              <View style={styles.informationContentContainer}>
                 <View style={styles.textRowCenterAlign}>
-                  <Text style={styles.cityStateZipText}>
-                    {bookClubEvent.location.city} {bookClubEvent.location.state}
-                    ,{bookClubEvent.location.zipcode}
-                  </Text>
+                  <Text style={styles.dateText}>{event.eventDate.date}</Text>
+                  <Text style={styles.spacerText}> at </Text>
+                  <Text style={styles.dateText}>{event.eventDate.time}</Text>
                 </View>
+
+                {/* in the future maybe change this to a card component or a box that the user can click on to get more info on person, contact info, map, ect. see notes from 1.21.20 */}
+                <View style={{marginTop: 10}}>
+                  <Text
+                    style={{
+                      fontSize: 12,
+                      textTransform: 'uppercase',
+                      textAlign: 'center',
+                    }}>
+                    {event.host.displayName}
+                  </Text>
+                  <Text style={styles.addressText}>
+                    {event.eventLocation.address.streetAddress}
+                  </Text>
+                  <View style={styles.textRowCenterAlign}>
+                    <Text style={styles.cityStateZipText}>
+                      {event.eventLocation.address.city}{' '}
+                      {event.eventLocation.address.state},{' '}
+                      {event.eventLocation.address.zipcode}
+                    </Text>
+                  </View>
+                </View>
+                {/* end of card data... */}
+                <View style={styles.hortizontalLine} />
+                <View style={styles.clickableDetailTabRow}>
+                  {/* make these buttons into a unique component using theming for active/non active passing props */}
+                  <Button
+                    title="Event Details"
+                    type="clear"
+                    titleStyle={styles.detailButtonsTitleStyle}
+                    containerStyle={styles.detailButtonsContainerStyle}
+                    onPress={this.onEventDetailPress}
+                  />
+                  <Button
+                    title="Book Details"
+                    type="clear"
+                    titleStyle={styles.detailButtonsTitleStyle}
+                    containerStyle={styles.detailButtonsContainerStyle}
+                    bookdata={this.state.bookdata}
+                    onPress={this.onBookDetailPress}
+                  />
+                </View>
+                {this.state.showEventDetail ? (
+                  <EventDetails event={event} />
+                ) : (
+                  <BookDetails event={event} />
+                )}
               </View>
-              {/* end of card data... */}
-              <View style={styles.hortizontalLine} />
-              <View style={styles.clickableDetailTabRow}>
-                {/* make these buttons into a unique component using theming for active/non active passing props */}
-                <Button
-                  title="Event Details"
-                  type="clear"
-                  titleStyle={styles.detailButtonsTitleStyle}
-                  containerStyle={styles.detailButtonsContainerStyle}
-                  onPress={this.onEventDetailPress}
-                />
-                <Button
-                  title="Book Details"
-                  type="clear"
-                  titleStyle={styles.detailButtonsTitleStyle}
-                  containerStyle={styles.detailButtonsContainerStyle}
-                  bookdata={this.state.bookdata}
-                  onPress={this.onBookDetailPress}
-                />
-              </View>
-              {this.state.showEventDetail ? <EventDetails /> : <BookDetails />}
             </View>
-          </View>
+          )}
         </ScrollView>
       </SafeAreaView>
     );

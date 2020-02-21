@@ -73,7 +73,7 @@ export default class CreateEvent extends Component {
       id: book.id,
       title: book.volumeInfo.title,
       authors: book.volumeInfo.authors,
-      isbn: book.volumeInfo.industryIdentifiers,
+      isbn: book.volumeInfo.industryIdentifiers[0].identifier,
       smallThumbnail: thumbnail.small,
       thumbnail: thumbnail.normal,
       pageCount: book.volumeInfo.pageCount,

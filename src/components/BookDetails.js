@@ -1,9 +1,10 @@
 import React, { Component } from 'react';
-import { Text, View, StyleSheet, Dimensions, FlatList } from 'react-native';
+import { Text, View, StyleSheet, Dimensions, FlatList, Image } from 'react-native';
 import { bookClubEvent } from '../utils/testInfo';
 import { Icon, Avatar } from 'react-native-elements';
 import BookcoverImage from './BookcoverImage';
 import ViewMoreText from 'react-native-view-more-text';
+
 
 export default class BookDetails extends Component {
   renderViewMore = onPress => {
@@ -18,17 +19,22 @@ export default class BookDetails extends Component {
     );
   }
 
+  renderBookCovers = ({item}) => (
+    <BookcoverImage source={{uri: item.coverArt}} style={styles.bookCoverList} />
+  )
+
   render() {
+    const {event} = this.props;
     return (
       <View>
         <View style={styles.headlineView}>
           <Text style={styles.bookTitleTextHeadline}>
-            {bookClubEvent.bookForEvent.name}
+            {event.bookForEvent.title}
           </Text>
         </View>
         <View style={styles.headlineView}>
           <Text style={styles.bookAuthorTextHeadline}>
-            {bookClubEvent.bookForEvent.author}
+            {event.bookForEvent.authors} 
           </Text>
         </View>
         <View style={styles.bookHeadlineView}>
@@ -38,19 +44,19 @@ export default class BookDetails extends Component {
             renderViewMore={this.renderViewMore}
             renderViewLess={this.renderViewLess}
             textStyle={styles.bookDescriptionText}>
-            <Text>{bookClubEvent.bookForEvent.bookDescription}</Text>
+            <Text>{event.bookForEvent.description}</Text>
           </ViewMoreText>
         </View>
         <View style={styles.bookHeadlineView}>
           <Text style={styles.headlineText}>
-            About {bookClubEvent.bookForEvent.author}
+            About {event.bookForEvent.authors}
           </Text>
           <ViewMoreText
             numberOfLines={3}
             renderViewMore={this.renderViewMore}
             renderViewLess={this.renderViewLess}
             textStyle={styles.bookDescriptionText}>
-            <Text>{bookClubEvent.bookForEvent.bookDescription}</Text>
+            <Text>{event.bookForEvent.authorBio}</Text>
           </ViewMoreText>
         </View>
 
@@ -58,18 +64,15 @@ export default class BookDetails extends Component {
           <Text style={styles.headlineText}>
             Other Books by {bookClubEvent.bookForEvent.author}
           </Text>
-          <FlatList
-            horizontal={true}
-            data={[
-              require('../utils/gal.jpg'),
-              require('../utils/songofach.jpg'),
-              require('../utils/herculesbow.jpg'),
-            ]}
-            keyExtractor={(item, index) => index.toString()}
-            renderItem={({item}) => (
-              <BookcoverImage source={item} style={styles.bookCoverList} />
-            )}
-          />
+          <View style={styles.bookCoversListView}>
+            <FlatList
+              horizontal={true}
+              data={event.bookForEvent.otherBooksByAuthor}
+              keyExtractor={(item, index) => index.toString()}
+              renderItem={this.renderBookCovers}
+            />
+          </View>
+          
         </View>
       </View>
     );
@@ -111,6 +114,8 @@ const styles = StyleSheet.create({
   bookHeadlineView: {
     left: '5%',
     paddingTop: 10,
+    // backgroundColor: 'pink',
+    // marginRight: '10%',
   },
   bookDescriptionText: {
     left: '2%',
@@ -130,6 +135,9 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     alignSelf: 'center',
     margin: 10,
+  },
+  bookCoversListView: {
+    marginRight: '2%'
   },
 });
 

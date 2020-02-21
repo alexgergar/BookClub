@@ -4,27 +4,24 @@ import {
   Text,
   View,
   StyleSheet,
-  ScrollView,
   Image,
   Dimensions,
-  Keyboard,
-  FlatList,
-  PermissionsAndroid,
-  Platform,
-  Modal,
 } from 'react-native';
-import { Button, Icon, ListItem, Input, Avatar, Badge } from 'react-native-elements';
 import UserContext from '../context/UserContext';
 import GreyWhiteBackgroundBottomButton from '../components/GreyWhiteBackgroundBottomButton';
 import EditInfoBlock from '../components/EditInfoBlock';
 import BadgeListItem from '../components/BadgeListItem';
 import firestore from '@react-native-firebase/firestore';
-import { TouchableHighlight } from 'react-native-gesture-handler';
 
 export default class CreateEventVerifyInfo extends Component {
   static contextType = UserContext;
   state={
     newBookClubID: null,
+  }
+
+  componentDidMount() {
+    const {selectedBook} = this.props.navigation.state.params;
+      console.log(selectedBook);
   }
 
   handleContinueButtonPress = async () => {
@@ -40,7 +37,7 @@ export default class CreateEventVerifyInfo extends Component {
       bookClubName,
       bookClubID,
       date,
-      newClub, } = this.props.navigation.state.params;
+      newClub } = this.props.navigation.state.params;
     const membersOfBookClub = [];
     bookClubMembers.forEach(member => {
       let thisMember = {
@@ -61,17 +58,22 @@ export default class CreateEventVerifyInfo extends Component {
     const thisEvent = {
       attendees: membersOfBookClub,
       bookForEvent: {
-        id: selectedBook.id,
+        googleID: selectedBook.id, 
         title: selectedBook.title,
         authors: selectedBook.authors,
         isbn: selectedBook.isbn,
-        smallThumbnail: selectedBook.smallThumbail,
-        thumbnail: selectedBook.thumbail,
+        smallThumbnail: selectedBook.smallThumbnail,
+        thumbnail: selectedBook.thumbnail,
         pageCount: selectedBook.pageCount,
         language: selectedBook.language,
         averageRating: selectedBook.averageRating,
         ratingsCount: selectedBook.ratingsCount,
         description: selectedBook.description,
+        authorID: selectedBook.authorID,
+        authorBio: selectedBook.authorBio,
+        authorImage: selectedBook.authorImage,
+        otherBooksByAuthor: selectedBook.otherBooksByAuthor,
+
       },
       bookClub: {
         bookClubID: bookClubID,
@@ -101,15 +103,10 @@ export default class CreateEventVerifyInfo extends Component {
       nameOfBookClub: bookClubName,
     };
     if (newClub) {
-      console.log('after delete');
       await firestore().collection('bookclubs').add(newBookClub).then(ref => {
         this.setState({newBookClubID: ref.id});
-      }).catch(error => console.log(error))
-      const newBookClubInfoForThisBookClubEvent = {
-        bookClubID: this.state.newBookClubID,
-        name: bookClubName,
-      };
-      thisEvent['bookClub']['bookClubID'] = this.state.newBookClubID;
+      }).catch(error => console.log(error));
+      thisEvent.bookClub.bookClubID = this.state.newBookClubID;
       this.handleCreateEventInFirestore(thisEvent);
     } else {
       this.handleCreateEventInFirestore(thisEvent);
@@ -117,12 +114,13 @@ export default class CreateEventVerifyInfo extends Component {
   }
 
   handleCreateEventInFirestore = async thisEvent => {
-    console.log('in handle to send to firestoer')
+    console.log('in firestore');
     await firestore()
       .collection('events')
       .add(thisEvent)
       .then(ref => {
-        this.props.navigation.navigate('MainEventScreen', {eventID: ref.id});
+        console.log(ref.id);
+        this.props.navigation.navigate('MainEvent', {eventID: ref.id});
       })
       .catch(error => console.log(error));
   }
@@ -148,7 +146,7 @@ export default class CreateEventVerifyInfo extends Component {
   }
 
   onEditBookSelectionPress = () => {
-    const { streetAddress, city, state, zipcode, detailsForLocation, bookClubMembers, newClub, bookClubID, bookClubName, date, } = this.props.navigation.state.params;
+    const { streetAddress, city, state, zipcode, detailsForLocation, bookClubMembers, newClub, bookClubID, bookClubName, date } = this.props.navigation.state.params;
     this.props.navigation.navigate('CreateEvent', {
       onUpdate: true,
       streetAddress: streetAddress,
@@ -165,7 +163,7 @@ export default class CreateEventVerifyInfo extends Component {
   }
 
   onEditDatePress = () => {
-    const { streetAddress, city, state, zipcode, detailsForLocation, bookClubMembers, newClub, bookClubID, bookClubName, selectedBook, } = this.props.navigation.state.params;
+    const { streetAddress, city, state, zipcode, detailsForLocation, bookClubMembers, newClub, bookClubID, bookClubName, selectedBook } = this.props.navigation.state.params;
     this.props.navigation.navigate('CreateEventPickDate', {
       onUpdate: true,
       streetAddress: streetAddress,
@@ -315,7 +313,7 @@ const styles = StyleSheet.create({
     flexWrap: 'wrap',
     flexDirection: 'row',
   },
-  
+
 });
 
 /* Color Theme Swatches in Hex
