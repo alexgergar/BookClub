@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import {
   Text,
   View,
@@ -8,10 +8,10 @@ import {
   ScrollView,
   Dimensions,
 } from 'react-native';
-import {bookClubEvent} from '../utils/testInfo';
+import { bookClubEvent } from '../utils/testInfo';
 import EventDetails from '../components/EventDetails';
 import BookDetails from '../components/BookDetails';
-import {Button} from 'react-native-elements';
+import { Button } from 'react-native-elements';
 import UserContext from '../context/UserContext';
 import firestore from '@react-native-firebase/firestore';
 
@@ -64,9 +64,9 @@ export default class MainEvent extends Component {
   };
 
   render() {
-    const {event, showEvent} = this.state;
+    const { event, showEvent } = this.state;
+    
     return (
-      <SafeAreaView>
         <ScrollView contentContainerStyle={styles.container}>
           {event === null ? (
             <Image
@@ -75,14 +75,14 @@ export default class MainEvent extends Component {
               resizeMode={'cover'}
             />
           ) : (
-            <Image
-              style={styles.bookImageView}
-              source={{
-                uri: event.bookForEvent.thumbnail || event.bookForEvent.smallThumbnail,
-              }}
-              resizeMode={'cover'}
-            />
-          )}
+              <Image
+                style={styles.bookImageView}
+                source={{
+                  uri: event.bookForEvent.thumbnail || event.bookForEvent.smallThumbnail,
+                }}
+                resizeMode={'cover'}
+              />
+            )}
           {event !== null && (
             <View style={styles.backgroundContentContainer}>
               <View style={styles.informationContentContainer}>
@@ -93,7 +93,7 @@ export default class MainEvent extends Component {
                 </View>
 
                 {/* in the future maybe change this to a card component or a box that the user can click on to get more info on person, contact info, map, ect. see notes from 1.21.20 */}
-                <View style={{marginTop: 10}}>
+                <View style={{ marginTop: 10 }}>
                   <Text
                     style={{
                       fontSize: 12,
@@ -136,13 +136,12 @@ export default class MainEvent extends Component {
                 {this.state.showEventDetail ? (
                   <EventDetails event={event} />
                 ) : (
-                  <BookDetails event={event} />
-                )}
+                    <BookDetails event={event} />
+                  )}
               </View>
             </View>
           )}
         </ScrollView>
-      </SafeAreaView>
     );
   }
 }
@@ -169,6 +168,7 @@ const styles = StyleSheet.create({
     bottom: 0,
     width: '90%',
     paddingBottom: 100,
+    flexGrow: 1,
   },
   informationContentContainer: {
     flexGrow: 1,
@@ -239,14 +239,12 @@ const styles = StyleSheet.create({
 .Book-cover-options-3-hex { color: #1E3342; } dark blue
 .Book-cover-options-4-hex { color: #A5ADB5; } grey blue
 .Book-cover-options-5-hex { color: #F8B787; } peach
-
 /* Color Theme Swatches in RGBA
 .Book-cover-options-1-rgba { color: rgba(58, 86, 114, 1); }
 .Book-cover-options-2-rgba { color: rgba(235, 226, 205, 1); }
 .Book-cover-options-3-rgba { color: rgba(29, 51, 66, 1); }
 .Book-cover-options-4-rgba { color: rgba(165, 172, 181, 1); }
 .Book-cover-options-5-rgba { color: rgba(247, 182, 135, 1); }
-
 /* Color Theme Swatches in HSLA *
 .Book-cover-options-1-hsla { color: hsla(210, 32, 33, 1); }
 .Book-cover-options-2-hsla { color: hsla(42, 42, 86, 1); }
