@@ -1,15 +1,25 @@
-import React, { Component } from 'react';
-import { Text, View, StyleSheet, Dimensions, FlatList, Image } from 'react-native';
-import { bookClubEvent } from '../utils/testInfo';
-import { Icon, Avatar } from 'react-native-elements';
+import React, {Component} from 'react';
+import {
+  Text,
+  View,
+  StyleSheet,
+  Dimensions,
+  FlatList,
+  Image,
+} from 'react-native';
+import {bookClubEvent} from '../utils/testInfo';
+import {Icon, Avatar} from 'react-native-elements';
 import BookcoverImage from './BookcoverImage';
 import ViewMoreText from 'react-native-view-more-text';
 
-
 export default class BookDetails extends Component {
   renderViewMore = onPress => {
-    return <Text style={styles.viewMore} onPress={onPress}>View more</Text>;
-  }
+    return (
+      <Text style={styles.viewMore} onPress={onPress}>
+        View more
+      </Text>
+    );
+  };
 
   renderViewLess = onPress => {
     return (
@@ -17,11 +27,14 @@ export default class BookDetails extends Component {
         View less
       </Text>
     );
-  }
+  };
 
   renderBookCovers = ({item}) => (
-    <BookcoverImage source={{uri: item.coverArt}} style={styles.bookCoverList} />
-  )
+    <BookcoverImage
+      source={{uri: item.coverArt}}
+      style={styles.bookCoverList}
+    />
+  );
 
   render() {
     const {event} = this.props;
@@ -34,7 +47,7 @@ export default class BookDetails extends Component {
         </View>
         <View style={styles.headlineView}>
           <Text style={styles.bookAuthorTextHeadline}>
-            {event.bookForEvent.authors} 
+            {event.bookForEvent.authors}
           </Text>
         </View>
         <View style={styles.bookHeadlineView}>
@@ -72,7 +85,6 @@ export default class BookDetails extends Component {
               renderItem={this.renderBookCovers}
             />
           </View>
-          
         </View>
       </View>
     );
@@ -83,7 +95,7 @@ export default class BookDetails extends Component {
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
 const bookCoverListImageWidth = windowWidth * 0.15;
-const bookCoverListImageHeight = bookCoverListImageWidth * 1.6;;
+const bookCoverListImageHeight = bookCoverListImageWidth * 1.6;
 
 const styles = StyleSheet.create({
   hortizontalLine: {
@@ -95,6 +107,7 @@ const styles = StyleSheet.create({
   },
   bookTitleTextHeadline: {
     textTransform: 'uppercase',
+    fontFamily: 'Montserrat-SemiBold',
     // color: '#585D61',
     fontSize: 16,
   },
@@ -102,6 +115,7 @@ const styles = StyleSheet.create({
     textTransform: 'uppercase',
     color: '#585D61',
     fontSize: 12,
+    fontFamily: 'Montserrat-Regular',
   },
   headlineView: {
     left: '5%',
@@ -110,6 +124,7 @@ const styles = StyleSheet.create({
     textTransform: 'uppercase',
     color: '#585D61',
     fontSize: 12,
+    fontFamily: 'Montserrat-Regular',
   },
   bookHeadlineView: {
     left: '5%',
@@ -120,6 +135,7 @@ const styles = StyleSheet.create({
   bookDescriptionText: {
     left: '2%',
     paddingRight: '12%',
+    fontFamily: 'Karla-Regular',
   },
   viewMore: {
     color: '#3A5673',
@@ -137,7 +153,7 @@ const styles = StyleSheet.create({
     margin: 10,
   },
   bookCoversListView: {
-    marginRight: '2%'
+    marginRight: '2%',
   },
 });
 

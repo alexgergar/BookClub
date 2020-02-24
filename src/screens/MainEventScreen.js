@@ -1,17 +1,16 @@
-import React, { Component } from 'react';
+import React, {Component} from 'react';
 import {
   Text,
   View,
   StyleSheet,
-  SafeAreaView,
   Image,
   ScrollView,
   Dimensions,
 } from 'react-native';
-import { bookClubEvent } from '../utils/testInfo';
 import EventDetails from '../components/EventDetails';
 import BookDetails from '../components/BookDetails';
-import { Button } from 'react-native-elements';
+import ActiveButton from '../components/ActiveButton';
+import {Button} from 'react-native-elements';
 import UserContext from '../context/UserContext';
 import firestore from '@react-native-firebase/firestore';
 
@@ -19,15 +18,12 @@ export default class MainEvent extends Component {
   static contextType = UserContext;
   state = {
     showEventDetail: true,
-    bookData: null,
     eventID: null,
-    showEvent: false,
     event: null,
   };
 
   componentDidMount() {
     // const {eventID, event} = this.props.navigation.state.params;
-    const user = this.context;
     this.getEventInfoFromFirestore('mwbdp7UdGFvp4z7ntpcN');
   }
 
@@ -64,84 +60,81 @@ export default class MainEvent extends Component {
   };
 
   render() {
-    const { event, showEvent } = this.state;
-    
+    const {event} = this.state;
     return (
-        <ScrollView contentContainerStyle={styles.container}>
-          {event === null ? (
-            <Image
-              style={styles.bookImageView}
-              source={require('../utils/bookPlaceholder.png')}
-              resizeMode={'cover'}
-            />
-          ) : (
-              <Image
-                style={styles.bookImageView}
-                source={{
-                  uri: event.bookForEvent.thumbnail || event.bookForEvent.smallThumbnail,
-                }}
-                resizeMode={'cover'}
-              />
-            )}
-          {event !== null && (
-            <View style={styles.backgroundContentContainer}>
-              <View style={styles.informationContentContainer}>
-                <View style={styles.textRowCenterAlign}>
-                  <Text style={styles.dateText}>{event.eventDate.date}</Text>
-                  <Text style={styles.spacerText}> at </Text>
-                  <Text style={styles.dateText}>{event.eventDate.time}</Text>
-                </View>
-
-                {/* in the future maybe change this to a card component or a box that the user can click on to get more info on person, contact info, map, ect. see notes from 1.21.20 */}
-                <View style={{ marginTop: 10 }}>
-                  <Text
-                    style={{
-                      fontSize: 12,
-                      textTransform: 'uppercase',
-                      textAlign: 'center',
-                    }}>
-                    {event.host.displayName}
-                  </Text>
-                  <Text style={styles.addressText}>
-                    {event.eventLocation.address.streetAddress}
-                  </Text>
-                  <View style={styles.textRowCenterAlign}>
-                    <Text style={styles.cityStateZipText}>
-                      {event.eventLocation.address.city}{' '}
-                      {event.eventLocation.address.state},{' '}
-                      {event.eventLocation.address.zipcode}
-                    </Text>
-                  </View>
-                </View>
-                {/* end of card data... */}
-                <View style={styles.hortizontalLine} />
-                <View style={styles.clickableDetailTabRow}>
-                  {/* make these buttons into a unique component using theming for active/non active passing props */}
-                  <Button
-                    title="Event Details"
-                    type="clear"
-                    titleStyle={styles.detailButtonsTitleStyle}
-                    containerStyle={styles.detailButtonsContainerStyle}
-                    onPress={this.onEventDetailPress}
-                  />
-                  <Button
-                    title="Book Details"
-                    type="clear"
-                    titleStyle={styles.detailButtonsTitleStyle}
-                    containerStyle={styles.detailButtonsContainerStyle}
-                    bookdata={this.state.bookdata}
-                    onPress={this.onBookDetailPress}
-                  />
-                </View>
-                {this.state.showEventDetail ? (
-                  <EventDetails event={event} />
-                ) : (
-                    <BookDetails event={event} />
+      <ScrollView contentContainerStyle={styles.container}>
+        {event === null ? (
+          <Image
+            style={styles.bookImageView}
+            source={require('../utils/bookPlaceholder.png')}
+            resizeMode={'cover'}
+          />
+        ) : (
+          <Image
+            style={styles.bookImageView}
+            source={{
+              uri:
+                event.bookForEvent.thumbnail ||
+                event.bookForEvent.smallThumbnail,
+            }}
+            resizeMode={'cover'}
+          />
+        )}
+        {event !== null && (
+          <View style={styles.backgroundContentContainer}>
+            <View style={styles.informationContentContainer}>
+              <View style={styles.textRowCenterAlign}>
+                <Text style={styles.dateText}>
+                  {event.eventDate.date.substring(
+                    0,
+                    event.eventDate.date.length - 5,
                   )}
+                </Text>
+                <Text style={styles.spacerText}> at </Text>
+                <Text style={styles.dateText}>{event.eventDate.time}</Text>
               </View>
+
+              {/* in the future maybe change this to a card component or a box that the user can click on to get more info on person, contact info, map, ect. see notes from 1.21.20 */}
+              <View style={{marginTop: 10}}>
+                <Text style={styles.hostNameText}>
+                  {event.host.displayName}
+                </Text>
+                <Text style={styles.addressText}>
+                  {event.eventLocation.address.streetAddress}
+                </Text>
+                <View style={styles.textRowCenterAlign}>
+                  <Text style={styles.cityStateZipText}>
+                    {event.eventLocation.address.city}{' '}
+                    {event.eventLocation.address.state},{' '}
+                    {event.eventLocation.address.zipcode}
+                  </Text>
+                </View>
+              </View>
+              {/* end of card data... */}
+              <View style={styles.hortizontalLine} />
+              <View style={styles.clickableDetailTabRow}>
+                <ActiveButton
+                  title="Event Details"
+                  type="clear"
+                  showButton={this.state.showEventDetail}
+                  onPress={this.onEventDetailPress}
+                />
+                <ActiveButton
+                  title="Book Details"
+                  type="clear"
+                  showButton={!this.state.showEventDetail}
+                  onPress={this.onBookDetailPress}
+                />
+              </View>
+              {this.state.showEventDetail ? (
+                <EventDetails event={event} />
+              ) : (
+                <BookDetails event={event} />
+              )}
             </View>
-          )}
-        </ScrollView>
+          </View>
+        )}
+      </ScrollView>
     );
   }
 }
@@ -191,23 +184,32 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   dateText: {
-    fontSize: 24,
-    fontWeight: 'bold',
+    fontSize: 20,
     textAlign: 'center',
+    fontFamily: 'Montserrat-Bold',
   },
   spacerText: {
     textTransform: 'uppercase',
     color: '#737373',
     marginRight: '1%',
     marginLeft: '1%',
+    fontFamily: 'Montserrat-Regular',
+  },
+  hostNameText: {
+    fontSize: 12,
+    textTransform: 'uppercase',
+    textAlign: 'center',
+    fontFamily: 'Montserrat-Regular',
   },
   addressText: {
     fontSize: 20,
     textAlign: 'center',
+    fontFamily: 'Montserrat-Regular',
   },
   cityStateZipText: {
     textTransform: 'uppercase',
     fontSize: 12,
+    fontFamily: 'Montserrat-Regular',
   },
   hortizontalLine: {
     padding: 15,
@@ -222,14 +224,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-around',
     marginBottom: 10,
-  },
-  detailButtonsTitleStyle: {
-    color: '#3A5673',
-  },
-  detailButtonsContainerStyle: {
-    borderBottomWidth: 3,
-    borderColor: '#F8B787',
-    borderRadius: 100,
   },
 });
 

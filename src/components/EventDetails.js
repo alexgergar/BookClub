@@ -1,12 +1,12 @@
 import React, {Component} from 'react';
 import {Text, View, StyleSheet, Dimensions} from 'react-native';
 import {bookClubEvent} from '../utils/testInfo';
-import {Avatar, Badge, Icon, withBadge} from 'react-native-elements';
+import {Avatar, Badge} from 'react-native-elements';
 
 export default class EventDetails extends Component {
   state = {
     showAllAttendeesInfo: false,
-  }
+  };
   handleGetInitials = fullName => {
     return fullName
       .split(' ')
@@ -18,26 +18,29 @@ export default class EventDetails extends Component {
     this.setState({
       showAllAttendeesInfo: !this.state.showAllAttendeesInfo,
     });
-  }
+  };
 
   render() {
     const {event} = this.props;
     const excludeAfterIndex = 4;
-    const listOfAttendees = event.attendees.reduce((shownedAttendees, attendee, index) => {
-      if (index < excludeAfterIndex) {
-        const initialsOfName = this.handleGetInitials(attendee.displayName);
-        shownedAttendees.push(
-          <Avatar
-            key={index}
-            size={40}
-            overlayContainerStyle={styles.avatarContainer}
-            rounded
-            title={initialsOfName}
-          />,
-        );
-      }
-      return shownedAttendees
-    }, []);
+    const listOfAttendees = event.attendees.reduce(
+      (shownedAttendees, attendee, index) => {
+        if (index < excludeAfterIndex) {
+          const initialsOfName = this.handleGetInitials(attendee.displayName);
+          shownedAttendees.push(
+            <Avatar
+              key={index}
+              size={40}
+              overlayContainerStyle={styles.avatarContainer}
+              title={initialsOfName}
+              titleStyle={{fontFamily: 'Montserrat-SemiBold', fontSize: 14}}
+            />,
+          );
+        }
+        return shownedAttendees;
+      },
+      [],
+    );
 
     return (
       <View>
@@ -54,24 +57,22 @@ export default class EventDetails extends Component {
         <View style={styles.whoIsComingListContainer}>
           {listOfAttendees}
           <View>
-            
             {event.attendees.length > 4 && (
               <>
-              <Avatar
-                size={30}
-                overlayContainerStyle={styles.avatarContainer}
-                rounded
-                icon={{ name: 'more-horizontal', type: 'feather' }}
-              />
-              <Badge
-                badgeStyle={styles.seeMoreAttendeesBadge}
-                value={
-                  <Text style={styles.badgeText}>
-                    {event.attendees.length - 4}
-                  </Text>
-                }
-                containerStyle={{position: 'absolute', top: -6, right: -6}}
-              />
+                <Avatar
+                  size={30}
+                  overlayContainerStyle={styles.avatarContainer}
+                  icon={{name: 'more-horizontal', type: 'feather'}}
+                />
+                <Badge
+                  badgeStyle={styles.seeMoreAttendeesBadge}
+                  value={
+                    <Text style={styles.badgeText}>
+                      {event.attendees.length - 4}
+                    </Text>
+                  }
+                  containerStyle={{position: 'absolute', top: -6, right: -6}}
+                />
               </>
             )}
           </View>
@@ -87,18 +88,18 @@ export default class EventDetails extends Component {
             {event.eventLocation.detailsForLocation}
           </Text>
         </View>
-        {event.detailsForEvent !== '' &&
-        <>
-          <View style={styles.headlineView}>
-            <Text style={styles.headlineText}>Just so you know</Text>
-          </View>
-          <View style={styles.importantInfoContainer}>
-            <Text style={styles.eventDetailsText}>
-              {bookClubEvent.detailsForEvent}
-            </Text>
-          </View>
+        {event.detailsForEvent !== '' && (
+          <>
+            <View style={styles.headlineView}>
+              <Text style={styles.headlineText}>Just so you know</Text>
+            </View>
+            <View style={styles.importantInfoContainer}>
+              <Text style={styles.eventDetailsText}>
+                {bookClubEvent.detailsForEvent}
+              </Text>
+            </View>
           </>
-        }
+        )}
 
         {/* }
                     <Text>Card list of who is attending - click and it expands into more info - slice the list based on a certain number based on size of avatar then add plus sign</Text>
@@ -138,6 +139,7 @@ const styles = StyleSheet.create({
     textTransform: 'uppercase',
     paddingLeft: 10,
     fontSize: 18,
+    fontFamily: 'Montserrat-Regular',
   },
   headlineView: {
     left: '5%',
@@ -147,6 +149,7 @@ const styles = StyleSheet.create({
     textTransform: 'uppercase',
     color: '#585D61',
     fontSize: 12,
+    fontFamily: 'Montserrat-Bold',
   },
   whoIsComingListContainer: {
     flexDirection: 'row',
@@ -169,9 +172,10 @@ const styles = StyleSheet.create({
     marginLeft: '5%',
     marginRight: '5%',
     color: '#1E3342',
+    fontFamily: 'Montserrat-Regular',
   },
   eventDetailsQuoteText: {
-    fontStyle: 'italic',
+    fontFamily: 'Karla-Italic',
     marginLeft: '8%',
     marginRight: '8%',
     color: '#1E3342',
@@ -181,15 +185,14 @@ const styles = StyleSheet.create({
   },
   avatarContainer: {
     backgroundColor: '#A5ADB5',
-    // height: windowWidth * 0.11,
+    borderRadius: 5,
   },
   seeMoreAttendeesBadge: {
     backgroundColor: '#F8B787',
-    // width: windowWidth * 0.11 * 0.6,
   },
   badgeText: {
     padding: 10,
-    // color: 'white',
+    fontFamily: 'Karla-Regular',
   },
 });
 
