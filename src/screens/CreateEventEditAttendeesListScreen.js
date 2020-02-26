@@ -30,7 +30,7 @@ export default class CreateEventEditAttendeesList extends Component {
   
 
   handleContinueButtonPress = () => {
-    const { streetAddress, city, state, zipcode, detailsForLocation, selectedBook } = this.props.navigation.state.params;
+    const { streetAddress, city, state, zipcode, detailsForLocation, selectedBook } = this.props.route.params;
     this.props.navigation.navigate('CreateEventEditAttendeesList', {
       streetAddress: streetAddress,
       city: city,
@@ -43,7 +43,7 @@ export default class CreateEventEditAttendeesList extends Component {
   }
 
   render() {
-    const { streetAddress, city, state, zipcode, detailsForLocation, bookClubMembers, selectedBook } = this.props.navigation.state.params;
+    const { streetAddress, city, state, zipcode, detailsForLocation, bookClubMembers, selectedBook } = this.props.route.params;
     return (
       <GreyWhiteBackgroundBottomButton
         headline='Edit Attendees'

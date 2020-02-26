@@ -19,66 +19,54 @@ import CreateEventNewClubNameScreen from './src/screens/CreateEventNewClubNameSc
 import UserContext from './src/context/UserContext';
 import {NavigationContainer} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
-import {createMaterialBottomTabNavigator} from '@react-navigation/material-bottom-tabs';
+import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import {Icon} from 'react-native-elements';
 
 const Stack = createStackNavigator();
-const Tab = createMaterialBottomTabNavigator();
+const Tab = createBottomTabNavigator();
 
-const MainStack = user => (
+const MainStack = () => (
   <Stack.Navigator initialRouteName="Home" headerMode="none">
-    {user ? (
-      <>
-        <Stack.Screen name="Home" component={HomeScreen} />
-        <Stack.Screen name="MainEvent" component={MainEventScreen} />
-        <Stack.Screen name="CreateEvent" component={CreateEventScreen} />
-        <Stack.Screen name="SelectedBook" component={SelectedBookScreen} />
-        <Stack.Screen
-          name="CreateEventPickDate"
-          component={CreateEventPickDateScreen}
-        />
-        <Stack.Screen
-          name="CreateEventAddDetails"
-          component={CreateEventAddDetailsScreen}
-        />
-        <Stack.Screen
-          name="CreateEventAttendees"
-          component={CreateEventAttendeesScreen}
-        />
-        <Stack.Screen
-          name="CreateEventVerifyInfo"
-          component={CreateEventVerifyInfoScreen}
-        />
-        <Stack.Screen
-          name="CreateEventEditAttendeesList"
-          component={CreateEventEditAttendeesListScreen}
-        />
-        <Stack.Screen
-          name="CreateEventNewClubName"
-          component={CreateEventNewClubNameScreen}
-        />
-        <Stack.Screen name="SignOutBook" component={SignOutScreen} />
-      </>
-    ) : (
-      <>
-        <Stack.Screen name="SignUpLogin" component={SignUpLoginScreen} />
-        <Stack.Screen
-          name="OnboardingOneProfile"
-          component={OnboardingOneProfileScreen}
-        />
-        <Stack.Screen
-          name="OnboardingTwoAvatar"
-          component={OnboardingTwoAvatarScreen}
-        />
-      </>
-    )}
+    <Stack.Screen name="Home" component={HomeScreen} />
+    <Stack.Screen name="MainEvent" component={MainEventScreen} />
+    <Stack.Screen name="CreateEvent" component={CreateEventScreen} />
+    <Stack.Screen name="SelectedBook" component={SelectedBookScreen} />
+    <Stack.Screen
+      name="CreateEventPickDate"
+      component={CreateEventPickDateScreen}
+    />
+    <Stack.Screen
+      name="CreateEventAddDetails"
+      component={CreateEventAddDetailsScreen}
+    />
+    <Stack.Screen
+      name="CreateEventAttendees"
+      component={CreateEventAttendeesScreen}
+    />
+    <Stack.Screen
+      name="CreateEventVerifyInfo"
+      component={CreateEventVerifyInfoScreen}
+    />
+    <Stack.Screen
+      name="CreateEventEditAttendeesList"
+      component={CreateEventEditAttendeesListScreen}
+    />
+    <Stack.Screen
+      name="CreateEventNewClubName"
+      component={CreateEventNewClubNameScreen}
+    />
+    <Stack.Screen name="SignOutBook" component={SignOutScreen} />
   </Stack.Navigator>
 );
 
-const CreateStack = user => (
+const CreateStack = () => (
   <Stack.Navigator initialRouteName="CreateEvent" headerMode="none">
     <Stack.Screen name="CreateEvent" component={CreateEventScreen} />
-    <Stack.Screen name="SelectedBook" component={SelectedBookScreen} />
+    <Stack.Screen
+      name="SelectedBook"
+      component={SelectedBookScreen}
+      initialParams={{onUpdate: false}}
+    />
     <Stack.Screen
       name="CreateEventPickDate"
       component={CreateEventPickDateScreen}
@@ -107,61 +95,51 @@ const CreateStack = user => (
   </Stack.Navigator>
 );
 
-const TabNav = user => (
-  <Tab.Navigator
-    // labeled={false}
-    shifting={true}
-    barStyle={{backgroundColor: 'white'}}>
+const TabNav = () => (
+  <Tab.Navigator shifting={true} barStyle={{backgroundColor: 'white'}}>
     <Tab.Screen
-      name="Main"
-      options={{
-        tabBarLabel: 'Main',
-        tabBarIcon: ({color, size}) => (
-          <Icon
-            name="home"
-            type="feather"
-            // color='#517fa4'
-          />
-        ),
-      }}>
-      {() => <MainStack />}
-    </Tab.Screen>
-    {/* <Tab.Screen
       name="Home"
-      component={HomeScreen}
       options={{
         tabBarLabel: 'Home',
-        tabBarIcon: ({color, size}) => (
-          <Icon
-            name="home"
-            type="feather"
-            // color='#517fa4'
-          />
-        ),
+        tabBarIcon: ({color, size}) => <Icon name="home" type="feather" />,
       }}
-    /> */}
+      component={MainStack}
+    />
     <Tab.Screen
       name="Create"
+      tabBarVisible={false}
       options={{
         tabBarLabel: 'Create',
+        tabBarVisible: false,
         tabBarIcon: ({color, size}) => (
-          <Icon
-            name="plus-circle"
-            type="feather"
-            // color='#517fa4'
-          />
+          <Icon name="plus-circle" type="feather" />
         ),
-      }}>
-      {() => <CreateStack />}
-    </Tab.Screen>
+      }}
+      component={CreateStack}
+    />
   </Tab.Navigator>
+);
+
+const AuthStack = () => (
+  <Stack.Navigator initialRouteName="SignUpLogin" headerMode="none">
+    <Stack.Screen name="SignUpLogin" component={SignUpLoginScreen} />
+    <Stack.Screen
+      name="OnboardingOneProfile"
+      component={OnboardingOneProfileScreen}
+    />
+    <Stack.Screen
+      name="OnboardingTwoAvatar"
+      component={OnboardingTwoAvatarScreen}
+    />
+    <Stack.Screen name="LoadingAuth" component={LoadingAuthScreen} />
+  </Stack.Navigator>
 );
 
 function App() {
   const [initializing, setInitializing] = useState(true);
   const [user, setUser] = useState();
 
-  function onChange() {
+  function onChange(user) {
     setUser(user);
     if (initializing) {
       setInitializing(false);
@@ -180,7 +158,7 @@ function App() {
   return (
     <UserContext.Provider value={user}>
       <NavigationContainer>
-        <TabNav />
+        {user !== null ? <TabNav /> : <AuthStack />}
       </NavigationContainer>
     </UserContext.Provider>
   );

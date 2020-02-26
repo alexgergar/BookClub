@@ -21,7 +21,7 @@ export default class SelectedBook extends Component {
   }
 
   componentDidMount() {
-    const {selectedBook} = this.props.navigation.state.params;
+    const {selectedBook} = this.props.route.params;
     const additionalBookInfo = {
       ...selectedBook,
       authorID: null,
@@ -58,7 +58,7 @@ export default class SelectedBook extends Component {
         this.setState({
           updatedSelectedBook: additionalBookInfo,
           hideContinueButton: false,
-        }, () => console.log(this.state.updatedSelectedBook));
+        });
       })
       .catch(error => console.log(error));
   }
@@ -93,7 +93,7 @@ export default class SelectedBook extends Component {
       selectedBook,
       newClub,
       date,
-    } = this.props.navigation.state.params;
+    } = this.props.route.params;
     onUpdate
       ? this.props.navigation.navigate('CreateEventVerifyInfo', {
           selectedBook: this.state.updatedSelectedBook,
@@ -114,8 +114,7 @@ export default class SelectedBook extends Component {
   };
 
   render() {
-    const {selectedBook, onUpdate} = this.props.navigation.state.params;
-    const test = 'this is a test';
+    const {selectedBook} = this.props.route.params;
     return (
       <SafeAreaView>
         <ScrollView contentContainerStyle={styles.container}>

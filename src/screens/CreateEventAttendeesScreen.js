@@ -43,7 +43,9 @@ export default class CreateEventAttendees extends Component {
   };
 
   componentDidMount() {
-    this.getBookClubsFromUID();
+    let user = this.context;
+    console.log(user);
+    // this.getBookClubsFromUID();
   }
 
   getBookClubsFromUID = () => {
@@ -265,7 +267,7 @@ export default class CreateEventAttendees extends Component {
       zipcode,
       detailsForLocation,
       date,
-    } = this.props.navigation.state.params;
+    } = this.props.route.params;
     if (
       this.state.originalBookClubMembers.length ===
         this.state.selectedBookClubMembers.length &&

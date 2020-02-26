@@ -37,7 +37,7 @@ export default class CreateEventNewClubName extends Component {
       zipcode,
       detailsForLocation,
       bookClubMembers,
-    } = this.props.navigation.state.params;
+    } = this.props.route.params;
     this.props.navigation.navigate('CreateEventVerifyInfo', {
       selectedBook: selectedBook,
       streetAddress: streetAddress,

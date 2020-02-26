@@ -102,8 +102,8 @@ export default class CreateEvent extends Component {
   };
 
   onBookSelectionPress = selectedBook => {
-    if (this.props.navigation.state.params) {
-      const { onUpdate, streetAddress, city, state, zipcode, detailsForLocation, membersForBookClub, newClub, date} = this.props.navigation.state.params;
+    if (this.props.route.params) {
+      const { onUpdate, streetAddress, city, state, zipcode, detailsForLocation, membersForBookClub, newClub, date} = this.props.route.params;
       this.props.navigation.navigate('SelectedBook', {
         onUpdate: onUpdate,
         selectedBook: selectedBook,
@@ -319,7 +319,6 @@ const styles = StyleSheet.create({
   titleText: {
     fontSize: 16,
     fontFamily: 'Montserrat-Bold',
-    fontWeight: 'bold',
   },
   authorText: {
     fontSize: 14,

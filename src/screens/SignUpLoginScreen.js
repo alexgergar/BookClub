@@ -12,16 +12,13 @@ import {Input, Button} from 'react-native-elements';
 import {TouchableHighlight} from 'react-native-gesture-handler';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import validateEmail from '../utils/validateEmail';
-import UserContext from '../context/UserContext';
-import HomeScreen from './HomeScreen';
 
 export default class SignUpLogin extends React.Component {
-  static contextType = UserContext;
   state = {
     email: '',
     password: '',
     errorMessage: null,
-    showSignUp: true,
+    showSignUp: false,
     showBottomBar: true,
   };
 
@@ -82,7 +79,7 @@ export default class SignUpLogin extends React.Component {
     const {email, password} = this.state;
     await auth()
       .signInWithEmailAndPassword(email, password)
-      .then(() => this.props.navigation.navigate('Home'))
+      .then(() => this.props.navigation.navigate('LoadingAuth'))
       .catch(error => this.setState({errorMessage: error.message}));
   };
 
@@ -95,137 +92,134 @@ export default class SignUpLogin extends React.Component {
   };
 
   render() {
-    if (this.context) {
-      let user = this.context;
-      return (
-        <SafeAreaView style={styles.safeAreaViewContainer}>
-          <View style={styles.topContainer}>
-            <View style={styles.authOptionsRow}>
-              <TouchableHighlight onPress={() => this.onLoginTextPress()}>
-                <View>
-                  <Text
-                    style={
-                      this.state.showSignUp
-                        ? styles.authOptionsInActiveText
-                        : styles.authOptionsActiveText
-                    }>
-                    Login
-                  </Text>
-                  {!this.state.showSignUp && (
-                    <View style={styles.authOptionsActiveLine} />
-                  )}
-                </View>
-              </TouchableHighlight>
-              <TouchableHighlight onPress={() => this.onSignUpTextPress()}>
-                <View style={styles.signUpText}>
-                  <Text
-                    style={
-                      this.state.showSignUp
-                        ? styles.authOptionsActiveText
-                        : styles.authOptionsInActiveText
-                    }>
-                    Sign Up
-                  </Text>
-                  {this.state.showSignUp && (
-                    <View style={styles.authOptionsActiveLine} />
-                  )}
-                </View>
-              </TouchableHighlight>
+    return (
+      <SafeAreaView style={styles.safeAreaViewContainer}>
+        <View style={styles.topContainer}>
+          <View style={styles.authOptionsRow}>
+            <TouchableHighlight onPress={() => this.onLoginTextPress()}>
+              <View>
+                <Text
+                  style={
+                    this.state.showSignUp
+                      ? styles.authOptionsInActiveText
+                      : styles.authOptionsActiveText
+                  }>
+                  Login
+                </Text>
+                {!this.state.showSignUp && (
+                  <View style={styles.authOptionsActiveLine} />
+                )}
+              </View>
+            </TouchableHighlight>
+            <TouchableHighlight onPress={() => this.onSignUpTextPress()}>
+              <View style={styles.signUpText}>
+                <Text
+                  style={
+                    this.state.showSignUp
+                      ? styles.authOptionsActiveText
+                      : styles.authOptionsInActiveText
+                  }>
+                  Sign Up
+                </Text>
+                {this.state.showSignUp && (
+                  <View style={styles.authOptionsActiveLine} />
+                )}
+              </View>
+            </TouchableHighlight>
+          </View>
+        </View>
+        <KeyboardAwareScrollView>
+          <View style={styles.middleContainer}>
+            <View
+              style={[
+                this.state.showBottomBar
+                  ? styles.welcomeHeadliner
+                  : styles.welcomeHeadlinerAlt,
+              ]}>
+              {this.state.showSignUp && (
+                <>
+                  <View style={{flexDirection: 'row', alignItems: 'center'}}>
+                    <Text style={styles.headlineOne}>Hello </Text>
+                    <Text style={styles.bold}>Reader,</Text>
+                  </View>
+                  <View style={styles.headlineTwo}>
+                    <Text style={styles.signUpBelowText}>
+                      Enter your informations below or login with a social
+                      account
+                    </Text>
+                  </View>
+                </>
+              )}
+              {!this.state.showSignUp && (
+                <>
+                  <Text style={styles.headlineOne}>Welcome Back,</Text>
+                  <View style={styles.headlineTwo}>
+                    <Text style={styles.bold}>Reader</Text>
+                  </View>
+                </>
+              )}
+            </View>
+            <View
+              style={[
+                this.state.showBottomBar
+                  ? styles.textInputView
+                  : styles.textInputViewAlt,
+              ]}>
+              <Input
+                containerStyle={styles.inputContainer}
+                inputContainerStyle={styles.placeholderInputContainer}
+                onFocus={() => this.onFocusTextInput()}
+                onBlur={() => this.onBlurTextInput()}
+                placeholder="Email"
+                autoCapitalize="none"
+                onChangeText={email => this.setState({email})}
+                value={this.state.email}
+                errorStyle={{color: 'red'}}
+                errorMessage={this.state.errorMessage}
+                keyboardType="email-address"
+              />
+              <Input
+                containerStyle={styles.inputContainer}
+                inputContainerStyle={styles.placeholderInputContainer}
+                secureTextEntry
+                onFocus={() => this.onFocusTextInput()}
+                onBlur={() => this.onBlurTextInput()}
+                autoCapitalize="none"
+                placeholder="Password"
+                onChangeText={password => this.setState({password})}
+                value={this.state.password}
+                errorStyle={{color: 'red'}}
+                errorMessage={this.state.errorMessage}
+              />
             </View>
           </View>
-          <KeyboardAwareScrollView>
-            <View style={styles.middleContainer}>
-              <View
-                style={[
-                  this.state.showBottomBar
-                    ? styles.welcomeHeadliner
-                    : styles.welcomeHeadlinerAlt,
-                ]}>
-                {this.state.showSignUp && (
-                  <>
-                    <View style={{flexDirection: 'row', alignItems: 'center'}}>
-                      <Text style={styles.headlineOne}>Hello </Text>
-                      <Text style={styles.bold}>Reader,</Text>
-                    </View>
-                    <View style={styles.headlineTwo}>
-                      <Text style={styles.signUpBelowText}>
-                        Enter your informations below or login with a social
-                        account
-                      </Text>
-                    </View>
-                  </>
-                )}
-                {!this.state.showSignUp && (
-                  <>
-                    <Text style={styles.headlineOne}>Welcome Back,</Text>
-                    <View style={styles.headlineTwo}>
-                      <Text style={styles.bold}>Reader</Text>
-                    </View>
-                  </>
-                )}
-              </View>
-              <View
-                style={[
-                  this.state.showBottomBar
-                    ? styles.textInputView
-                    : styles.textInputViewAlt,
-                ]}>
-                <Input
-                  containerStyle={styles.inputContainer}
-                  inputContainerStyle={styles.placeholderInputContainer}
-                  onFocus={() => this.onFocusTextInput()}
-                  onBlur={() => this.onBlurTextInput()}
-                  placeholder="Email"
-                  autoCapitalize="none"
-                  onChangeText={email => this.setState({email})}
-                  value={this.state.email}
-                  errorStyle={{color: 'red'}}
-                  errorMessage={this.state.errorMessage}
-                  keyboardType="email-address"
-                />
-                <Input
-                  containerStyle={styles.inputContainer}
-                  inputContainerStyle={styles.placeholderInputContainer}
-                  secureTextEntry
-                  onFocus={() => this.onFocusTextInput()}
-                  onBlur={() => this.onBlurTextInput()}
-                  autoCapitalize="none"
-                  placeholder="Password"
-                  onChangeText={password => this.setState({password})}
-                  value={this.state.password}
-                  errorStyle={{color: 'red'}}
-                  errorMessage={this.state.errorMessage}
-                />
-              </View>
+        </KeyboardAwareScrollView>
+
+        {this.state.showBottomBar && (
+          <>
+            {!this.state.showSignUp && (
+              <Button
+                containerStyle={styles.passwordButtonContainer}
+                titleStyle={styles.passwordButton}
+                buttonStyle={{paddingLeft: 0}}
+                title="Forgot Password?"
+                type="clear"
+              />
+            )}
+
+            <View style={styles.bottomGreyBarView} />
+
+            <View style={styles.buttonContainer}>
+              <Button
+                buttonStyle={styles.submitButtonViewContainer}
+                icon={{name: 'arrow-right', color: 'white', type: 'feather'}}
+                onPress={this.handleSubmit}
+              />
             </View>
-          </KeyboardAwareScrollView>
-
-          {this.state.showBottomBar && (
-            <>
-              {!this.state.showSignUp && (
-                <Button
-                  containerStyle={styles.passwordButtonContainer}
-                  titleStyle={styles.passwordButton}
-                  buttonStyle={{paddingLeft: 0}}
-                  title="Forgot Password?"
-                  type="clear"
-                />
-              )}
-
-              <View style={styles.bottomGreyBarView} />
-
-              <View style={styles.buttonContainer}>
-                <Button
-                  buttonStyle={styles.submitButtonViewContainer}
-                  icon={{name: 'arrow-right', color: 'white', type: 'feather'}}
-                  onPress={this.handleSubmit}
-                />
-              </View>
-            </>
-          )}
-        </SafeAreaView>
-      );
-    }
+          </>
+        )}
+      </SafeAreaView>
+    );
   }
 }
 

@@ -1,8 +1,9 @@
 import React from 'react';
 import {View, Text, ActivityIndicator, StyleSheet} from 'react-native';
-import {firebase} from '@react-native-firebase/auth';
+import UserContext from '../context/UserContext';
 
 export default class LoadingAuth extends React.Component {
+
   render() {
     return (
       <View style={styles.container}>

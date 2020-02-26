@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {View, StyleSheet, Text, Dimensions} from 'react-native';
+import {View, StyleSheet, Text, Dimensions, Image, TouchableWithoutFeedback} from 'react-native';
 import {Button} from 'react-native-elements';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import GreyWhiteBackgroundBottomButton from '../components/GreyWhiteBackgroundBottomButton';
@@ -17,22 +17,34 @@ export default class CreateEventPickDate extends Component {
   };
 
   setDate = (event, date) => {
-    this.setState({
-      date: date,
-      showTimePicker: true,
-      showDatePicker: false,
-    });
+    if (date === undefined) {
+      this.setState({showDatePicker: false});
+    } else {
+      this.setState({
+        date: date,
+        showTimePicker: true,
+        showDatePicker: false,
+      });
+    }
+    
   };
 
   setTime = (event, selectedDate) => {
-    const currentDate = selectedDate || this.state.date;
-    this.setState({
-      date: currentDate,
-      showTimePicker: false,
-      headline: 'Continue'
-      },
-      () => this.sendToNextScreen(),
-    );
+    if (selectedDate !== undefined) {
+      const currentDate = selectedDate || this.state.date;
+      this.setState({
+        date: currentDate,
+        showTimePicker: false,
+        headline: 'Continue'
+        },
+        () => this.sendToNextScreen(),
+      );
+    } else {
+      this.setState({
+        showTimePicker: false,
+      })
+    }
+    
   };
 
   sendToNextScreen = () => {
@@ -50,7 +62,7 @@ export default class CreateEventPickDate extends Component {
       bookClubName,
       selectedBook,
       newClub,
-    } = this.props.navigation.state.params;
+    } = this.props.route.params;
     onUpdate
       ? this.props.navigation.navigate('CreateEventVerifyInfo', {
           selectedBook: selectedBook,
@@ -114,8 +126,16 @@ export default class CreateEventPickDate extends Component {
       <GreyWhiteBackgroundBottomButton
         headline="Pick a Date"
         buttonTitle={this.state.headline}
+        scrollView={false}
         continueButtonOnPress={this.onPressButton}>
-        <View style={styles.buttonView}>
+        <View style={styles.imageView}>
+          <TouchableWithoutFeedback onPress={() => this.showDatepicker()}>
+            <Image
+            style={styles.backgroundImage}
+            source={require('../utils/pickDateTimeImage.png')}
+            resizeMode={'contain'}
+          />
+        </TouchableWithoutFeedback>
         </View>
         {this.state.showDatePicker && (
           <DateTimePicker
@@ -145,6 +165,14 @@ const styles = StyleSheet.create({
   buttonView: {
     height: windowHeight * 0.7,
     justifyContent: 'center',
+  },
+  imageView: {
+    alignItems: 'center',
+    top: windowHeight * .15,
+  },
+  backgroundImage: {
+    height: windowWidth * .5,
+    top: 0,
   },
   buttonContainer: {
     borderRadius: 20,

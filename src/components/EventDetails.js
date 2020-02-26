@@ -55,27 +55,32 @@ export default class EventDetails extends Component {
           <Text style={styles.headlineText}>Who is coming?</Text>
         </View>
         <View style={styles.whoIsComingListContainer}>
-          {listOfAttendees}
-          <View>
-            {event.attendees.length > 4 && (
-              <>
-                <Avatar
-                  size={30}
-                  overlayContainerStyle={styles.avatarContainer}
-                  icon={{name: 'more-horizontal', type: 'feather'}}
-                />
-                <Badge
-                  badgeStyle={styles.seeMoreAttendeesBadge}
-                  value={
-                    <Text style={styles.badgeText}>
-                      {event.attendees.length - 4}
-                    </Text>
-                  }
-                  containerStyle={{position: 'absolute', top: -6, right: -6}}
-                />
-              </>
-            )}
-          </View>
+          {event !== null && (
+            <>
+            {listOfAttendees}
+            <View>
+              {event.attendees.length > 4 && (
+                <>
+                  <Avatar
+                    size={30}
+                    overlayContainerStyle={styles.avatarContainer}
+                    icon={{name: 'more-horizontal', type: 'feather'}}
+                  />
+                  <Badge
+                    badgeStyle={styles.seeMoreAttendeesBadge}
+                    value={
+                      <Text style={styles.badgeText}>
+                        {event.attendees.length - 4}
+                      </Text>
+                    }
+                    containerStyle={{position: 'absolute', top: -6, right: -6}}
+                  />
+                </>
+                )
+              }
+            </View>
+            </>
+          )}
         </View>
         <View style={styles.headlineView}>
           <Text style={styles.headlineText}>Info</Text>
@@ -84,9 +89,11 @@ export default class EventDetails extends Component {
           <Text style={styles.eventDetailsText}>
             {event.host.displayName} wanted you to know...
           </Text>
-          <Text style={styles.eventDetailsQuoteText}>
-            {event.eventLocation.detailsForLocation}
-          </Text>
+          {event !== null && 
+            <Text style={styles.eventDetailsQuoteText}>
+              {event.eventLocation.detailsForLocation}
+            </Text>
+          }
         </View>
         {event.detailsForEvent !== '' && (
           <>
@@ -94,9 +101,10 @@ export default class EventDetails extends Component {
               <Text style={styles.headlineText}>Just so you know</Text>
             </View>
             <View style={styles.importantInfoContainer}>
-              <Text style={styles.eventDetailsText}>
-                {bookClubEvent.detailsForEvent}
-              </Text>
+              {event !== null && 
+                <Text style={styles.eventDetailsText}>
+                  {bookClubEvent.detailsForEvent}
+                </Text>}
             </View>
           </>
         )}

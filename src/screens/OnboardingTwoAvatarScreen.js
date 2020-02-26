@@ -29,7 +29,7 @@ export default class OnboardingTwoAvatar extends Component {
      firstName,
      lastName,
      phoneNumber,
-   } = this.props.navigation.state.params;
+   } = this.props.route.params;
    console.log(phoneNumber);
    console.log(firstName)
    console.log(lastName);
@@ -46,7 +46,7 @@ export default class OnboardingTwoAvatar extends Component {
   };
 
   handleUpdateToProfile = async () => {
-    const {firstName, lastName, phoneNumber} = this.props.navigation.state.params;
+    const {firstName, lastName, phoneNumber} = this.props.route.params;
     const update = {
       displayName: `${firstName} ${lastName}`,
       // phoneNumber: phoneNumber,

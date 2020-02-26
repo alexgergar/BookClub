@@ -134,7 +134,7 @@ export default class CreateEventAddAttendees extends Component {
   };
 
   handleSecondSectionContinuePress = () => {
-    const { selectedBook, streetAddress, city, state, zipcode, detailsForLocation } = this.props.navigation.state.params;
+    const { selectedBook, streetAddress, city, state, zipcode, detailsForLocation } = this.props.route.params;
     if (this.state.originalBookClubMembersList.length === this.state.bookClubMembersList.length && this.state.originalBookClubMembersList.every((value, index) => value === this.state.bookClubMembersList[index])) {
       console.log('this is the same list');
       this.props.navigation.navigate('CreateEventVerifyInfo', {
@@ -287,7 +287,7 @@ export default class CreateEventAddAttendees extends Component {
   
 
   render() {
-    const { onUpdate } = this.props.navigation.state.params;
+    const { onUpdate } = this.props.route.params;
     return (
       <SafeAreaView>
         <View style={styles.container}>

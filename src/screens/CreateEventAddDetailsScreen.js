@@ -13,7 +13,7 @@ export default class CreateEventAddDetails extends Component {
   };
 
   handleContinuePress = () => {
-    const {selectedBook, date} = this.props.navigation.state.params;
+    const {selectedBook, date} = this.props.route.params;
     this.props.navigation.navigate('CreateEventAttendees', {
       selectedBook: selectedBook,
       streetAddress: this.state.streetAddress,
@@ -32,7 +32,7 @@ export default class CreateEventAddDetails extends Component {
       date,
       bookClubID,
       bookClubName,
-    } = this.props.navigation.state.params;
+    } = this.props.route.params;
     this.props.navigation.navigate('CreateEventVerifyInfo', {
       selectedBook: selectedBook,
       streetAddress: this.state.streetAddress,
@@ -48,7 +48,7 @@ export default class CreateEventAddDetails extends Component {
   };
 
   render() {
-    const {onUpdate} = this.props.navigation.state.params;
+    const {onUpdate} = this.props.route.params;
     const buttonTitle = onUpdate ? 'Update Information' : 'Continue';
     const onPressButton = onUpdate
       ? this.handleUpdate

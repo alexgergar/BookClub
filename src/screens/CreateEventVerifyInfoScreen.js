@@ -20,7 +20,7 @@ export default class CreateEventVerifyInfo extends Component {
   }
 
   componentDidMount() {
-    const {selectedBook} = this.props.navigation.state.params;
+    const {selectedBook} = this.props.route.params;
       console.log(selectedBook);
   }
 
@@ -37,7 +37,7 @@ export default class CreateEventVerifyInfo extends Component {
       bookClubName,
       bookClubID,
       date,
-      newClub } = this.props.navigation.state.params;
+      newClub } = this.props.route.params;
     const membersOfBookClub = [];
     bookClubMembers.forEach(member => {
       let thisMember = {
@@ -50,10 +50,7 @@ export default class CreateEventVerifyInfo extends Component {
     });
     const membersOfBookClubUID = [];
     bookClubMembers.forEach(member => {
-      let thisMember = {
-        uid: member.uid,
-      };
-      membersOfBookClubUID.push(thisMember);
+      membersOfBookClubUID.push(member.uid);
     });
     const thisEvent = {
       attendees: membersOfBookClub,
@@ -133,7 +130,7 @@ export default class CreateEventVerifyInfo extends Component {
       date,
       bookClubID,
       bookClubName,
-    } = this.props.navigation.state.params;
+    } = this.props.route.params;
     this.props.navigation.navigate('CreateEventAddDetails', {
       onUpdate: true,
       selectedBook: selectedBook,
@@ -146,7 +143,7 @@ export default class CreateEventVerifyInfo extends Component {
   }
 
   onEditBookSelectionPress = () => {
-    const { streetAddress, city, state, zipcode, detailsForLocation, bookClubMembers, newClub, bookClubID, bookClubName, date } = this.props.navigation.state.params;
+    const { streetAddress, city, state, zipcode, detailsForLocation, bookClubMembers, newClub, bookClubID, bookClubName, date } = this.props.route.params;
     this.props.navigation.navigate('CreateEvent', {
       onUpdate: true,
       streetAddress: streetAddress,
@@ -163,7 +160,7 @@ export default class CreateEventVerifyInfo extends Component {
   }
 
   onEditDatePress = () => {
-    const { streetAddress, city, state, zipcode, detailsForLocation, bookClubMembers, newClub, bookClubID, bookClubName, selectedBook } = this.props.navigation.state.params;
+    const { streetAddress, city, state, zipcode, detailsForLocation, bookClubMembers, newClub, bookClubID, bookClubName, selectedBook } = this.props.route.params;
     this.props.navigation.navigate('CreateEventPickDate', {
       onUpdate: true,
       streetAddress: streetAddress,
@@ -191,7 +188,7 @@ export default class CreateEventVerifyInfo extends Component {
       bookClubID,
       bookClubName,
       date,
-    } = this.props.navigation.state.params;
+    } = this.props.route.params;
     this.props.navigation.navigate('CreateEventAttendees', {
       streetAddress,
       city,
@@ -208,7 +205,7 @@ export default class CreateEventVerifyInfo extends Component {
 
   render() {
     let user = this.context;
-    const { selectedBook, streetAddress, city, state, zipcode, detailsForLocation, bookClubMembers, date } = this.props.navigation.state.params;
+    const { selectedBook, streetAddress, city, state, zipcode, detailsForLocation, bookClubMembers, date } = this.props.route.params;
     return (
       <GreyWhiteBackgroundBottomButton
         headline="Verify Informtion"

@@ -15,7 +15,6 @@ import UserContext from '../context/UserContext';
 import firestore from '@react-native-firebase/firestore';
 
 export default class MainEvent extends Component {
-  static contextType = UserContext;
   state = {
     showEventDetail: true,
     eventID: null,
@@ -23,7 +22,7 @@ export default class MainEvent extends Component {
   };
 
   componentDidMount() {
-    // const {eventID, event} = this.props.navigation.state.params;
+    // const {eventID, event} = this.props.route.params;
     this.getEventInfoFromFirestore('mwbdp7UdGFvp4z7ntpcN');
   }
 
@@ -80,60 +79,62 @@ export default class MainEvent extends Component {
             resizeMode={'cover'}
           />
         )}
-        {event !== null && (
-          <View style={styles.backgroundContentContainer}>
-            <View style={styles.informationContentContainer}>
-              <View style={styles.textRowCenterAlign}>
-                <Text style={styles.dateText}>
-                  {event.eventDate.date.substring(
+        <View style={styles.backgroundContentContainer}>
+          <View style={styles.informationContentContainer}>
+            <View style={styles.textRowCenterAlign}>
+              <Text style={styles.dateText}>
+                {event !== null &&
+                  event.eventDate.date.substring(
                     0,
                     event.eventDate.date.length - 5,
                   )}
-                </Text>
-                <Text style={styles.spacerText}> at </Text>
-                <Text style={styles.dateText}>{event.eventDate.time}</Text>
-              </View>
-
-              {/* in the future maybe change this to a card component or a box that the user can click on to get more info on person, contact info, map, ect. see notes from 1.21.20 */}
-              <View style={{marginTop: 10}}>
-                <Text style={styles.hostNameText}>
-                  {event.host.displayName}
-                </Text>
-                <Text style={styles.addressText}>
-                  {event.eventLocation.address.streetAddress}
-                </Text>
-                <View style={styles.textRowCenterAlign}>
-                  <Text style={styles.cityStateZipText}>
-                    {event.eventLocation.address.city}{' '}
-                    {event.eventLocation.address.state},{' '}
-                    {event.eventLocation.address.zipcode}
-                  </Text>
-                </View>
-              </View>
-              {/* end of card data... */}
-              <View style={styles.hortizontalLine} />
-              <View style={styles.clickableDetailTabRow}>
-                <ActiveButton
-                  title="Event Details"
-                  type="clear"
-                  showButton={this.state.showEventDetail}
-                  onPress={this.onEventDetailPress}
-                />
-                <ActiveButton
-                  title="Book Details"
-                  type="clear"
-                  showButton={!this.state.showEventDetail}
-                  onPress={this.onBookDetailPress}
-                />
-              </View>
-              {this.state.showEventDetail ? (
-                <EventDetails event={event} />
-              ) : (
-                <BookDetails event={event} />
-              )}
+              </Text>
+              <Text style={styles.spacerText}> at </Text>
+              {event !== null && 
+                <Text style={styles.dateText}>{event.eventDate.time}</Text>}
             </View>
+
+            {/* in the future maybe change this to a card component or a box that the user can click on to get more info on person, contact info, map, ect. see notes from 1.21.20 */}
+            <View style={{marginTop: 10}}>
+              {event !== null && (
+                <>
+                  <Text style={styles.hostNameText}>
+                    {event.host.displayName}
+                  </Text>
+                  <Text style={styles.addressText}>
+                    {event.eventLocation.address.streetAddress}
+                  </Text>
+                  <View style={styles.textRowCenterAlign}>
+                    <Text style={styles.cityStateZipText}>
+                      {event.eventLocation.address.city}{' '}
+                      {event.eventLocation.address.state},{' '}
+                      {event.eventLocation.address.zipcode}
+                    </Text>
+                  </View>
+                </>
+              )}
+              
+            </View>
+            {/* end of card data... */}
+            <View style={styles.hortizontalLine} />
+            <View style={styles.clickableDetailTabRow}>
+              <ActiveButton
+                title="Event Details"
+                type="clear"
+                showButton={this.state.showEventDetail}
+                onPress={this.onEventDetailPress}
+              />
+              <ActiveButton
+                title="Book Details"
+                type="clear"
+                showButton={!this.state.showEventDetail}
+                onPress={this.onBookDetailPress}
+              />
+            </View>
+            {this.state.showEventDetail && event !== null && <EventDetails event={event} />}
+            {!this.state.showEventDetail && event !== null &&  <BookDetails event={event} />}  
           </View>
-        )}
+        </View>
       </ScrollView>
     );
   }
@@ -187,6 +188,10 @@ const styles = StyleSheet.create({
     fontSize: 20,
     textAlign: 'center',
     fontFamily: 'Montserrat-Bold',
+  },
+  dateTextFiller: {
+    height: 20,
+    backgroundColor: 'grey'
   },
   spacerText: {
     textTransform: 'uppercase',
@@ -246,3 +251,5 @@ const styles = StyleSheet.create({
 .Book-cover-options-4-hsla { color: hsla(210, 9, 67, 1); }
 .Book-cover-options-5-hsla { color: hsla(25, 88, 75, 1); }
 */
+
+MainEvent.contextType = UserContext;

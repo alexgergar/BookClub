@@ -45,7 +45,7 @@ const styles = StyleSheet.create({
   },
   avatarTitleStyle: {
     fontFamily: 'Montserrat-SemiBold',
-    fontSize: 14,
-    // padding: 5,
+    fontSize: 11,
+    padding: 5,
   },
 });

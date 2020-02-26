@@ -41,49 +41,55 @@ export default class BookDetails extends Component {
     return (
       <View>
         <View style={styles.headlineView}>
+          {event !== null && 
           <Text style={styles.bookTitleTextHeadline}>
             {event.bookForEvent.title}
-          </Text>
+          </Text>}
         </View>
         <View style={styles.headlineView}>
-          <Text style={styles.bookAuthorTextHeadline}>
-            {event.bookForEvent.authors}
-          </Text>
+          {event !== null && 
+            <Text style={styles.bookAuthorTextHeadline}>
+              {event.bookForEvent.authors}
+            </Text>}
         </View>
         <View style={styles.bookHeadlineView}>
           <Text style={styles.headlineText}>Description</Text>
-          <ViewMoreText
-            numberOfLines={3}
-            renderViewMore={this.renderViewMore}
-            renderViewLess={this.renderViewLess}
-            textStyle={styles.bookDescriptionText}>
-            <Text>{event.bookForEvent.description}</Text>
-          </ViewMoreText>
+          {event !== null && 
+            <ViewMoreText
+              numberOfLines={3}
+              renderViewMore={this.renderViewMore}
+              renderViewLess={this.renderViewLess}
+              textStyle={styles.bookDescriptionText}>
+              <Text>{event.bookForEvent.description}</Text>
+            </ViewMoreText>}
         </View>
         <View style={styles.bookHeadlineView}>
           <Text style={styles.headlineText}>
             About {event.bookForEvent.authors}
           </Text>
-          <ViewMoreText
-            numberOfLines={3}
-            renderViewMore={this.renderViewMore}
-            renderViewLess={this.renderViewLess}
-            textStyle={styles.bookDescriptionText}>
-            <Text>{event.bookForEvent.authorBio}</Text>
-          </ViewMoreText>
+          {event !== null && 
+            <ViewMoreText
+              numberOfLines={3}
+              renderViewMore={this.renderViewMore}
+              renderViewLess={this.renderViewLess}
+              textStyle={styles.bookDescriptionText}>
+              <Text>{event.bookForEvent.authorBio}</Text>
+            </ViewMoreText>}
         </View>
 
         <View style={styles.bookHeadlineView}>
-          <Text style={styles.headlineText}>
-            Other Books by {bookClubEvent.bookForEvent.author}
-          </Text>
+          {event !== null && 
+            <Text style={styles.headlineText}>
+              Other Books by {bookClubEvent.bookForEvent.author}
+            </Text>}
           <View style={styles.bookCoversListView}>
-            <FlatList
-              horizontal={true}
-              data={event.bookForEvent.otherBooksByAuthor}
-              keyExtractor={(item, index) => index.toString()}
-              renderItem={this.renderBookCovers}
-            />
+            {event !== null && 
+              <FlatList
+                horizontal={true}
+                data={event.bookForEvent.otherBooksByAuthor}
+                keyExtractor={(item, index) => index.toString()}
+                renderItem={this.renderBookCovers}
+              />}
           </View>
         </View>
       </View>
