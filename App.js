@@ -13,9 +13,9 @@ import SelectedBookScreen from './src/screens/SelectedBookScreen';
 import CreateEventAddDetailsScreen from './src/screens/CreateEventAddDetailsScreen';
 import CreateEventAttendeesScreen from './src/screens/CreateEventAttendeesScreen';
 import CreateEventVerifyInfoScreen from './src/screens/CreateEventVerifyInfoScreen';
-import CreateEventEditAttendeesListScreen from './src/screens/CreateEventEditAttendeesListScreen';
 import CreateEventPickDateScreen from './src/screens/CreateEventPickDateScreen';
 import CreateEventNewClubNameScreen from './src/screens/CreateEventNewClubNameScreen';
+import TestScreen from './src/screens/TestScreen';
 import UserContext from './src/context/UserContext';
 import {NavigationContainer} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
@@ -26,7 +26,8 @@ const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
 
 const MainStack = () => (
-  <Stack.Navigator initialRouteName="Home" headerMode="none">
+  <Stack.Navigator 
+    initialRouteName="Home" headerMode="none">
     <Stack.Screen name="Home" component={HomeScreen} />
     <Stack.Screen name="MainEvent" component={MainEventScreen} />
     <Stack.Screen name="CreateEvent" component={CreateEventScreen} />
@@ -48,10 +49,6 @@ const MainStack = () => (
       component={CreateEventVerifyInfoScreen}
     />
     <Stack.Screen
-      name="CreateEventEditAttendeesList"
-      component={CreateEventEditAttendeesListScreen}
-    />
-    <Stack.Screen
       name="CreateEventNewClubName"
       component={CreateEventNewClubNameScreen}
     />
@@ -65,27 +62,27 @@ const CreateStack = () => (
     <Stack.Screen
       name="SelectedBook"
       component={SelectedBookScreen}
+      options={{ headerTransparent: true }}
       initialParams={{onUpdate: false}}
     />
     <Stack.Screen
       name="CreateEventPickDate"
+      options={{ headerTransparent: true }}
       component={CreateEventPickDateScreen}
     />
     <Stack.Screen
       name="CreateEventAddDetails"
+      options={{ headerTransparent: true }}
       component={CreateEventAddDetailsScreen}
     />
     <Stack.Screen
       name="CreateEventAttendees"
+      options={{ headerTransparent: true }}
       component={CreateEventAttendeesScreen}
     />
     <Stack.Screen
       name="CreateEventVerifyInfo"
       component={CreateEventVerifyInfoScreen}
-    />
-    <Stack.Screen
-      name="CreateEventEditAttendeesList"
-      component={CreateEventEditAttendeesListScreen}
     />
     <Stack.Screen
       name="CreateEventNewClubName"
@@ -105,6 +102,13 @@ const TabNav = () => (
       }}
       component={MainStack}
     />
+    <Tab.Screen name="Test" component={TestScreen} tabBarVisible={false} options={{
+      tabBarLabel: 'Test',
+      tabBarVisible: false,
+      tabBarIcon: ({ color, size }) => (
+        <Icon name="plus-circle" type="feather" />
+      ),
+    }}/>
     <Tab.Screen
       name="Create"
       tabBarVisible={false}

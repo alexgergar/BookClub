@@ -1,10 +1,22 @@
 import React, {Component} from 'react';
-import {Text, View, StyleSheet, SafeAreaView, ScrollView} from 'react-native';
+import {
+  Text,
+  View,
+  StyleSheet,
+  SafeAreaView,
+  ScrollView,
+  Keyboard,
+  Animated,
+  Easing,
+  Dimensions,
+} from 'react-native';
 import {Button} from 'react-native-elements';
 
 const HeadlineSection = props => (
   <View style={props.headerView}>
-    <Text style={styles.headlineTitleText}>{props.headline}</Text>
+    {props.headline && (
+      <Text style={styles.headlineTitleText}>{props.headline}</Text>
+    )}
     {props.subHeadline && (
       <>
         <Text style={styles.subHeadLineText}>{props.subHeadline}</Text>
@@ -15,11 +27,77 @@ const HeadlineSection = props => (
 );
 
 export default class GreyWhiteBackgroundBottomButton extends Component {
+  constructor(props) {
+    super(props);
+
+    this.buttonVerticalMarginsAnimated = new Animated.Value(0);
+    this.heightOfButton = new Animated.Value(0);
+    this.vertMargins = this.heightOfButton.interpolate({
+      inputRange: [0, 1],
+      outputRange: ['3%', '0%'],
+    });
+    this.buttonHeight = this.heightOfButton.interpolate({
+      inputRange: [0, 1],
+      outputRange: ['6.5%', '0%'],
+    });
+  }
   static defaultProps = {
     buttonTitle: 'Continue',
     scrollView: true,
     showButton: true,
+    hideButtonOnKeyboardView: true,
     paddingHorizontal: '5%',
+    disableButton: false,
+  };
+
+  componentDidMount() {
+    this.keyboardDidShowListener = Keyboard.addListener(
+      'keyboardDidShow',
+      this._keyboardDidShow,
+    );
+    this.keyboardDidHideListener = Keyboard.addListener(
+      'keyboardDidHide',
+      this._keyboardDidHide,
+    );
+  }
+
+  componentWillUnmount() {
+    this.keyboardDidShowListener.remove();
+    this.keyboardDidHideListener.remove();
+  }
+
+  _keyboardDidShow = event => {
+    if (this.props.hideButtonOnKeyboardView) {
+      Animated.parallel([
+        Animated.timing(this.buttonVerticalMarginsAnimated, {
+          toValue: 1,
+          duration: 100,
+          easing: Easing.bezier(0.25, 0.1, 0.25, 1),
+        }),
+        Animated.timing(this.heightOfButton, {
+          toValue: 1,
+          duration: 100,
+          easing: Easing.bezier(0.25, 0.1, 0.25, 1),
+        }),
+      ]).start();
+    }
+  };
+
+  _keyboardDidHide = () => {
+    if (this.props.hideButtonOnKeyboardView) {
+      Animated.parallel([
+        Animated.timing(this.heightOfButton, {
+          toValue: 0,
+          duration: 100,
+          easing: Easing.bezier(0.25, 0.1, 0.25, 1),
+        }),
+        Animated.timing(this.heightOfButton, {
+          toValue: 0,
+          duration: 100,
+          easing: Easing.bezier(0.25, 0.1, 0.25, 1),
+        }),
+      ]).start();
+    }
   };
 
   render() {
@@ -44,7 +122,6 @@ export default class GreyWhiteBackgroundBottomButton extends Component {
             )}
             {!this.props.scrollView && (
               <HeadlineSection
-                headerView={this.props.headerView}
                 headline={this.props.headline}
                 subHeadline={this.props.subHeadline}
                 middleContainer={this.props.middleContainer}
@@ -53,15 +130,20 @@ export default class GreyWhiteBackgroundBottomButton extends Component {
             )}
             {this.props.showButton && (
               <>
-                <View style={styles.bottomButtonView}>
+                <Animated.View
+                  style={{
+                    marginVertical: this.vertMargins,
+                    height: this.buttonHeight,
+                  }}>
                   <Button
                     title={this.props.buttonTitle}
-                    containerStyle={styles.continueButtonContainerStyle}
+                    containerStyle={[styles.continueButtonContainerStyle]}
                     buttonStyle={styles.continueButtonStyle}
                     titleStyle={styles.continueTitleButtonStyle}
                     onPress={this.props.continueButtonOnPress}
+                    disabled={this.props.disableButton}
                   />
-                </View>
+                </Animated.View>
               </>
             )}
           </View>
@@ -70,6 +152,9 @@ export default class GreyWhiteBackgroundBottomButton extends Component {
     );
   }
 }
+
+const windowWidth = Dimensions.get('window').width;
+const windowHeight = Dimensions.get('window').height;
 
 const styles = StyleSheet.create({
   container: {
@@ -98,7 +183,7 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   bottomButtonView: {
-    marginVertical: '3%',
+    // marginVertical: '3%',
   },
   continueButtonContainerStyle: {
     borderRadius: 20,

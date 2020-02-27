@@ -1,15 +1,108 @@
 import React, {Component} from 'react';
-import {Text, View, StyleSheet, Dimensions, Keyboard} from 'react-native';
-import {Input} from 'react-native-elements';
+import {
+  Text,
+  View,
+  StyleSheet,
+  Dimensions,
+  Animated,
+  Easing,
+  Keyboard,
+} from 'react-native';
+import {Input, Button, Icon} from 'react-native-elements';
 import GreyWhiteBackgroundBottomButton from '../components/GreyWhiteBackgroundBottomButton';
 
 export default class CreateEventAddDetails extends Component {
+  constructor(props) {
+    super(props);
+
+    this.buttonVerticalMarginsAnimated = new Animated.Value(0);
+    this.heightOfButton = new Animated.Value(0);
+    this.detailsTextInputWidthAnimated = new Animated.Value(0),
+    this.submitButtonAnimated = new Animated.Value(0),
+    this.widthForDetailsTextBox = this.detailsTextInputWidthAnimated.interpolate(
+      {
+        inputRange: [0, 1],
+        outputRange: ['100%', '75%'],
+      },
+    );
+    this.widthForSubmit = this.submitButtonAnimated.interpolate(
+      {
+        inputRange: [0, 1],
+        outputRange: ['0%', '25%'],
+      },
+    );
+    this.flexForSubmit = this.submitButtonAnimated.interpolate(
+      {
+        inputRange: [0, 1],
+        outputRange: [0, 1],
+      },
+    );
+  }
   state = {
-    streetAddress: null,
-    city: null,
-    state: null,
-    zipcode: null,
+    streetAddress: '',
+    city: '',
+    state: '',
+    zipcode: '',
     detailsForLocation: null,
+    disableButton: true,
+    showDetailSubmitButton: false,
+  };
+
+  componentDidMount() {
+    this.keyboardDidShowListener = Keyboard.addListener(
+      'keyboardDidShow',
+      this._keyboardDidShow,
+    );
+    this.keyboardDidHideListener = Keyboard.addListener(
+      'keyboardDidHide',
+      this._keyboardDidHide,
+    );
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    if (
+      this.state.streetAddress !== prevState.streetAddress ||
+      this.state.city !== prevState.city ||
+      this.state.state !== prevState.state ||
+      this.state.zipcode !== prevState.zipcode
+    ) {
+      this.validateDetails();
+    }
+  }
+
+  componentWillUnmount() {
+    this.keyboardDidShowListener.remove();
+    this.keyboardDidHideListener.remove();
+  }
+
+  _keyboardDidShow = event => {
+    Animated.parallel([
+      Animated.timing(this.detailsTextInputWidthAnimated, {
+        toValue: 1,
+        duration: 100,
+        easing: Easing.linear,
+      }),
+      Animated.timing(this.submitButtonAnimated, {
+        toValue: 1,
+        duration: 100,
+        easing: Easing.linear,
+      }),
+    ]).start();
+  };
+
+  _keyboardDidHide = () => {
+    Animated.parallel([
+      Animated.timing(this.detailsTextInputWidthAnimated, {
+        toValue: 0,
+        duration: 100,
+        easing: Easing.linear,
+      }),
+      Animated.timing(this.submitButtonAnimated, {
+        toValue: 0,
+        duration: 100,
+        easing: Easing.linear,
+      }),
+    ]).start();
   };
 
   handleContinuePress = () => {
@@ -47,6 +140,22 @@ export default class CreateEventAddDetails extends Component {
     });
   };
 
+  validateDetails = () => {
+    const breakDownOfStreetAddress = this.state.streetAddress.split(' ');
+    if (
+      this.state.city.length >= 3 &&
+      this.state.state.length >= 2 &&
+      this.state.zipcode.length >= 5 &&
+      breakDownOfStreetAddress[0] &&
+      breakDownOfStreetAddress[1] &&
+      breakDownOfStreetAddress[2]
+    ) {
+      this.setState({disableButton: false});
+    } else {
+      this.setState({disableButton: true});
+    }
+  };
+
   render() {
     const {onUpdate} = this.props.route.params;
     const buttonTitle = onUpdate ? 'Update Information' : 'Continue';
@@ -58,14 +167,21 @@ export default class CreateEventAddDetails extends Component {
         headline="Event Details"
         subHeadline="Address:"
         continueButtonOnPress={onPressButton}
+        disableButton={this.state.disableButton}
+        hideButtonOnKeyboardView={true}
         buttonTitle={buttonTitle}>
         <Input
           placeholder="Street Address"
+          textContentType={'streetAddressLine1'}
           onChangeText={streetAddress => this.setState({streetAddress})}
           value={this.state.streetAddress}
           inputStyle={styles.inputTextStyle}
           containerStyle={styles.singleLineContainerStyle}
           inputContainerStyle={styles.inputContainerStyle}
+          onSubmitEditing={() => {
+            this.cityInput.focus();
+          }}
+          blurOnSubmit={false}
         />
         <Input
           placeholder="City"
@@ -74,6 +190,13 @@ export default class CreateEventAddDetails extends Component {
           inputStyle={styles.inputTextStyle}
           containerStyle={styles.singleLineContainerStyle}
           inputContainerStyle={styles.inputContainerStyle}
+          ref={input => {
+            this.cityInput = input;
+          }}
+          onSubmitEditing={() => {
+            this.stateInput.focus();
+          }}
+          blurOnSubmit={false}
         />
         <View style={{flexDirection: 'row'}}>
           <Input
@@ -83,36 +206,73 @@ export default class CreateEventAddDetails extends Component {
             inputStyle={styles.inputTextStyle}
             containerStyle={styles.twoLineContainerStyle}
             inputContainerStyle={styles.inputContainerStyle}
+            ref={input => {
+              this.stateInput = input;
+            }}
+            onSubmitEditing={() => {
+              this.zipcodeInput.focus();
+            }}
+            blurOnSubmit={false}
           />
           <Input
             placeholder="Zip Code"
             onChangeText={zipcode => this.setState({zipcode})}
             value={this.state.zipcode}
+            keyboardType={'numeric'}
             inputStyle={styles.inputTextStyle}
             containerStyle={styles.twoLineContainerStyle}
             inputContainerStyle={styles.inputContainerStyle}
+            ref={input => {
+              this.zipcodeInput = input;
+            }}
+            onSubmitEditing={() => {
+              this.detailsInput.focus();
+            }}
+            blurOnSubmit={false}
           />
         </View>
-        <Input
-          placeholder="Details for Location"
-          onChangeText={detailsForLocation =>
-            this.setState({detailsForLocation})
-          }
-          value={this.state.detailsForLocation}
-          multiline={true}
-          inputStyle={styles.inputTextStyle}
-          containerStyle={[
-            styles.multiLineContainerStyle,
-            styles.bottomContainerStyle,
-          ]}
-          inputContainerStyle={[
-            styles.inputContainerStyle,
-            styles.multiLineInputContainerStyle,
-          ]}
-          maxLength={400}
-          onFocus={this.toggleShowTitle}
-          onBlur={this.toggleShowTitle}
-        />
+        <View style={{flexDirection: 'row'}}>
+          <Animated.View style={{width: this.widthForDetailsTextBox}}>
+            <Input
+              placeholder="Details on the Location "
+              onChangeText={detailsForLocation =>
+                this.setState({detailsForLocation})
+              }
+              value={this.state.detailsForLocation}
+              multiline={true}
+              inputStyle={styles.inputTextStyle}
+              containerStyle={[
+                styles.multiLineContainerStyle,
+                styles.bottomContainerStyle,
+              ]}
+              inputContainerStyle={[
+                styles.inputContainerStyle,
+                styles.multiLineInputContainerStyle,
+              ]}
+              maxLength={400}
+              ref={input => {
+                this.detailsInput = input;
+              }}
+            />
+          </Animated.View>
+          <Animated.View style={{ width: this.widthForSubmit, flex: this.flexForSubmit }}>
+            <Button
+              containerStyle={[styles.submitButtonContainerStyle, styles.multiLineContainerStyle, styles.bottomContainerStyle]}
+              buttonStyle={styles.submitButtonStyle}
+              titleStyle={styles.submitTitleButtonStyle}
+              onPress={onPressButton}
+              disabled={this.state.disableButton}
+              icon={
+                <Icon
+                  name="arrow-right"
+                  name='chevron-right'
+                  type='feather'
+                  color='white'
+                />
+              }
+            />
+          </Animated.View>
+        </View>
       </GreyWhiteBackgroundBottomButton>
     );
   }
@@ -147,11 +307,25 @@ const styles = StyleSheet.create({
     paddingTop: windowHeight * 0.01,
   },
   multiLineInputContainerStyle: {
-    height: windowHeight * 0.1,
+    height: windowHeight * 0.12,
   },
   bottomContainerStyle: {
     paddingBottom: windowHeight * 0.01,
   },
+  submitButtonContainerStyle: {
+    borderRadius: 20,
+    width: '100%',
+    flexGrow: 1,
+    alignSelf: 'center',
+  },
+  submitButtonStyle: {
+    backgroundColor: '#1E3342',
+    flexGrow: 1,
+    borderRadius: 10,
+  },
+  submitTitleButtonStyle: {
+    fontFamily: 'Montserrat-SemiBold',
+  }
 });
 
 /* Color Theme Swatches in Hex

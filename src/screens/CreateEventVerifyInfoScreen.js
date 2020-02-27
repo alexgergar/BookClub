@@ -111,7 +111,6 @@ export default class CreateEventVerifyInfo extends Component {
   }
 
   handleCreateEventInFirestore = async thisEvent => {
-    console.log('in firestore');
     await firestore()
       .collection('events')
       .add(thisEvent)

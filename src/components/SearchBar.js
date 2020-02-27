@@ -127,6 +127,7 @@ class SearchBar extends Component {
             ref={ref => {
               this.input = ref;
             }}
+            returnKeyType={'search'}
           />
           <View style={rightContainer}>
             {(hasFocus && showLoader) && (

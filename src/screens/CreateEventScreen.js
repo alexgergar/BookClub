@@ -35,7 +35,7 @@ export default class CreateEvent extends Component {
   };
 
   onSearchBooks = text => {
-    Keyboard.dismiss();
+    this.setState({searchTitle: text});
     let search = encodeURI(text);
     axios
       .get(
@@ -48,6 +48,7 @@ export default class CreateEvent extends Component {
           showBookListImage: false,
         }),
       )
+      // .then(() => this.flatListRef.scrollToIndex({ animated: true, index: 0 }))
       .catch(error => console.log(error));
   };
 
@@ -84,14 +85,22 @@ export default class CreateEvent extends Component {
     };
     return (
       <TouchableHighlight
-        underlayColor="white"
+        underlayColor="rgba(58, 86, 114, 0.3)"
         onPress={() => this.onBookSelectionPress(bookObject)}>
         <View style={styles.flatListRowContainer}>
-          <Image
-            style={styles.bookListImage}
-            source={{uri: bookObject.thumbnail}}
-            resizeMode={'cover'}
-          />
+          {bookObject.thumbnail === null || bookObject.thumbnail === "" ? (
+            <Image
+              style={styles.bookListImage}
+              source={require('../utils/bookPlaceholder.png')}
+              resizeMode={'cover'}
+            />
+          ) : (
+            <Image
+              style={styles.bookListImage}
+              source={{ uri: bookObject.thumbnail }}
+              resizeMode={'cover'}
+            />
+          )}
           <View style={styles.titleAuthorTextContainer}>
             <Text style={styles.titleText}>{bookObject.title}</Text>
             <Text style={styles.authorText}>{bookObject.authors}</Text>
@@ -103,7 +112,17 @@ export default class CreateEvent extends Component {
 
   onBookSelectionPress = selectedBook => {
     if (this.props.route.params) {
-      const { onUpdate, streetAddress, city, state, zipcode, detailsForLocation, membersForBookClub, newClub, date} = this.props.route.params;
+      const {
+        onUpdate,
+        streetAddress,
+        city,
+        state,
+        zipcode,
+        detailsForLocation,
+        membersForBookClub,
+        newClub,
+        date,
+      } = this.props.route.params;
       this.props.navigation.navigate('SelectedBook', {
         onUpdate: onUpdate,
         selectedBook: selectedBook,
@@ -128,7 +147,7 @@ export default class CreateEvent extends Component {
     Animated.parallel([
       Animated.timing(this.state.backgroundHeightAnimation, {
         toValue: 1,
-        duration: 300,
+        duration: 100,
         easing: Easing.bezier(0.25, 0.1, 0.25, 1),
       }),
       Animated.timing(this.state.bookImageOpacity, {
@@ -148,7 +167,7 @@ export default class CreateEvent extends Component {
     const heightForWhiteBackground = this.state.backgroundHeightAnimation.interpolate(
       {
         inputRange: [0, 1],
-        outputRange: ['30%', '95%'],
+        outputRange: ['17%', '95%'],
       },
     );
     const opacticyForBackgroundImage = this.state.bookImageOpacity.interpolate({
@@ -178,32 +197,24 @@ export default class CreateEvent extends Component {
           ]}>
           <View style={styles.informationContentContainer}>
             <View style={styles.searchAndListContainer}>
-              <View style={{width: '100%'}}>
+              <Animated.View style={{width: '100%'}}>
                 <SearchBar
-                  placeholder='Find a Book by Title'
-                  onChangeText={text => this.setState({ searchTitle: text })}
+                  placeholder="Find a Book by Title"
+                  onChangeText={text => this.onSearchBooks(text)}
                   onFocus={this.onTextInputPress}
                 />
-              </View>
-              {this.state.showcontainer ? (
+              </Animated.View>
+              {this.state.showcontainer && (
                 <View>
                   <FlatList
                     data={this.state.googleBooks}
                     keyExtractor={(item, index) => index.toString()}
                     renderItem={book => this.renderGoogleBooks(book.item)}
-                  />
+                    keyboardShouldPersistTaps={'always'}
+                    ref={(ref) => { this.flatListRef = ref; }}
+                />
                 </View>
-              ) : (
-                <View />
               )}
-
-              <Button
-                title="Search For Book"
-                titleStyle={{fontFamily: 'Montserrat-SemiBold'}}
-                containerStyle={styles.searchButtonContainer}
-                buttonStyle={styles.searchButtonStyle}
-                onPress={() => this.onSearchBooks(this.state.searchTitle)}
-              />
               {this.state.showBookListImage && (
                 <Animated.Image
                   style={[
@@ -222,7 +233,7 @@ export default class CreateEvent extends Component {
             styles.backgroundTextView,
             {opacity: opacticyForBackgroundImage},
           ]}>
-          <Text style={styles.backgroundTextH1}>Hello</Text>
+          <Text style={styles.backgroundTextH1}>Hey there,</Text>
           <Text style={styles.backgroundTextH2}>
             Ready to host your next BookClub?
           </Text>
@@ -252,7 +263,6 @@ const styles = StyleSheet.create({
     borderTopRightRadius: 15,
     marginBottom: 0,
     width: '90%',
-    height: '30%',
     zIndex: 10,
   },
   backgroundStarterImage: {
@@ -293,9 +303,12 @@ const styles = StyleSheet.create({
     borderRadius: 10,
   },
   listBackgroundBookImage: {
+    // backgroundColor: 'pink',
+    justifyContent: 'flex-start',
     zIndex: 5,
     top: 40,
-    height: '50%',
+    width: '60%',
+    height: '70%',
     paddingLeft: 20,
   },
   searchButtonContainer: {

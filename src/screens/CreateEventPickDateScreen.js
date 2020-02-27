@@ -1,6 +1,11 @@
 import React, {Component} from 'react';
-import {View, StyleSheet, Text, Dimensions, Image, TouchableWithoutFeedback} from 'react-native';
-import {Button} from 'react-native-elements';
+import {
+  View,
+  StyleSheet,
+  Dimensions,
+  Image,
+  TouchableWithoutFeedback,
+} from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import GreyWhiteBackgroundBottomButton from '../components/GreyWhiteBackgroundBottomButton';
 
@@ -26,25 +31,24 @@ export default class CreateEventPickDate extends Component {
         showDatePicker: false,
       });
     }
-    
   };
 
   setTime = (event, selectedDate) => {
     if (selectedDate !== undefined) {
       const currentDate = selectedDate || this.state.date;
-      this.setState({
-        date: currentDate,
-        showTimePicker: false,
-        headline: 'Continue'
+      this.setState(
+        {
+          date: currentDate,
+          showTimePicker: false,
+          headline: 'Continue',
         },
         () => this.sendToNextScreen(),
       );
     } else {
       this.setState({
         showTimePicker: false,
-      })
+      });
     }
-    
   };
 
   sendToNextScreen = () => {
@@ -102,8 +106,8 @@ export default class CreateEventPickDate extends Component {
       return `0${minutes}`;
     } else {
       return minutes;
-    };
-  }
+    }
+  };
 
   formatHours = (hour, minutes) => {
     if (hour > 12) {
@@ -114,12 +118,11 @@ export default class CreateEventPickDate extends Component {
     } else {
       return `12:${minutes} am`;
     }
-  }
+  };
 
   onPressButton = () => {
     this.showDatepicker();
-  }
-
+  };
 
   render() {
     return (
@@ -131,11 +134,11 @@ export default class CreateEventPickDate extends Component {
         <View style={styles.imageView}>
           <TouchableWithoutFeedback onPress={() => this.showDatepicker()}>
             <Image
-            style={styles.backgroundImage}
-            source={require('../utils/pickDateTimeImage.png')}
-            resizeMode={'contain'}
-          />
-        </TouchableWithoutFeedback>
+              style={styles.backgroundImage}
+              source={require('../utils/pickDateTimeImage.png')}
+              resizeMode={'contain'}
+            />
+          </TouchableWithoutFeedback>
         </View>
         {this.state.showDatePicker && (
           <DateTimePicker
@@ -156,7 +159,7 @@ export default class CreateEventPickDate extends Component {
       </GreyWhiteBackgroundBottomButton>
     );
   }
-};
+}
 
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
@@ -168,10 +171,10 @@ const styles = StyleSheet.create({
   },
   imageView: {
     alignItems: 'center',
-    top: windowHeight * .15,
+    top: windowHeight * 0.15,
   },
   backgroundImage: {
-    height: windowWidth * .5,
+    height: windowWidth * 0.5,
     top: 0,
   },
   buttonContainer: {
