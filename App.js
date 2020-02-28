@@ -30,28 +30,6 @@ const MainStack = () => (
     initialRouteName="Home" headerMode="none">
     <Stack.Screen name="Home" component={HomeScreen} />
     <Stack.Screen name="MainEvent" component={MainEventScreen} />
-    <Stack.Screen name="CreateEvent" component={CreateEventScreen} />
-    <Stack.Screen name="SelectedBook" component={SelectedBookScreen} />
-    <Stack.Screen
-      name="CreateEventPickDate"
-      component={CreateEventPickDateScreen}
-    />
-    <Stack.Screen
-      name="CreateEventAddDetails"
-      component={CreateEventAddDetailsScreen}
-    />
-    <Stack.Screen
-      name="CreateEventAttendees"
-      component={CreateEventAttendeesScreen}
-    />
-    <Stack.Screen
-      name="CreateEventVerifyInfo"
-      component={CreateEventVerifyInfoScreen}
-    />
-    <Stack.Screen
-      name="CreateEventNewClubName"
-      component={CreateEventNewClubNameScreen}
-    />
     <Stack.Screen name="SignOutBook" component={SignOutScreen} />
   </Stack.Navigator>
 );
@@ -62,22 +40,18 @@ const CreateStack = () => (
     <Stack.Screen
       name="SelectedBook"
       component={SelectedBookScreen}
-      options={{ headerTransparent: true }}
       initialParams={{onUpdate: false}}
     />
     <Stack.Screen
       name="CreateEventPickDate"
-      options={{ headerTransparent: true }}
       component={CreateEventPickDateScreen}
     />
     <Stack.Screen
       name="CreateEventAddDetails"
-      options={{ headerTransparent: true }}
       component={CreateEventAddDetailsScreen}
     />
     <Stack.Screen
       name="CreateEventAttendees"
-      options={{ headerTransparent: true }}
       component={CreateEventAttendeesScreen}
     />
     <Stack.Screen
@@ -88,7 +62,6 @@ const CreateStack = () => (
       name="CreateEventNewClubName"
       component={CreateEventNewClubNameScreen}
     />
-    <Stack.Screen name="MainEvent" component={MainEventScreen} />
   </Stack.Navigator>
 );
 

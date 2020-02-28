@@ -22,8 +22,8 @@ export default class MainEvent extends Component {
   };
 
   componentDidMount() {
-    // const {eventID, event} = this.props.route.params;
-    this.getEventInfoFromFirestore('mwbdp7UdGFvp4z7ntpcN');
+    const {eventID, event} = this.props.route.params;
+    this.getEventInfoFromFirestore(eventID);
   }
 
   getEventInfoFromFirestore = async eventID => {

@@ -36,8 +36,8 @@ export default class SelectedBook extends Component {
       .then(response => {
         const bookDataJSON = convert.xml2js(response.data, {compact: true, spaces: 4, textKey: 'text', cdataKey: 'cdata', attributesKey: 'attributes'}); // changes xml to json
         const authorID = bookDataJSON.GoodreadsResponse.search.results.work.best_book.author.id.text; // this gets the author ID
-        additionalBookInfo.authorID = authorID; 
-        return axios.get(`https://www.goodreads.com/author/show/176372?format=xml&key=${GOODREAD_API_KEY}`) // immediately returning a new get request to get info on author
+        additionalBookInfo.authorID = authorID;
+        return axios.get(`https://www.goodreads.com/author/show/${authorID}?format=xml&key=${GOODREAD_API_KEY}`) // immediately returning a new get request to get info on author
         }
       )
       .then(response => {

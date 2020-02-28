@@ -26,7 +26,6 @@ import Contacts from 'react-native-contacts';
 
 
 export default class CreateEventAttendees extends Component {
-  static contextType = UserContext;
   state = {
     listOfBookClubs: [],
     selectedBookClubID: null,
@@ -40,13 +39,29 @@ export default class CreateEventAttendees extends Component {
     searchItemPressed: false,
     searchItemPressedID: null,
     showSearchList: false,
+    disableButton: true,
   };
 
   componentDidMount() {
     let user = this.context;
-    console.log(user);
-    // this.getBookClubsFromUID();
+    console.log(this.state.selectedBookClubMembers.length);
+    this.getBookClubsFromUID();
   }
+
+  componentDidUpdate(prevProps, prevState) {
+    if (
+      this.state.selectedBookClubMembers !== prevState.selectedBookClubMembers
+    ) {
+      this.validateDetails();
+    }
+  }
+
+  validateDetails = () => {
+    this.state.selectedBookClubMembers.length >= 2 ?
+    this.setState({ disableButton: false }, () => console.log('disable button is false'))
+    :
+    this.setState({ disableButton: true }, );
+  };
 
   getBookClubsFromUID = () => {
     let user = this.context;
@@ -223,7 +238,7 @@ export default class CreateEventAttendees extends Component {
       searchItemPressedID: null,
       showContinueButton: true,
     }));
-    
+
   }
 
   onSearchListItemPressIn = item => {
@@ -333,6 +348,8 @@ export default class CreateEventAttendees extends Component {
         headline="Add Attendees"
         continueButtonOnPress={this.handleContinueButtonPress}
         scrollView={false}
+        disableButton={this.state.disableButton}
+        buttonTitle={this.state.disableButton ? 'Add At Least One Person' : 'Continue'}
         showButton={this.state.showContinueButton}>
         <SearchBar
           placeholder="Add a Person From Your Contacts"
@@ -499,6 +516,7 @@ const styles = StyleSheet.create({
   },
 });
 
+CreateEventAttendees.contextType = UserContext;
 /* Color Theme Swatches in Hex
 .Book-cover-options-1-hex { color: #3A5673; } medium blue
 .Book-cover-options-2-hex { color: #EBE2CD; } light tan

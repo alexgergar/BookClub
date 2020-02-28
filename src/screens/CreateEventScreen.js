@@ -74,7 +74,7 @@ export default class CreateEvent extends Component {
       id: book.id,
       title: book.volumeInfo.title,
       authors: book.volumeInfo.authors,
-      isbn: book.volumeInfo.industryIdentifiers[0].identifier,
+      isbn: book.volumeInfo.industryIdentifiers,
       smallThumbnail: thumbnail.small,
       thumbnail: thumbnail.normal,
       pageCount: book.volumeInfo.pageCount,
@@ -111,35 +111,36 @@ export default class CreateEvent extends Component {
   };
 
   onBookSelectionPress = selectedBook => {
-    if (this.props.route.params) {
-      const {
-        onUpdate,
-        streetAddress,
-        city,
-        state,
-        zipcode,
-        detailsForLocation,
-        membersForBookClub,
-        newClub,
-        date,
-      } = this.props.route.params;
-      this.props.navigation.navigate('SelectedBook', {
-        onUpdate: onUpdate,
-        selectedBook: selectedBook,
-        streetAddress: streetAddress,
-        city: city,
-        state: state,
-        zipcode: zipcode,
-        detailsForLocation: detailsForLocation,
-        membersForBookClub: membersForBookClub,
-        newClub: newClub,
-        date: date,
-      });
-    } else {
-      this.props.navigation.navigate('SelectedBook', {
-        selectedBook: selectedBook,
-      });
-    }
+    console.log(selectedBook);
+    // if (this.props.route.params) {
+    //   const {
+    //     onUpdate,
+    //     streetAddress,
+    //     city,
+    //     state,
+    //     zipcode,
+    //     detailsForLocation,
+    //     membersForBookClub,
+    //     newClub,
+    //     date,
+    //   } = this.props.route.params;
+    //   this.props.navigation.navigate('SelectedBook', {
+    //     onUpdate: onUpdate,
+    //     selectedBook: selectedBook,
+    //     streetAddress: streetAddress,
+    //     city: city,
+    //     state: state,
+    //     zipcode: zipcode,
+    //     detailsForLocation: detailsForLocation,
+    //     membersForBookClub: membersForBookClub,
+    //     newClub: newClub,
+    //     date: date,
+    //   });
+    // } else {
+    //   this.props.navigation.navigate('SelectedBook', {
+    //     selectedBook: selectedBook,
+    //   });
+    // }
   };
 
   onTextInputPress = () => {

@@ -80,7 +80,7 @@ export default class BookDetails extends Component {
         <View style={styles.bookHeadlineView}>
           {event !== null && 
             <Text style={styles.headlineText}>
-              Other Books by {bookClubEvent.bookForEvent.author}
+            Other Books by {event.bookForEvent.author}
             </Text>}
           <View style={styles.bookCoversListView}>
             {event !== null && 

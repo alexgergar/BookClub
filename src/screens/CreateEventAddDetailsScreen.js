@@ -12,32 +12,6 @@ import {Input, Button, Icon} from 'react-native-elements';
 import GreyWhiteBackgroundBottomButton from '../components/GreyWhiteBackgroundBottomButton';
 
 export default class CreateEventAddDetails extends Component {
-  constructor(props) {
-    super(props);
-
-    this.buttonVerticalMarginsAnimated = new Animated.Value(0);
-    this.heightOfButton = new Animated.Value(0);
-    this.detailsTextInputWidthAnimated = new Animated.Value(0),
-    this.submitButtonAnimated = new Animated.Value(0),
-    this.widthForDetailsTextBox = this.detailsTextInputWidthAnimated.interpolate(
-      {
-        inputRange: [0, 1],
-        outputRange: ['100%', '75%'],
-      },
-    );
-    this.widthForSubmit = this.submitButtonAnimated.interpolate(
-      {
-        inputRange: [0, 1],
-        outputRange: ['0%', '25%'],
-      },
-    );
-    this.flexForSubmit = this.submitButtonAnimated.interpolate(
-      {
-        inputRange: [0, 1],
-        outputRange: [0, 1],
-      },
-    );
-  }
   state = {
     streetAddress: '',
     city: '',
@@ -45,19 +19,7 @@ export default class CreateEventAddDetails extends Component {
     zipcode: '',
     detailsForLocation: null,
     disableButton: true,
-    showDetailSubmitButton: false,
   };
-
-  componentDidMount() {
-    this.keyboardDidShowListener = Keyboard.addListener(
-      'keyboardDidShow',
-      this._keyboardDidShow,
-    );
-    this.keyboardDidHideListener = Keyboard.addListener(
-      'keyboardDidHide',
-      this._keyboardDidHide,
-    );
-  }
 
   componentDidUpdate(prevProps, prevState) {
     if (
@@ -69,41 +31,6 @@ export default class CreateEventAddDetails extends Component {
       this.validateDetails();
     }
   }
-
-  componentWillUnmount() {
-    this.keyboardDidShowListener.remove();
-    this.keyboardDidHideListener.remove();
-  }
-
-  _keyboardDidShow = event => {
-    Animated.parallel([
-      Animated.timing(this.detailsTextInputWidthAnimated, {
-        toValue: 1,
-        duration: 100,
-        easing: Easing.linear,
-      }),
-      Animated.timing(this.submitButtonAnimated, {
-        toValue: 1,
-        duration: 100,
-        easing: Easing.linear,
-      }),
-    ]).start();
-  };
-
-  _keyboardDidHide = () => {
-    Animated.parallel([
-      Animated.timing(this.detailsTextInputWidthAnimated, {
-        toValue: 0,
-        duration: 100,
-        easing: Easing.linear,
-      }),
-      Animated.timing(this.submitButtonAnimated, {
-        toValue: 0,
-        duration: 100,
-        easing: Easing.linear,
-      }),
-    ]).start();
-  };
 
   handleContinuePress = () => {
     const {selectedBook, date} = this.props.route.params;
@@ -232,46 +159,27 @@ export default class CreateEventAddDetails extends Component {
           />
         </View>
         <View style={{flexDirection: 'row'}}>
-          <Animated.View style={{width: this.widthForDetailsTextBox}}>
-            <Input
-              placeholder="Details on the Location "
-              onChangeText={detailsForLocation =>
-                this.setState({detailsForLocation})
-              }
-              value={this.state.detailsForLocation}
-              multiline={true}
-              inputStyle={styles.inputTextStyle}
-              containerStyle={[
-                styles.multiLineContainerStyle,
-                styles.bottomContainerStyle,
-              ]}
-              inputContainerStyle={[
-                styles.inputContainerStyle,
-                styles.multiLineInputContainerStyle,
-              ]}
-              maxLength={400}
-              ref={input => {
-                this.detailsInput = input;
-              }}
-            />
-          </Animated.View>
-          <Animated.View style={{ width: this.widthForSubmit, flex: this.flexForSubmit }}>
-            <Button
-              containerStyle={[styles.submitButtonContainerStyle, styles.multiLineContainerStyle, styles.bottomContainerStyle]}
-              buttonStyle={styles.submitButtonStyle}
-              titleStyle={styles.submitTitleButtonStyle}
-              onPress={onPressButton}
-              disabled={this.state.disableButton}
-              icon={
-                <Icon
-                  name="arrow-right"
-                  name='chevron-right'
-                  type='feather'
-                  color='white'
-                />
-              }
-            />
-          </Animated.View>
+          <Input
+            placeholder="Details on the Location "
+            onChangeText={detailsForLocation =>
+              this.setState({detailsForLocation})
+            }
+            value={this.state.detailsForLocation}
+            multiline={true}
+            inputStyle={styles.inputTextStyle}
+            containerStyle={[
+              styles.multiLineContainerStyle,
+              styles.bottomContainerStyle,
+            ]}
+            inputContainerStyle={[
+              styles.inputContainerStyle,
+              styles.multiLineInputContainerStyle,
+            ]}
+            maxLength={400}
+            ref={input => {
+              this.detailsInput = input;
+            }}
+          />
         </View>
       </GreyWhiteBackgroundBottomButton>
     );
@@ -325,7 +233,7 @@ const styles = StyleSheet.create({
   },
   submitTitleButtonStyle: {
     fontFamily: 'Montserrat-SemiBold',
-  }
+  },
 });
 
 /* Color Theme Swatches in Hex

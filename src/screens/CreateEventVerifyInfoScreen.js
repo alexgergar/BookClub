@@ -99,15 +99,16 @@ export default class CreateEventVerifyInfo extends Component {
       membersUID: membersOfBookClubUID,
       nameOfBookClub: bookClubName,
     };
-    if (newClub) {
-      await firestore().collection('bookclubs').add(newBookClub).then(ref => {
-        this.setState({newBookClubID: ref.id});
-      }).catch(error => console.log(error));
-      thisEvent.bookClub.bookClubID = this.state.newBookClubID;
-      this.handleCreateEventInFirestore(thisEvent);
-    } else {
-      this.handleCreateEventInFirestore(thisEvent);
-    }
+    console.log(thisEvent);
+    // if (newClub) {
+    //   await firestore().collection('bookclubs').add(newBookClub).then(ref => {
+    //     this.setState({newBookClubID: ref.id});
+    //   }).catch(error => console.log(error));
+    //   thisEvent.bookClub.bookClubID = this.state.newBookClubID;
+    //   this.handleCreateEventInFirestore(thisEvent);
+    // } else {
+    //   this.handleCreateEventInFirestore(thisEvent);
+    // }
   }
 
   handleCreateEventInFirestore = async thisEvent => {
@@ -209,6 +210,7 @@ export default class CreateEventVerifyInfo extends Component {
       <GreyWhiteBackgroundBottomButton
         headline="Verify Informtion"
         subHeadline="Make sure everything looks good"
+        buttonTitle="Save Your Event"
         continueButtonOnPress={this.handleContinueButtonPress}>
         <View>
           <Text style={styles.headline3}>Host: {user.displayName}</Text>
