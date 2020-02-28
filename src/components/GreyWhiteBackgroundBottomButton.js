@@ -38,7 +38,7 @@ export default class GreyWhiteBackgroundBottomButton extends Component {
     });
     this.buttonHeight = this.heightOfButton.interpolate({
       inputRange: [0, 1],
-      outputRange: ['6.5%', '0%'],
+      outputRange: ['8.5%', '0%'],
     });
   }
   static defaultProps = {
@@ -102,7 +102,7 @@ export default class GreyWhiteBackgroundBottomButton extends Component {
 
   render() {
     return (
-      <SafeAreaView>
+      <SafeAreaView style={styles.safeAreaView}>
         <View style={styles.container}>
           <View
             style={[
@@ -110,7 +110,7 @@ export default class GreyWhiteBackgroundBottomButton extends Component {
               styles.whiteBackgroundContainer,
             ]}>
             {this.props.scrollView && (
-              <ScrollView>
+              <ScrollView contentContainerStyle={{ flexGrow: 1,}}>
                 <HeadlineSection
                   headerView={this.props.headerView}
                   headline={this.props.headline}
@@ -157,16 +157,17 @@ const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
 
 const styles = StyleSheet.create({
+  safeAreaView: { flex: 1, backgroundColor: '#E3E4E6',},
   container: {
     backgroundColor: '#E3E4E6',
     alignItems: 'center',
-    height: '100%',
-    justifyContent: 'flex-end',
+    height: windowHeight,
   },
   whiteBackgroundContainer: {
     backgroundColor: 'white',
+    marginTop: '10%',
     width: '90%',
-    height: '95%',
+    flexGrow: 1,
     borderTopLeftRadius: 15,
     borderTopRightRadius: 15,
     justifyContent: 'space-between',

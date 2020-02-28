@@ -138,8 +138,7 @@ export default class SelectedBook extends Component {
     const {selectedBook} = this.props.route.params;
     const {updatedSelectedBook} = this.state;
     return (
-      <View style={{ flex: 1, backgroundColor: '#E3E4E6',}}>
-        <View style={{height: '100%'}}>
+      <SafeAreaView style={{ flex: 1, backgroundColor: '#E3E4E6',}}>
           <ScrollView contentContainerStyle={styles.scrollViewContainer}>
             {selectedBook === null ? (
               <Image
@@ -191,13 +190,14 @@ export default class SelectedBook extends Component {
                 </View>
                 <View style={styles.descriptionView}>
                 <Text style={styles.descriptionTitle}>Description</Text>
+                  {updatedSelectedBook.description && 
                 <ViewMoreText
                   numberOfLines={4}
                   renderViewMore={this.renderViewMore}
                   renderViewLess={this.renderViewLess}
                   textStyle={styles.descriptionBodyText}>
-                    <Text>{updatedSelectedBook.description}</Text>
-                </ViewMoreText>
+                    <Text>{selectedBook.description}</Text>
+                    </ViewMoreText>}
               </View>
               </View>
             </View>
@@ -214,8 +214,7 @@ export default class SelectedBook extends Component {
               />
             </View>
           </View>
-        </View>
-      </View>
+      </SafeAreaView>
     );
   }
 }
