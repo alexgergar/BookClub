@@ -16,9 +16,9 @@ import {GOODREAD_API_KEY} from 'react-native-dotenv';
 
 export default class SelectedBook extends Component {
   state = {
-    updatedSelectedBook: null,
+    updatedSelectedBook: '',
     hideContinueButton: true,
-  }
+  };
 
   componentDidMount() {
     const {selectedBook} = this.props.route.params;
@@ -28,30 +28,51 @@ export default class SelectedBook extends Component {
       authorBio: null,
       authorImage: null,
       otherBooksByAuthor: null,
+      averageRating: null,
+      ratingsCount: null,
     };
-     axios
+    axios
       .get(
-        `https://www.goodreads.com/search/index.xml?key=${GOODREAD_API_KEY}&q=${selectedBook.isbn}` // this gets info about author from goodreads
+        `https://www.goodreads.com/search/index.xml?key=${GOODREAD_API_KEY}&q=${
+          selectedBook.isbn
+        }`, // this gets info about author from goodreads
       )
       .then(response => {
-        const bookDataJSON = convert.xml2js(response.data, {compact: true, spaces: 4, textKey: 'text', cdataKey: 'cdata', attributesKey: 'attributes'}); // changes xml to json
-        const authorID = bookDataJSON.GoodreadsResponse.search.results.work.best_book.author.id.text; // this gets the author ID
-        additionalBookInfo.authorID = authorID;
-        return axios.get(`https://www.goodreads.com/author/show/${authorID}?format=xml&key=${GOODREAD_API_KEY}`) // immediately returning a new get request to get info on author
-        }
-      )
+        const bookDataJSON = convert.xml2js(response.data, {
+          compact: true,
+          spaces: 4,
+          textKey: 'text',
+          cdataKey: 'cdata',
+          attributesKey: 'attributes',
+        }); // changes xml to json
+        additionalBookInfo.authorID = bookDataJSON.GoodreadsResponse.search.results.work.best_book.author.id.text;
+        additionalBookInfo.averageRating = bookDataJSON.GoodreadsResponse.search.results.work.average_rating.text;
+        additionalBookInfo.ratingsCount = bookDataJSON.GoodreadsResponse.search.results.work.ratings_count.text;
+        return axios.get(
+          `https://www.goodreads.com/author/show/${additionalBookInfo.authorID}?format=xml&key=${GOODREAD_API_KEY}`,
+        ); // immediately returning a new get request to get info on author
+      })
       .then(response => {
-        const bookDataJSON = convert.xml2js(response.data, {compact: true, spaces: 4, textKey: 'text', cdataKey: 'cdata', attributesKey: 'attributes'});
+        const bookDataJSON = convert.xml2js(response.data, {
+          compact: true,
+          spaces: 4,
+          textKey: 'text',
+          cdataKey: 'cdata',
+          attributesKey: 'attributes',
+        });
         const authorBio = bookDataJSON.GoodreadsResponse.author.about.cdata; // this is the author bio
-        const authorImage = bookDataJSON.GoodreadsResponse.author.large_image_url.cdata || bookDataJSON.GoodreadsResponse.author.image_url.cdata; // author image
-        const authorsOtherBooksAllData = bookDataJSON.GoodreadsResponse.author.books.book; // other books by author and the below is to map through just for the info we want
+        const authorImage =
+          bookDataJSON.GoodreadsResponse.author.large_image_url.cdata ||
+          bookDataJSON.GoodreadsResponse.author.image_url.cdata; // author image
+        const authorsOtherBooksAllData =
+          bookDataJSON.GoodreadsResponse.author.books.book; // other books by author and the below is to map through just for the info we want
         const otherBooks = authorsOtherBooksAllData.map(book => ({
           title: book.title.text,
           coverArt: book.image_url.text,
           isbn: book.isbn13.text,
           avgRating: book.average_rating.text,
           description: book.description.text,
-        })); 
+        }));
         additionalBookInfo.authorBio = authorBio;
         additionalBookInfo.authorImage = authorImage;
         additionalBookInfo.otherBooksByAuthor = otherBooks;
@@ -115,83 +136,86 @@ export default class SelectedBook extends Component {
 
   render() {
     const {selectedBook} = this.props.route.params;
+    const {updatedSelectedBook} = this.state;
     return (
-      <SafeAreaView>
-        <ScrollView contentContainerStyle={styles.container}>
-          {selectedBook === null ? (
-            <Image
-              style={styles.bookImageView}
-              source={require('../utils/bookPlaceholder.png')}
-              resizeMode={'cover'}
-            />
-          ) : (
-            <Image
-              style={styles.bookImageView}
-              source={{
-                uri: selectedBook.thumbnail,
-              }}
-              resizeMode={'cover'}
-            />
-          )}
-          <View style={styles.backgroundContentContainer}>
-            <View style={styles.informationContentContainer}>
-              <View style={styles.titleAuthorView}>
-                <Text style={styles.bookTitleText}>{selectedBook.title}</Text>
-                <Text style={styles.bookAuthorsText}>
-                  {selectedBook.authors}
-                </Text>
-              </View>
-              <View style={styles.hortizontalLine} />
-              <View style={styles.greyInfoBoxView}>
-                <View style={styles.individualInGreyBoxView}>
-                  <Text style={styles.greyBoxTitle}>rating</Text>
-                  <Text style={styles.greyBoxSubTitle}>
-                    {selectedBook.averageRating}
+      <View style={{ flex: 1, backgroundColor: '#E3E4E6',}}>
+        <View style={{height: '100%'}}>
+          <ScrollView contentContainerStyle={styles.scrollViewContainer}>
+            {selectedBook === null ? (
+              <Image
+                style={styles.bookImageView}
+                source={require('../utils/bookPlaceholder.png')}
+                resizeMode={'cover'}
+              />
+            ) : (
+                <Image
+                  style={styles.bookImageView}
+                  source={{
+                    uri: selectedBook.thumbnail,
+                  }}
+                  resizeMode={'cover'}
+                />
+              )}
+            <View style={styles.backgroundContentContainer}>
+              <View style={styles.informationContentContainer}>
+                <View style={styles.titleAuthorView}>
+                  <Text style={styles.bookTitleText}>{updatedSelectedBook.title}</Text>
+                  <Text style={styles.bookAuthorsText}>
+                    {updatedSelectedBook.authors}
                   </Text>
                 </View>
-                <View
-                  style={[
-                    styles.individualInGreyBoxView,
-                    styles.middleInGreyBoxView,
-                  ]}>
-                  <Text style={styles.greyBoxTitle}>page count</Text>
-                  <Text style={styles.greyBoxSubTitle}>
-                    {selectedBook.pageCount}
-                  </Text>
+                <View style={styles.hortizontalLine} />
+                <View style={styles.greyInfoBoxView}>
+                  <View style={styles.individualInGreyBoxView}>
+                    <Text style={styles.greyBoxTitle}>rating</Text>
+                    <Text style={styles.greyBoxSubTitle}>
+                      {updatedSelectedBook.averageRating}
+                    </Text>
+                  </View>
+                  <View
+                    style={[
+                      styles.individualInGreyBoxView,
+                      styles.middleInGreyBoxView,
+                    ]}>
+                    <Text style={styles.greyBoxTitle}>page count</Text>
+                    <Text style={styles.greyBoxSubTitle}>
+                      {updatedSelectedBook.pageCount}
+                    </Text>
+                  </View>
+                  <View style={styles.individualInGreyBoxView}>
+                    <Text style={styles.greyBoxTitle}>lang</Text>
+                    <Text style={styles.greyBoxSubTitle}>
+                      {updatedSelectedBook.language}
+                    </Text>
+                  </View>
                 </View>
-                <View style={styles.individualInGreyBoxView}>
-                  <Text style={styles.greyBoxTitle}>lang</Text>
-                  <Text style={styles.greyBoxSubTitle}>
-                    {selectedBook.language}
-                  </Text>
-                </View>
-              </View>
-              <View style={styles.descriptionView}>
+                <View style={styles.descriptionView}>
                 <Text style={styles.descriptionTitle}>Description</Text>
                 <ViewMoreText
                   numberOfLines={4}
                   renderViewMore={this.renderViewMore}
                   renderViewLess={this.renderViewLess}
                   textStyle={styles.descriptionBodyText}>
-                  <Text>{selectedBook.description}</Text>
+                    <Text>{updatedSelectedBook.description}</Text>
                 </ViewMoreText>
               </View>
+              </View>
+            </View>
+          </ScrollView>
+          <View style={styles.bottomContainerForContinueButton}>
+            <View style={styles.bottonWhiteContainerView}>
+              <Button
+                title="Pick This Book"
+                disabled={this.state.hideContinueButton}
+                containerStyle={styles.continueButtonContainerStyle}
+                buttonStyle={styles.continueButtonStyle}
+                titleStyle={styles.continueTitleButtonStyle}
+                onPress={this.handlePickButtonPress}
+              />
             </View>
           </View>
-        </ScrollView>
-        <View style={styles.bottomContainerForContinueButton}>
-          <View style={styles.bottonWhiteContainerView}>
-            <Button
-              title="Pick This Book"
-              disabled={this.state.hideContinueButton}
-              containerStyle={styles.continueButtonContainerStyle}
-              buttonStyle={styles.continueButtonStyle}
-              titleStyle={styles.continueTitleButtonStyle}
-              onPress={this.handlePickButtonPress}
-            />
-          </View>
         </View>
-      </SafeAreaView>
+      </View>
     );
   }
 }
@@ -205,10 +229,9 @@ const starterHeightPositionForInformationTextUnderBookImage =
   bookPlaceholderImageHeight + 40 - windowHeight * 0.2;
 
 const styles = StyleSheet.create({
-  container: {
-    backgroundColor: '#E3E4E6',
+  scrollViewContainer: {
     alignItems: 'center',
-    paddingBottom: windowHeight * 0.22,
+    flexGrow: 1,
   },
   backgroundContentContainer: {
     backgroundColor: 'white',
@@ -216,7 +239,8 @@ const styles = StyleSheet.create({
     borderTopLeftRadius: 15,
     borderTopRightRadius: 15,
     width: '90%',
-    height: '100%',
+    flexGrow: 1,
+    paddingBottom: windowHeight * .2,
   },
   informationContentContainer: {
     padding: windowHeight * 0.02,
@@ -299,7 +323,7 @@ const styles = StyleSheet.create({
     bottom: 0,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#E3E4E6',
+    // backgroundColor: '#E3E4E6',
   },
   bottonWhiteContainerView: {
     backgroundColor: 'white',

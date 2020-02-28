@@ -6,13 +6,10 @@ import {
   Image,
   ScrollView,
   Dimensions,
-  TouchableWithoutFeedback,
 } from 'react-native';
-import {Button} from 'react-native-elements';
 import UserContext from '../context/UserContext';
 import firestore from '@react-native-firebase/firestore';
 import EventCardHorizontal from '../components/EventCardHorizontal';
-import EventCardHarizontalTest from '../components/EventCardHarizontalTest';
 import {FlatList} from 'react-native-gesture-handler';
 import GroupTile from '../components/GroupTile';
 

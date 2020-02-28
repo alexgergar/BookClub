@@ -9,12 +9,10 @@ import {
   FlatList,
   PermissionsAndroid,
   Platform,
-  Animated,
   TouchableOpacity,
   TouchableHighlight,
 } from 'react-native';
-import { Button, Icon, ListItem, Input, Avatar, Badge } from 'react-native-elements';
-import Modal from 'react-native-modal';
+import {Icon, ListItem } from 'react-native-elements';
 import GreyWhiteBackgroundBottomButton from '../components/GreyWhiteBackgroundBottomButton';
 import SeriesOfAvatars from '../components/SeriesOfAvatars';
 import SearchBar from '../components/SearchBar';
@@ -43,8 +41,6 @@ export default class CreateEventAttendees extends Component {
   };
 
   componentDidMount() {
-    let user = this.context;
-    console.log(this.state.selectedBookClubMembers.length);
     this.getBookClubsFromUID();
   }
 
@@ -58,7 +54,7 @@ export default class CreateEventAttendees extends Component {
 
   validateDetails = () => {
     this.state.selectedBookClubMembers.length >= 2 ?
-    this.setState({ disableButton: false }, () => console.log('disable button is false'))
+    this.setState({ disableButton: false })
     :
     this.setState({ disableButton: true }, );
   };
@@ -290,7 +286,6 @@ export default class CreateEventAttendees extends Component {
         (value, index) => value === this.state.selectedBookClubMembers[index],
       )
     ) {
-      console.log('this is the same list');
       this.props.navigation.navigate('CreateEventVerifyInfo', {
         selectedBook: selectedBook,
         streetAddress: streetAddress,
@@ -305,7 +300,6 @@ export default class CreateEventAttendees extends Component {
         date: date,
       });
     } else {
-      console.log('not the same');
       this.props.navigation.navigate('CreateEventNewClubName', {
         selectedBook: selectedBook,
         streetAddress: streetAddress,
@@ -320,6 +314,20 @@ export default class CreateEventAttendees extends Component {
   }
 
   render() {
+    let user = this.context;
+    let workingAttendeeInviteList = this.state.selectedBookClubMembers;
+    console.log(workingAttendeeInviteList);
+    if (workingAttendeeInviteList.find(({uid}) => uid === user.uid) === undefined) {
+      console.log('need to add me')
+      const userInfo = {
+        email: user.email,
+        displayName: user.displayName,
+        uid: user.uid,
+        phone: user.phone,
+      }
+      workingAttendeeInviteList = [userInfo, ...workingAttendeeInviteList];
+      console.log(workingAttendeeInviteList);
+    }
     const displayOfList = this.state.showSearchList ? (
       <FlatList
         data={this.state.searchContacts}
@@ -329,7 +337,7 @@ export default class CreateEventAttendees extends Component {
     ) : (
       <SwipeListView
         disableRightSwipe={true}
-        data={this.state.selectedBookClubMembers}
+        data={workingAttendeeInviteList}
         renderItem={this.renderMember}
         renderHiddenItem={(data, rowMap) => (
           <TouchableOpacity
@@ -340,7 +348,7 @@ export default class CreateEventAttendees extends Component {
         )}
         rightOpenValue={-windowWidth * 0.8}
         onRowDidOpen={this.onRowDidOpen}
-        friction={15}
+        friction={10}
       />
     )
     return (

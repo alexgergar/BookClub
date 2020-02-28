@@ -70,17 +70,28 @@ export default class CreateEvent extends Component {
           ? book.volumeInfo.imageLinks.thumbnail
           : null;
     }
+    let isbn = null;
+    let identifiers = book.volumeInfo.industryIdentifiers;
+    if (identifiers !== undefined) {
+      let idResult13 = identifiers.find(({type}) => type === 'ISBN_13');
+      let idResult10 = identifiers.find(({type}) => type === 'ISBN_10');
+      if (idResult13 !== undefined) {
+        isbn = idResult13.identifier;
+      } else if (idResult10 !== undefined) {
+        isbn = idResult10.identifier;
+      }
+    }
     let bookObject = {
-      id: book.id,
+      // id: book.id,
       title: book.volumeInfo.title,
       authors: book.volumeInfo.authors,
-      isbn: book.volumeInfo.industryIdentifiers,
+      isbn: isbn,
       smallThumbnail: thumbnail.small,
       thumbnail: thumbnail.normal,
       pageCount: book.volumeInfo.pageCount,
       language: book.volumeInfo.language,
-      averageRating: book.volumeInfo.averageRating,
-      ratingsCount: book.volumeInfo.ratingsCount,
+      // averageRating: book.volumeInfo.averageRating,
+      // ratingsCount: book.volumeInfo.ratingsCount,
       description: book.volumeInfo.description,
     };
     return (
@@ -88,7 +99,7 @@ export default class CreateEvent extends Component {
         underlayColor="rgba(58, 86, 114, 0.3)"
         onPress={() => this.onBookSelectionPress(bookObject)}>
         <View style={styles.flatListRowContainer}>
-          {bookObject.thumbnail === null || bookObject.thumbnail === "" ? (
+          {bookObject.thumbnail === null || bookObject.thumbnail === '' ? (
             <Image
               style={styles.bookListImage}
               source={require('../utils/bookPlaceholder.png')}
@@ -97,7 +108,7 @@ export default class CreateEvent extends Component {
           ) : (
             <Image
               style={styles.bookListImage}
-              source={{ uri: bookObject.thumbnail }}
+              source={{uri: bookObject.thumbnail}}
               resizeMode={'cover'}
             />
           )}
@@ -111,36 +122,35 @@ export default class CreateEvent extends Component {
   };
 
   onBookSelectionPress = selectedBook => {
-    console.log(selectedBook);
-    // if (this.props.route.params) {
-    //   const {
-    //     onUpdate,
-    //     streetAddress,
-    //     city,
-    //     state,
-    //     zipcode,
-    //     detailsForLocation,
-    //     membersForBookClub,
-    //     newClub,
-    //     date,
-    //   } = this.props.route.params;
-    //   this.props.navigation.navigate('SelectedBook', {
-    //     onUpdate: onUpdate,
-    //     selectedBook: selectedBook,
-    //     streetAddress: streetAddress,
-    //     city: city,
-    //     state: state,
-    //     zipcode: zipcode,
-    //     detailsForLocation: detailsForLocation,
-    //     membersForBookClub: membersForBookClub,
-    //     newClub: newClub,
-    //     date: date,
-    //   });
-    // } else {
-    //   this.props.navigation.navigate('SelectedBook', {
-    //     selectedBook: selectedBook,
-    //   });
-    // }
+    if (this.props.route.params) {
+      const {
+        onUpdate,
+        streetAddress,
+        city,
+        state,
+        zipcode,
+        detailsForLocation,
+        membersForBookClub,
+        newClub,
+        date,
+      } = this.props.route.params;
+      this.props.navigation.navigate('SelectedBook', {
+        onUpdate: onUpdate,
+        selectedBook: selectedBook,
+        streetAddress: streetAddress,
+        city: city,
+        state: state,
+        zipcode: zipcode,
+        detailsForLocation: detailsForLocation,
+        membersForBookClub: membersForBookClub,
+        newClub: newClub,
+        date: date,
+      });
+    } else {
+      this.props.navigation.navigate('SelectedBook', {
+        selectedBook: selectedBook,
+      });
+    }
   };
 
   onTextInputPress = () => {
@@ -212,8 +222,10 @@ export default class CreateEvent extends Component {
                     keyExtractor={(item, index) => index.toString()}
                     renderItem={book => this.renderGoogleBooks(book.item)}
                     keyboardShouldPersistTaps={'always'}
-                    ref={(ref) => { this.flatListRef = ref; }}
-                />
+                    ref={ref => {
+                      this.flatListRef = ref;
+                    }}
+                  />
                 </View>
               )}
               {this.state.showBookListImage && (
