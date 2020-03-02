@@ -55,7 +55,6 @@ export default class CreateEventVerifyInfo extends Component {
     const thisEvent = {
       attendees: membersOfBookClub,
       bookForEvent: {
-        googleID: selectedBook.id, 
         title: selectedBook.title,
         authors: selectedBook.authors,
         isbn: selectedBook.isbn,
@@ -76,7 +75,8 @@ export default class CreateEventVerifyInfo extends Component {
         bookClubID: bookClubID,
         name: bookClubName,
       },
-      eventDate: date,
+      eventDate: date.date,
+      eventTime: date.time,
       detailsForEvent: '',
       eventLocation: {
         address: {
@@ -100,15 +100,15 @@ export default class CreateEventVerifyInfo extends Component {
       nameOfBookClub: bookClubName,
     };
     console.log(thisEvent);
-    // if (newClub) {
-    //   await firestore().collection('bookclubs').add(newBookClub).then(ref => {
-    //     this.setState({newBookClubID: ref.id});
-    //   }).catch(error => console.log(error));
-    //   thisEvent.bookClub.bookClubID = this.state.newBookClubID;
-    //   this.handleCreateEventInFirestore(thisEvent);
-    // } else {
-    //   this.handleCreateEventInFirestore(thisEvent);
-    // }
+    if (newClub) {
+      await firestore().collection('bookclubs').add(newBookClub).then(ref => {
+        this.setState({newBookClubID: ref.id});
+      }).catch(error => console.log(error));
+      thisEvent.bookClub.bookClubID = this.state.newBookClubID;
+      this.handleCreateEventInFirestore(thisEvent);
+    } else {
+      this.handleCreateEventInFirestore(thisEvent);
+    }
   }
 
   handleCreateEventInFirestore = async thisEvent => {

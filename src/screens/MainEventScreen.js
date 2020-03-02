@@ -84,10 +84,7 @@ export default class MainEvent extends Component {
             <View style={styles.textRowCenterAlign}>
               <Text style={styles.dateText}>
                 {event !== null &&
-                  event.eventDate.date.substring(
-                    0,
-                    event.eventDate.date.length - 5,
-                  )}
+                  event.eventDate.date}
               </Text>
               <Text style={styles.spacerText}> at </Text>
               {event !== null && 

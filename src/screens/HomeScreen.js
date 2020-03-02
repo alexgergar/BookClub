@@ -6,6 +6,7 @@ import {
   Image,
   ScrollView,
   Dimensions,
+  SafeAreaView,
 } from 'react-native';
 import UserContext from '../context/UserContext';
 import firestore from '@react-native-firebase/firestore';
@@ -69,7 +70,7 @@ export default class Home extends Component {
   render() {
     const {events, bookClubs} = this.state;
     return (
-      <View style={styles.container}>
+      <SafeAreaView style={styles.container}>
         <View style={[styles.upcomingContainer, styles.headlineView]}>
           <Text style={styles.homeHeadlineOneText}>Upcoming {events.length}</Text>
         </View>
@@ -99,7 +100,7 @@ export default class Home extends Component {
                 renderItem={({item}) => <GroupTile containerStyle={styles.bookClubListItemContainer} bookClub={item} />}
               />}
           </View>
-      </View>
+      </SafeAreaView>
     );
   }
 }

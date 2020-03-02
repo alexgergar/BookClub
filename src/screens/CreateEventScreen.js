@@ -11,10 +11,10 @@ import {
   TouchableHighlight,
   Animated,
   Easing,
-  Keyboard,
+  Platform,
 } from 'react-native';
 import axios from 'axios';
-import {Button} from 'react-native-elements';
+import {Icon} from 'react-native-elements';
 import {GOOGLE_BOOKS_API_KEY} from 'react-native-dotenv';
 import SearchBar from '../components/SearchBar';
 import urlFor from '../utils/urlFor';
@@ -63,7 +63,7 @@ export default class CreateEvent extends Component {
           showBookListImage: false,
         }),
       )
-      .then(() => this.flatListRef.scrollToIndex({ animated: true, index: 0 }))
+      .then(() => this.flatListRef.scrollToIndex({animated: true, index: 0}))
       .catch(error => console.log(error));
   };
 
@@ -189,6 +189,16 @@ export default class CreateEvent extends Component {
   render() {
     return (
       <SafeAreaView style={styles.container}>
+        {Platform.OS === 'ios' && (
+          <View
+            style={styles.iosBackButton}
+          >
+            <Icon
+              name='chevron-left'
+              type='feather'
+              
+              onPress={() => this.props.navigation.navigate('Home')} /></View>
+        )}
         <View style={styles.innerContainer}>
           <Animated.Image
             style={[
@@ -357,6 +367,10 @@ const styles = StyleSheet.create({
     height: flatListBookImageHeight,
     borderRadius: 5,
   },
+  iosBackButton: {
+    zIndex: 50,
+    position: 'absolute', left: windowHeight * .02, top: windowHeight * .06,
+  }
 });
 
 /* Color Theme Swatches in Hex

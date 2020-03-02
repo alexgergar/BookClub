@@ -1,30 +1,55 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import {
   View,
   StyleSheet,
   Dimensions,
   Image,
+  Text,
   TouchableWithoutFeedback,
   Platform,
-  Text,
+  Modal,
+  Button,
 } from 'react-native';
+import DatePicker from '../components/DatePicker';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import GreyWhiteBackgroundBottomButton from '../components/GreyWhiteBackgroundBottomButton';
 
 export default class CreateEventPickDate extends Component {
   state = {
     date: new Date(),
+    mode: 'date',
+    showModal: false,
+    time: null,
     showDatePicker: false,
     showTimePicker: false,
     headline: 'Pick A Date',
+  }
+
+  onPressButton = () => {
+    Platform.OS === 'android' ? this.handleAndroidPicker() : this.handleModal();
   };
 
-  showDatepicker = () => {
+  handleModal = () => {
+    this.setState({ 
+      showModal: !this.state.showModal });
+  };
+
+  handleAndroidPicker = () => {
     this.setState({showDatePicker: true});
   };
 
+  setIOSDate = (event, selectedDate) => {
+    if (Platform.OS === 'ios') {
+      const currentDate = selectedDate || this.state.date;
+      const eventTime = this.formatTime(currentDate);
+      this.setState({
+        date: currentDate,
+        time: eventTime,
+      });
+    } 
+  };
+
   setDate = (event, date) => {
-    console.log(date);
     if (date === undefined) {
       this.setState({showDatePicker: false});
     } else {
@@ -39,9 +64,11 @@ export default class CreateEventPickDate extends Component {
   setTime = (event, selectedDate) => {
     if (selectedDate !== undefined) {
       const currentDate = selectedDate || this.state.date;
+      const eventTime = this.formatTime(currentDate);
       this.setState(
         {
           date: currentDate,
+          time: eventTime,
           showTimePicker: false,
           headline: 'Continue',
         },
@@ -54,9 +81,51 @@ export default class CreateEventPickDate extends Component {
     }
   };
 
+  handleSubmitTime = () => {
+    this.setState({showModal: false});
+    this.sendToNextScreen();
+  }
+
+  showTimeMode = () => {
+    const currentTime = this.formatTime(this.state.date);
+    this.setState({mode: 'time', time: currentTime});
+  }
+
+  showDateMode = () => {
+    this.setState({ mode: 'date'});
+  }
+
+  formatTime = currentDate => {
+    const hours = currentDate.getHours();
+    const minutes = currentDate.getMinutes();
+    const newMinutes = this.formatMinutes(minutes);
+    const newTime = this.formatHours(hours, newMinutes);
+    return newTime;
+  };
+
+  formatMinutes = minutes => {
+    if (minutes < 10) {
+      return `0${minutes}`;
+    } else {
+      return minutes;
+    }
+  };
+
+  formatHours = (hour, minutes) => {
+    if (hour > 12) {
+      const newHour = hour - 12;
+      return `${newHour}:${minutes} pm`;
+    } else if (hour !== 0) {
+      return `${hour}:${minutes} am`;
+    } else {
+      return `12:${minutes} am`;
+    }
+  };
+
+  
+
   sendToNextScreen = () => {
     const eventDate = this.state.date.toDateString();
-    const eventTime = this.formatTime();
     const {
       onUpdate,
       streetAddress,
@@ -84,96 +153,79 @@ export default class CreateEventPickDate extends Component {
           newClub: newClub,
           date: {
             date: eventDate,
-            time: eventTime,
+            time: this.state.time,
           },
         })
       : this.props.navigation.navigate('CreateEventAddDetails', {
           selectedBook: selectedBook,
           date: {
             date: eventDate,
-            time: eventTime,
+            time: this.state.time,
           },
         });
   };
 
-  formatTime = () => {
-    const hours = this.state.date.getHours();
-    const minutes = this.state.date.getMinutes();
-    const newMinutes = this.formatMinutes(minutes);
-    const newTime = this.formatHours(hours, newMinutes);
-    return newTime;
-  };
-
-  formatMinutes = minutes => {
-    if (minutes < 10) {
-      return `0${minutes}`;
-    } else {
-      return minutes;
-    }
-  };
-
-  formatHours = (hour, minutes) => {
-    if (hour > 12) {
-      const newHour = hour - 12;
-      return `${newHour}:${minutes} pm`;
-    } else if (hour !== 0) {
-      return `${hour}:${minutes} am`;
-    } else {
-      return `12:${minutes} am`;
-    }
-  };
-
-  onPressButton = () => {
-    this.showDatepicker();
-  };
-
   render() {
+    const { date, showModal, time, mode } = this.state;
     return (
-      <GreyWhiteBackgroundBottomButton
-        headline="Pick a Date"
-        buttonTitle={this.state.headline}
-        scrollView={false}
-        continueButtonOnPress={this.onPressButton}>
-        <View style={styles.imageView}>
-          {Platform.OS === 'android' && 
-          <TouchableWithoutFeedback onPress={() => this.showDatepicker()}>
-            <Image
-              style={styles.backgroundImage}
-              source={require('../utils/pickDateTimeImage.png')}
-              resizeMode={'contain'}
+      <>
+        <GreyWhiteBackgroundBottomButton
+          headline="Pick a Date"
+          buttonTitle='Select time'
+          continueButtonOnPress={this.onPressButton}
+        >
+        <TouchableWithoutFeedback onPress={this.onPressButton}>
+        <View style={{ marginTop: '30%'}}>
+          <Image
+            style={styles.backgroundImage}
+            source={require('../utils/pickDateTimeImage.png')}
+            resizeMode={'contain'}
             />
-            </TouchableWithoutFeedback>}
-          {Platform.OS === 'ios' && !this.state.showDatePicker && !this.state.showTimePicker &&
-            <TouchableWithoutFeedback onPress={() => this.showDatepicker()}>
-              <Image
-                style={styles.backgroundImage}
-                source={require('../utils/pickDateTimeImage.png')}
-                resizeMode={'contain'}
-              />
-            </TouchableWithoutFeedback>}
         </View>
-        {Platform.OS === 'ios' && <View style={styles.spaceForDateTimePicker} />
-        }
-        {this.state.showDatePicker && (<View><Text style={{ fontSize: 40 }}>Date</Text></View>)}
-        {this.state.showDatePicker && (
-            <DateTimePicker
-              value={this.state.date}
-              mode="date"
-              display="default"
-              onChange={this.setDate}
-            />
-          )}
-          {this.state.showTimePicker && (
-            <DateTimePicker
-              value={this.state.date}
-              mode="time"
-              display="default"
-              onChange={this.setTime}
-            />
-          )}
-          
+              
+          </TouchableWithoutFeedback>
+        <View style={{alignItems: 'center'}}>
+            <View style={{marginTop: windowHeight * .05, alignItems: 'center'}}>
+              {showModal && <Text style={styles.dateTimeTextStyle}>{date.toDateString()}</Text>}
+              {showModal && time !== null && <Text style={styles.dateTimeTextStyle}>{time}</Text>  }
+            </View>
+        </View>
         
-      </GreyWhiteBackgroundBottomButton>
+        {this.state.showDatePicker && (
+          <DateTimePicker
+            value={this.state.date}
+            mode="date"
+            display="default"
+            onChange={this.setDate}
+          />
+        )}
+        {this.state.showTimePicker && (
+          <DateTimePicker
+            value={this.state.date}
+            mode="time"
+            display="default"
+            onChange={this.setTime}
+          />
+        )}
+        </GreyWhiteBackgroundBottomButton>
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={showModal}
+      >
+        <View style={{ justifyContent: 'flex-end', backgroundColor: 'white', width: windowWidth, position: 'absolute', bottom: 0 }}>
+          <DatePicker
+            date={date}
+            showTimeMode={this.showTimeMode}
+            mode={mode}
+            handleModal={this.handleModal}
+            showDateMode={this.showDateMode}
+            setIOSDate={this.setIOSDate}
+            handleSubmitTime={this.handleSubmitTime}
+          />
+        </View>
+      </Modal>
+      </>
     );
   }
 }
@@ -188,22 +240,26 @@ const styles = StyleSheet.create({
   },
   imageView: {
     alignItems: 'center',
-    top: windowHeight * 0.2,
-  },
-  backgroundImage: {
-    height: windowWidth * 0.5,
-    top: 0,
-  },
-  spaceForDateTimePicker: {
-    height: '40%',
+    top: windowHeight * 0.15,
   },
   buttonContainer: {
     borderRadius: 20,
     width: '85%',
     alignSelf: 'center',
   },
-  bottom: {
-    backgroundColor: 'orange',
-    height: windowHeight * 0.3,
+  iosDatePickerView: {
+    zIndex: 1000,
+    position: 'absolute',
+    top: windowHeight * .5,
+    width: windowWidth,
+    backgroundColor: 'pink',
+  },
+  dateTimeTextStyle: {
+    fontFamily: 'Montserrat-Regular',
+    fontSize: 26,
+  },
+  backgroundImage: {
+    height: windowWidth * 0.45,
+    width: '100%',
   },
 });

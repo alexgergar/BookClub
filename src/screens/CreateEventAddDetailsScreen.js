@@ -204,7 +204,6 @@ const styles = StyleSheet.create({
     alignSelf: 'flex-start',
   },
   singleLineContainerStyle: {
-    height: windowHeight * 0.1,
     paddingVertical: windowHeight * 0.01,
   },
   twoLineContainerStyle: {

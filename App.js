@@ -26,8 +26,7 @@ const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
 
 const MainStack = () => (
-  <Stack.Navigator 
-    initialRouteName="Home" headerMode="none">
+  <Stack.Navigator initialRouteName="Home" headerMode="none">
     <Stack.Screen name="Home" component={HomeScreen} />
     <Stack.Screen name="MainEvent" component={MainEventScreen} />
     <Stack.Screen name="SignOutBook" component={SignOutScreen} />
@@ -75,13 +74,18 @@ const TabNav = () => (
       }}
       component={MainStack}
     />
-    <Tab.Screen name="Test" component={TestScreen} tabBarVisible={false} options={{
-      tabBarLabel: 'Test',
-      tabBarVisible: false,
-      tabBarIcon: ({ color, size }) => (
-        <Icon name="plus-circle" type="feather" />
-      ),
-    }}/>
+    <Tab.Screen
+      name="Test"
+      component={TestScreen}
+      tabBarVisible={false}
+      options={{
+        tabBarLabel: 'Test',
+        tabBarVisible: false,
+        tabBarIcon: ({color, size}) => (
+          <Icon name="plus-circle" type="feather" />
+        ),
+      }}
+    />
     <Tab.Screen
       name="Create"
       tabBarVisible={false}
