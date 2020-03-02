@@ -5,6 +5,8 @@ import {
   Dimensions,
   Image,
   TouchableWithoutFeedback,
+  Platform,
+  Text,
 } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import GreyWhiteBackgroundBottomButton from '../components/GreyWhiteBackgroundBottomButton';
@@ -22,6 +24,7 @@ export default class CreateEventPickDate extends Component {
   };
 
   setDate = (event, date) => {
+    console.log(date);
     if (date === undefined) {
       this.setState({showDatePicker: false});
     } else {
@@ -132,30 +135,44 @@ export default class CreateEventPickDate extends Component {
         scrollView={false}
         continueButtonOnPress={this.onPressButton}>
         <View style={styles.imageView}>
+          {Platform.OS === 'android' && 
           <TouchableWithoutFeedback onPress={() => this.showDatepicker()}>
             <Image
               style={styles.backgroundImage}
               source={require('../utils/pickDateTimeImage.png')}
               resizeMode={'contain'}
             />
-          </TouchableWithoutFeedback>
+            </TouchableWithoutFeedback>}
+          {Platform.OS === 'ios' && !this.state.showDatePicker && !this.state.showTimePicker &&
+            <TouchableWithoutFeedback onPress={() => this.showDatepicker()}>
+              <Image
+                style={styles.backgroundImage}
+                source={require('../utils/pickDateTimeImage.png')}
+                resizeMode={'contain'}
+              />
+            </TouchableWithoutFeedback>}
         </View>
+        {Platform.OS === 'ios' && <View style={styles.spaceForDateTimePicker} />
+        }
+        {this.state.showDatePicker && (<View><Text style={{ fontSize: 40 }}>Date</Text></View>)}
         {this.state.showDatePicker && (
-          <DateTimePicker
-            value={this.state.date}
-            mode="date"
-            display="default"
-            onChange={this.setDate}
-          />
-        )}
-        {this.state.showTimePicker && (
-          <DateTimePicker
-            value={this.state.date}
-            mode="time"
-            display="default"
-            onChange={this.setTime}
-          />
-        )}
+            <DateTimePicker
+              value={this.state.date}
+              mode="date"
+              display="default"
+              onChange={this.setDate}
+            />
+          )}
+          {this.state.showTimePicker && (
+            <DateTimePicker
+              value={this.state.date}
+              mode="time"
+              display="default"
+              onChange={this.setTime}
+            />
+          )}
+          
+        
       </GreyWhiteBackgroundBottomButton>
     );
   }
@@ -171,11 +188,14 @@ const styles = StyleSheet.create({
   },
   imageView: {
     alignItems: 'center',
-    top: windowHeight * 0.15,
+    top: windowHeight * 0.2,
   },
   backgroundImage: {
     height: windowWidth * 0.5,
     top: 0,
+  },
+  spaceForDateTimePicker: {
+    height: '40%',
   },
   buttonContainer: {
     borderRadius: 20,

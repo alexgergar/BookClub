@@ -110,7 +110,7 @@ export default class GreyWhiteBackgroundBottomButton extends Component {
               styles.whiteBackgroundContainer,
             ]}>
             {this.props.scrollView && (
-              <ScrollView contentContainerStyle={{ flexGrow: 1,}}>
+              <ScrollView contentContainerStyle={{ flexGrow: 1}}>
                 <HeadlineSection
                   headerView={this.props.headerView}
                   headline={this.props.headline}
@@ -157,7 +157,7 @@ const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
 
 const styles = StyleSheet.create({
-  safeAreaView: { flex: 1, backgroundColor: '#E3E4E6',},
+  safeAreaView: { flex: 1, backgroundColor: '#E3E4E6'},
   container: {
     backgroundColor: '#E3E4E6',
     alignItems: 'center',
