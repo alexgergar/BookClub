@@ -16,7 +16,7 @@ import firestore from '@react-native-firebase/firestore';
 
 export default class MainEvent extends Component {
   state = {
-    showEventDetail: true,
+    showEventDetail: false,
     eventID: null,
     event: null,
   };
@@ -129,7 +129,7 @@ export default class MainEvent extends Component {
               />
             </View>
             {this.state.showEventDetail && event !== null && <EventDetails event={event} />}
-            {!this.state.showEventDetail && event !== null &&  <BookDetails event={event} />}  
+            {!this.state.showEventDetail && event !== null && <BookDetails book={event.bookForEvent} />}  
           </View>
         </View>
       </ScrollView>

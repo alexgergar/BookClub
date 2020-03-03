@@ -13,6 +13,10 @@ import BookcoverImage from './BookcoverImage';
 import ViewMoreText from 'react-native-view-more-text';
 
 export default class BookDetails extends Component {
+  static defaultProps = {
+    showTitleAuthor: true,
+  };
+  
   renderViewMore = onPress => {
     return (
       <Text style={styles.viewMore} onPress={onPress}>
@@ -29,67 +33,73 @@ export default class BookDetails extends Component {
     );
   };
 
-  renderBookCovers = ({item}) => (
-    <BookcoverImage
-      source={{uri: item.coverArt}}
-      style={styles.bookCoverList}
-    />
-  );
+  renderBookCovers = ({item}) => {
+    if (item.title.toLowerCase() !== this.props.book.title.toLowerCase() && item.coverArt !== `https://s.gr-assets.com/assets/nophoto/book/111x148-bcc042a9c91a29c1d680899eff700a03.png`) {
+      return (
+        <BookcoverImage
+          source={{ uri: item.coverArt }}
+          style={styles.bookCoverList}
+        />
+      );
+    }
+  }
 
   render() {
-    const {event} = this.props;
+    const {book, showTitleAuthor, headlineText} = this.props;
+    const author = book.authors !== '' && book.authors !== undefined ? book.authors : book.author;
     return (
       <View>
-        <View style={styles.headlineView}>
-          {event !== null && 
-          <Text style={styles.bookTitleTextHeadline}>
-            {event.bookForEvent.title}
-          </Text>}
-        </View>
-        <View style={styles.headlineView}>
-          {event !== null && 
-            <Text style={styles.bookAuthorTextHeadline}>
-              {event.bookForEvent.authors}
-            </Text>}
-        </View>
+       {showTitleAuthor && (
+         <>
+            <View style={styles.headlineView}>
+              {book !== null &&
+                <Text style={styles.bookTitleTextHeadline}>
+                  {book.title}
+                </Text>}
+            </View>
+            <View style={styles.headlineView}>
+              {book !== null &&
+                <Text style={styles.bookAuthorTextHeadline}>
+                  {author}
+                </Text>}
+            </View>
+         </>
+       )}
+        
         <View style={styles.bookHeadlineView}>
-          <Text style={styles.headlineText}>Description</Text>
-          {event !== null && 
+          <Text style={[styles.headlineText, headlineText]}>Description</Text>
             <ViewMoreText
               numberOfLines={3}
               renderViewMore={this.renderViewMore}
               renderViewLess={this.renderViewLess}
               textStyle={styles.bookDescriptionText}>
-              <Text>{event.bookForEvent.description}</Text>
-            </ViewMoreText>}
+            <Text>{book.description}</Text>
+            </ViewMoreText>
         </View>
         <View style={styles.bookHeadlineView}>
-          <Text style={styles.headlineText}>
-            About {event.bookForEvent.authors}
+          <Text style={[styles.headlineText, headlineText]}>
+            About {author}
           </Text>
-          {event !== null && 
             <ViewMoreText
               numberOfLines={3}
               renderViewMore={this.renderViewMore}
               renderViewLess={this.renderViewLess}
               textStyle={styles.bookDescriptionText}>
-              <Text>{event.bookForEvent.authorBio}</Text>
-            </ViewMoreText>}
+            <Text>{book.authorBio}</Text>
+            </ViewMoreText>
         </View>
 
         <View style={styles.bookHeadlineView}>
-          {event !== null && 
             <Text style={styles.headlineText}>
-            Other Books by {event.bookForEvent.author}
-            </Text>}
+            Other Books by {author}
+            </Text>
           <View style={styles.bookCoversListView}>
-            {event !== null && 
               <FlatList
                 horizontal={true}
-                data={event.bookForEvent.otherBooksByAuthor}
+                data={book.otherBooksByAuthor}
                 keyExtractor={(item, index) => index.toString()}
                 renderItem={this.renderBookCovers}
-              />}
+              />
           </View>
         </View>
       </View>

@@ -16,6 +16,7 @@ import CreateEventVerifyInfoScreen from './src/screens/CreateEventVerifyInfoScre
 import CreateEventPickDateScreen from './src/screens/CreateEventPickDateScreen';
 import CreateEventNewClubNameScreen from './src/screens/CreateEventNewClubNameScreen';
 import TestScreen from './src/screens/TestScreen';
+import BookViewScreen from './src/screens/BookViewScreen';
 import UserContext from './src/context/UserContext';
 import {NavigationContainer} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
@@ -29,6 +30,7 @@ const MainStack = () => (
   <Stack.Navigator initialRouteName="Home" headerMode="none">
     <Stack.Screen name="Home" component={HomeScreen} />
     <Stack.Screen name="MainEvent" component={MainEventScreen} />
+    <Stack.Screen name="BookView" component={BookViewScreen} />
     <Stack.Screen name="SignOutBook" component={SignOutScreen} />
   </Stack.Navigator>
 );
@@ -68,8 +70,10 @@ const TabNav = () => (
   <Tab.Navigator shifting={true} barStyle={{backgroundColor: 'white'}}>
     <Tab.Screen
       name="Home"
+      // tabBarVisible={false}
       options={{
         tabBarLabel: 'Home',
+        // tabBarVisible: false,
         tabBarIcon: ({color, size}) => <Icon name="home" type="feather" />,
       }}
       component={MainStack}
@@ -82,6 +86,18 @@ const TabNav = () => (
         tabBarLabel: 'Test',
         tabBarVisible: false,
         tabBarIcon: ({color, size}) => (
+          <Icon name="plus-circle" type="feather" />
+        ),
+      }}
+    />
+    <Tab.Screen
+      name="Loading"
+      component={LoadingAuthScreen}
+      tabBarVisible={false}
+      options={{
+        tabBarLabel: 'Loading',
+        tabBarVisible: false,
+        tabBarIcon: ({ color, size }) => (
           <Icon name="plus-circle" type="feather" />
         ),
       }}

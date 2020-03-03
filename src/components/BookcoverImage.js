@@ -1,6 +1,7 @@
 import React from 'react';
 import {Image} from 'react-native';
 
+
 const BookcoverImage = props => (
   <Image
     source={props.source}
