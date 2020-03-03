@@ -99,28 +99,55 @@ export default class CreateEventVerifyInfo extends Component {
       membersUID: membersOfBookClubUID,
       nameOfBookClub: bookClubName,
     };
-    console.log(thisEvent);
     if (newClub) {
-      await firestore().collection('bookclubs').add(newBookClub).then(ref => {
-        this.setState({newBookClubID: ref.id});
-      }).catch(error => console.log(error));
+      await firestore().collection('bookclubs')
+        .add(newBookClub)
+        .then(ref => {
+          this.setState({newBookClubID: ref.id});
+        })
+        .catch(error => console.log(error));
       thisEvent.bookClub.bookClubID = this.state.newBookClubID;
-      this.handleCreateEventInFirestore(thisEvent);
+      this.handleCreateEventInFirestore(thisEvent, membersOfBookClubUID);
     } else {
-      this.handleCreateEventInFirestore(thisEvent);
+      this.handleCreateEventInFirestore(thisEvent, membersOfBookClubUID);
     }
   }
 
-  handleCreateEventInFirestore = async thisEvent => {
+  handleCreateEventInFirestore = async (thisEvent, membersOfBookClubUID) => {
     await firestore()
       .collection('events')
       .add(thisEvent)
       .then(ref => {
         console.log(ref.id);
-        this.props.navigation.navigate('MainEvent', {eventID: ref.id});
+        this.handleUpdateUserEvents(thisEvent, membersOfBookClubUID, ref.id)
       })
       .catch(error => console.log(error));
   }
+
+/// TBD handle if user doesn't exist in DB - currently just erroring out
+  handleUpdateUserEvents = async (thisEvent, membersOfBookClubUID, eventID) => {
+    const addToUserEventArray = firestore.FieldValue.arrayUnion({
+      bookCover: thisEvent.bookForEvent.thumbnail,
+      bookTitle: thisEvent.bookForEvent.title,
+      date: thisEvent.eventDate,
+      time: thisEvent.eventTime,
+      eventID: eventID,
+    });
+    await membersOfBookClubUID.forEach(memberUID => {
+      firestore()
+        .collection('users')
+        .doc(memberUID)
+        .update({
+          events: addToUserEventArray
+        })
+        .then(ref => {
+          this.props.navigation.navigate('MainEvent', {
+            eventID: eventID
+          });
+        })
+        .catch(error => console.log(error));
+    })
+  } 
 
   onEditLocationPress = () => {
     const {

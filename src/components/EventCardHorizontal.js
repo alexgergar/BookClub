@@ -20,6 +20,8 @@ const ListOfAttendees = props =>
 const EventCardHorizontal = props => {
   const dayOfWeek = props.date.slice(4, 7);
   const dateNumber = props.date.slice(8, 10);
+  const timeNum = props.time.length === 7 ? props.time.slice(0, 4) : props.time.slice(0, 5)
+  const timeEnd = props.time.slice(-2, props.time.length)
   return (
     <View style={styles.container}>
       {props.bookCover === undefined ?
@@ -37,19 +39,25 @@ const EventCardHorizontal = props => {
       }
       <View style={styles.cardContainer}>
         <View style={[styles.innerCardContainer]}>
-          <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-            <Text style={styles.bookTitleText}>{props.bookTitle}</Text>
-            <View style={{ flexDirection: 'column', alignItems: 'center' }}>
+          <View style={{ flexDirection: 'row', justifyContent: 'space-between'}}>
+            <View style={{flexDirection: 'column', alignItems: 'center', paddingTop: '2%' }}>
               <Text style={styles.dateTextLineOne}>{dayOfWeek}</Text>
               <Text style={styles.dateTextLineTwo}>{dateNumber}</Text>
             </View>
+            <View style={{alignItems: 'flex-end'}}>
+              <Text style={styles.timeTextOne}>{timeNum}</Text>
+              <Text style={styles.timeTextTwo}>{timeEnd}</Text>
+            </View>
           </View>
-          <View>
-            {/* <ListOfAttendees 
+          <View style={{alignSelf: 'flex-end', marginBottom: '8%'}}>
+            <Text style={styles.bookTitleText}>{props.bookTitle}</Text>
+          </View>
+          {/* <View>
+            <ListOfAttendees 
             displayName={props.displayName}
             avatar={props.avatar}
-            avatarSize={40}/> */}
-          </View>
+            avatarSize={40}/>
+          </View> */}
         </View>
       </View>
     </View>
@@ -58,12 +66,12 @@ const EventCardHorizontal = props => {
 
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
-const innerCardWidth = (windowWidth * .85) - (windowHeight * 0.3 * .85 * .625)
+const innerCardWidth = (windowWidth * (.85 - .05)) - (windowHeight * 0.2 * .85 * .625) // width of container minus 5% paddingright (cardContainer) - the book width - TBD default props to change later date for reuse 
 
 const styles = StyleSheet.create({
   container: {
-    width: windowWidth * .90,
-    height: windowHeight * 0.3,
+    width: windowWidth * .85,
+    height: windowHeight * 0.2,
   },
   bookImageView: {
     height: '85%',
@@ -85,9 +93,20 @@ const styles = StyleSheet.create({
     padding: '5%',
     width: innerCardWidth,
     alignSelf: 'flex-end',
+    justifyContent: 'space-between',
   },
   bookTitleText: {
+    fontSize: 22,
     fontFamily: 'Montserrat-SemiBold',
+  },
+  timeTextOne: {
+    fontFamily: 'Montserrat-Bold',
+    fontSize: 30,
+  },
+  timeTextTwo: {
+    fontFamily: 'Montserrat-SemiBold',
+    fontSize: 16,
+    textTransform: 'uppercase',
   },
   dateTextLineOne: {
     fontFamily: 'Montserrat-Bold',
@@ -96,7 +115,7 @@ const styles = StyleSheet.create({
   },
   dateTextLineTwo: {
     fontFamily: 'Montserrat-Bold',
-    fontSize: 22,
+    fontSize: 26,
   },
 });
 
