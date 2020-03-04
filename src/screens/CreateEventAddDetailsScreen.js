@@ -74,8 +74,7 @@ export default class CreateEventAddDetails extends Component {
       this.state.state.length >= 2 &&
       this.state.zipcode.length >= 5 &&
       breakDownOfStreetAddress[0] &&
-      breakDownOfStreetAddress[1] &&
-      breakDownOfStreetAddress[2]
+      breakDownOfStreetAddress[1]
     ) {
       this.setState({disableButton: false});
     } else {
@@ -165,20 +164,16 @@ export default class CreateEventAddDetails extends Component {
               this.setState({detailsForLocation})
             }
             value={this.state.detailsForLocation}
-            multiline={true}
             inputStyle={styles.inputTextStyle}
             containerStyle={[
-              styles.multiLineContainerStyle,
+              styles.singleLineContainerStyle,
               styles.bottomContainerStyle,
             ]}
-            inputContainerStyle={[
-              styles.inputContainerStyle,
-              styles.multiLineInputContainerStyle,
-            ]}
-            maxLength={400}
+            inputContainerStyle={styles.inputContainerStyle}
             ref={input => {
               this.detailsInput = input;
             }}
+            onSubmitEditing={onPressButton}
           />
         </View>
       </GreyWhiteBackgroundBottomButton>

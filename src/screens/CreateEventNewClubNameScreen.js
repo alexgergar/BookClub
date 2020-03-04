@@ -37,6 +37,7 @@ export default class CreateEventNewClubName extends Component {
       zipcode,
       detailsForLocation,
       bookClubMembers,
+      date,
     } = this.props.route.params;
     this.props.navigation.navigate('CreateEventVerifyInfo', {
       selectedBook: selectedBook,
@@ -45,6 +46,7 @@ export default class CreateEventNewClubName extends Component {
       state: state,
       zipcode: zipcode,
       detailsForLocation: detailsForLocation,
+      date: date,
       bookClubMembers: bookClubMembers,
       bookClubName: this.state.bookClubName,
       newClub: true,
@@ -58,9 +60,12 @@ export default class CreateEventNewClubName extends Component {
         continueButtonOnPress={this.handleContinueButtonPress}
         scrollView={false}
         showButton={this.state.showContinueButton}>
-        <Text style={[styles.headline1, {textAlign: 'center'}]}>
-          Looks like you have created a new or different group.
-        </Text>
+        <View style={{paddingTop: '15%'}}>
+          <Text style={[styles.headline1, {textAlign: 'center'}]}>
+            Looks like you have created a new or different group.
+          </Text>
+        </View>
+
         <View style={{paddingTop: '15%'}}>
           <Text style={[styles.headline2, {textAlign: 'center'}]}>
             Give it a name

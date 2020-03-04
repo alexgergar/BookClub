@@ -19,11 +19,6 @@ export default class CreateEventVerifyInfo extends Component {
     newBookClubID: null,
   }
 
-  componentDidMount() {
-    const {selectedBook} = this.props.route.params;
-      console.log(selectedBook);
-  }
-
   handleContinueButtonPress = async () => {
     let user = this.context;
     const {

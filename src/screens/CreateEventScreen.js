@@ -54,7 +54,7 @@ export default class CreateEvent extends Component {
     let search = encodeURI(text);
     axios
       .get(
-        `https://www.googleapis.com/books/v1/volumes?q=${search}&maxResults=10&orderBy=relevance&key=${GOOGLE_BOOKS_API_KEY}`,
+        `https://www.googleapis.com/books/v1/volumes?q=${search}&maxResults=10&orderBy=relevance&printType=books&key=${GOOGLE_BOOKS_API_KEY}`,
       )
       .then(response =>
         this.setState({
@@ -234,7 +234,7 @@ export default class CreateEvent extends Component {
                   />
                 </Animated.View>
                 {this.state.showcontainer && (
-                  <View>
+                  <View style={{height: windowHeight * .80}}>
                     <FlatList
                       data={this.state.googleBooks}
                       keyExtractor={(item, index) => index.toString()}
@@ -318,6 +318,7 @@ const styles = StyleSheet.create({
   searchAndListContainer: {
     marginBottom: 10,
     alignItems: 'center',
+    height: '95%',
   },
   textInput: {
     height: 40,

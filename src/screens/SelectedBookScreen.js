@@ -332,11 +332,11 @@ const styles = StyleSheet.create({
     height: '100%',
   },
   continueButtonContainerStyle: {
-    width: '82%',
+    width: '75%',
   },
   continueButtonStyle: {
     backgroundColor: '#1E3342',
-    borderRadius: 5,
+    borderRadius: 10,
     width: '100%',
     justifyContent: 'center',
     alignSelf: 'center',

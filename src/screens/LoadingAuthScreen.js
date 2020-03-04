@@ -1,13 +1,17 @@
 import React from 'react';
 import {View, Text, ActivityIndicator, StyleSheet} from 'react-native';
-import UserContext from '../context/UserContext';
+import LottieView from 'lottie-react-native';
 
 export default class LoadingAuth extends React.Component {
 
   render() {
     return (
       <View style={styles.container}>
-        <ActivityIndicator size="large" />
+        <LottieView
+          source={require('../utils/loading-book-blue.json')}
+          autoPlay
+          loop
+        />
       </View>
     );
   }
@@ -16,7 +20,7 @@ export default class LoadingAuth extends React.Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
+    justifyContent: 'space-around',
     alignItems: 'center',
   },
 });

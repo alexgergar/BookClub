@@ -91,18 +91,6 @@ const TabNav = () => (
       }}
     />
     <Tab.Screen
-      name="Loading"
-      component={LoadingAuthScreen}
-      tabBarVisible={false}
-      options={{
-        tabBarLabel: 'Loading',
-        tabBarVisible: false,
-        tabBarIcon: ({ color, size }) => (
-          <Icon name="plus-circle" type="feather" />
-        ),
-      }}
-    />
-    <Tab.Screen
       name="Create"
       tabBarVisible={false}
       options={{

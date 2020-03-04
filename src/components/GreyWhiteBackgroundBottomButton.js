@@ -38,7 +38,7 @@ export default class GreyWhiteBackgroundBottomButton extends Component {
     });
     this.buttonHeight = this.heightOfButton.interpolate({
       inputRange: [0, 1],
-      outputRange: ['8.5%', '0%'],
+      outputRange: ['6.5%', '0%'],
     });
   }
   static defaultProps = {
@@ -110,7 +110,7 @@ export default class GreyWhiteBackgroundBottomButton extends Component {
               styles.whiteBackgroundContainer,
             ]}>
             {this.props.scrollView && (
-              <ScrollView contentContainerStyle={{flexGrow: 1}}>
+              <ScrollView contentContainerStyle={{}}>
                 <HeadlineSection
                   headerView={this.props.headerView}
                   headline={this.props.headline}
@@ -157,17 +157,22 @@ const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
 
 const styles = StyleSheet.create({
-  safeAreaView: {flex: 1, backgroundColor: '#E3E4E6'},
+  safeAreaView: {
+    flex: 1,
+    backgroundColor: '#E3E4E6',
+    // justifyContent: 'flex-end',
+  },
   container: {
     backgroundColor: '#E3E4E6',
     alignItems: 'center',
-    height: windowHeight,
+    paddingTop: windowHeight * .05,
   },
   whiteBackgroundContainer: {
     backgroundColor: 'white',
-    marginTop: '10%',
     width: '90%',
-    flexGrow: 1,
+    height: '100%',
+    // flexGrow: 1,
+
     borderTopLeftRadius: 15,
     borderTopRightRadius: 15,
     justifyContent: 'space-between',
