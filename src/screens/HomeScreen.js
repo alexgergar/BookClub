@@ -15,13 +15,8 @@ import UserContext from '../context/UserContext';
 import firestore from '@react-native-firebase/firestore';
 import EventCardHorizontal from '../components/EventCardHorizontal';
 import {FlatList} from 'react-native-gesture-handler';
-import { BookDetailsAdditional} from '../components/BookDetails';
-import GroupTile from '../components/GroupTile';
 import axios from 'axios';
-import convert from 'xml-js';
-import { GOODREAD_API_KEY } from 'react-native-dotenv';
-
-
+import {NYTIMES_KEY} from 'react-native-dotenv';
 
 const ListOfBooks = props => {
   const bookList = props.list.map(book => 
@@ -43,14 +38,60 @@ const ListOfBooks = props => {
   return bookList;
 }
 
+const SectionHeader = props => {
+  return (
+    <View style={styles.discoverHeadlineView}>
+      <TouchableHighlight
+        onPress={() => props.onSectionHeaderPress('hardcover-fiction')}>
+        <Text
+          style={[
+            styles.bookGenreHeadline,
+            props.pickedSection === 'hardcover-fiction'
+              ? {color: 'black'}
+              : {color: 'grey'},
+          ]}>
+          Fiction
+        </Text>
+      </TouchableHighlight>
+      <TouchableHighlight
+        onPress={() => props.onSectionHeaderPress('hardcover-nonfiction')}>
+        <Text
+          style={[
+            styles.bookGenreHeadline,
+            props.pickedSection === 'hardcover-nonfiction'
+              ? {color: 'black'}
+              : {color: 'grey'},
+          ]}>
+          Non Fiction
+        </Text>
+      </TouchableHighlight>
+      <TouchableHighlight
+        onPress={() => props.onSectionHeaderPress('graphic-books-and-manga')}>
+        <Text
+          style={[
+            styles.bookGenreHeadline,
+            props.pickedSection === 'graphic-books-and-manga'
+              ? {color: 'black'}
+              : {color: 'grey'},
+          ]}>
+          Graphic Novels
+        </Text>
+      </TouchableHighlight>
+    </View>
+  );
+}
+
 export default class Home extends Component {
   state = {
     events: [],
     nonFictionBooks: [],
+    fictionBooks: [],
+    graphicNovels: [],
+    discoverSection: 'hardcover-fiction',
   };
 
   componentDidMount() {
-    this.getNonFictionList();
+    this.getNYTimesList('hardcover-fiction');
     this.getUserEventsFromUID();
   }
 
@@ -68,14 +109,28 @@ export default class Home extends Component {
       });
   };
 
-  getNonFictionList = () => {
-    const NYTIMES_KEY = 'UiZwU6WBk89jFzd0E8uGjZI3S5r63A0W'
+  getNYTimesList = genre => {
     axios
       .get(
-        `https://api.nytimes.com/svc/books/v3/lists/current/hardcover-fiction.json?api-key=${NYTIMES_KEY}`, // this gets info about author from goodreads
+        `https://api.nytimes.com/svc/books/v3/lists/current/${genre}.json?api-key=${NYTIMES_KEY}`, // this gets info about author from goodreads
       )
       .then(response => {
-        this.setState({ nonFictionBooks: response.data.results.books});
+        if (genre === 'hardcover-fiction') {
+          this.setState({
+            fictionBooks: response.data.results.books,
+            discoverSection: 'hardcover-fiction',
+          });
+        } else if (genre === 'graphic-books-and-manga') {
+          this.setState({
+            graphicNovels: response.data.results.books,
+            discoverSection: 'graphic-books-and-manga',
+          });
+        } else {
+          this.setState({
+            nonFictionBooks: response.data.results.books,
+            discoverSection: 'hardcover-nonfiction',
+          });
+        }
       })
       .catch(error => console.log(error));
   }
@@ -101,75 +156,106 @@ export default class Home extends Component {
       eventID: event.eventID,
     });
   }
-  
+
+  onSectionHeaderPress = genre => {
+    if (genre === 'hardcover-nonfiction' && this.state.nonFictionBooks.length == 0) {
+      this.getNYTimesList(`hardcover-nonfiction`);
+    } 
+    if (genre === 'graphic-books-and-manga' && this.state.graphicNovels.length == 0) {
+      this.getNYTimesList(`graphic-books-and-manga`);
+    }
+    this.setState({discoverSection: genre});
+  }
 
   render() {
-    const {events, bookClubs} = this.state;
+    const {events, discoverSection, nonFictionBooks, fictionBooks, graphicNovels} = this.state;
     return (
       <SafeAreaView style={styles.container}>
-        <ScrollView
-          keyboardShouldPersistTaps={'always'}>
-        <View style={[styles.upcomingContainer, styles.headlineView]}>
-          <Text style={styles.homeHeadlineOneText}>Upcoming Events</Text>
-        </View>
-        <View style={styles.topHorizontalCard}>
-          {events.length !== 0 && (
-            <FlatList
-              horizontal
-              data={events}
-              keyExtractor={item => item.eventID.toString()}
-              renderItem={({ item }) => (
-                <TouchableOpacity style={{flex: 1}} onPress={() => this.onEventItemPress(item)}>
-                  <EventCardHorizontal
-                    date={item.date}
-                    time={item.time}
-                    bookTitle={item.bookTitle}
-                    bookCover={item.bookCover}
-                  />
-                </TouchableOpacity>
+        <ScrollView keyboardShouldPersistTaps={'always'}>
+          <View style={[styles.upcomingContainer, styles.headlineView]}>
+            <Text style={styles.homeHeadlineOneText}>Upcoming Events</Text>
+          </View>
+          <View style={styles.topHorizontalCard}>
+            {events.length !== 0 && (
+              <FlatList
+                horizontal
+                data={events}
+                keyExtractor={item => item.eventID.toString()}
+                renderItem={({item}) => (
+                  <TouchableOpacity
+                    style={{flex: 1}}
+                    onPress={() => this.onEventItemPress(item)}>
+                    <EventCardHorizontal
+                      date={item.date}
+                      time={item.time}
+                      bookTitle={item.bookTitle}
+                      bookCover={item.bookCover}
+                    />
+                  </TouchableOpacity>
+                )}
+              />
+            )}
+          </View>
+          <View style={styles.quickActionButtonsView}>
+            <TouchableHighlight
+              style={styles.touchableHighlightView}
+              onPress={() =>
+                console.log('this will take your to the list of user bookclubs')
+              }>
+              <View style={styles.quickActionButton}>
+                <Icon name="ios-people" type="ionicon" color="#3A5673" />
+                <Text style={styles.quickActionButtonTextStyle}>BookClubs</Text>
+              </View>
+            </TouchableHighlight>
+            <TouchableHighlight 
+              style={styles.touchableHighlightView}
+              >
+              <View style={styles.quickActionButton}>
+                <Icon name="plus-circle" type="feather" color="#3A5673" />
+                <Text style={styles.quickActionButtonTextStyle}>New Event</Text>
+              </View>
+            </TouchableHighlight>
+            <TouchableHighlight style={styles.touchableHighlightView}>
+              <View style={styles.quickActionButton}>
+                <Icon name="ios-chatbubbles" type="ionicon" color="#3A5673" />
+                <Text style={styles.quickActionButtonTextStyle}>Messages</Text>
+              </View>
+            </TouchableHighlight>
+          </View>
+          <View style={[styles.discoverTitleContainer, styles.headlineView]}>
+            <Text style={styles.homeHeadlineOneText}>Discover</Text>
+          </View>
+          <View style={styles.discoverContainerView}>
+            <SectionHeader
+              onSectionHeaderPress={this.onSectionHeaderPress}
+              pickedSection={discoverSection}
+            />
+            <View style={styles.listFromDiscoverView}>
+              {discoverSection == 'hardcover-fiction' && (
+                <ListOfBooks
+                  list={fictionBooks}
+                  onPress={this.onDiscoverListItemPress}
+                />
               )}
-            />)}
-        </View>
-        <View style={styles.quickActionButtonsView}>
-          <TouchableHighlight style={styles.touchableHighlightView}>
-            <View style={styles.quickActionButton}>
-              <Icon
-                name="ios-people"
-                type='ionicon'
-                color='#3A5673'
-              />
-              <Text style={styles.quickActionButtonTextStyle}>BookClubs</Text>
+              {discoverSection === 'hardcover-nonfiction' && (
+                <ListOfBooks
+                  list={nonFictionBooks}
+                  onPress={this.onDiscoverListItemPress}
+                />
+              )}
+              {discoverSection === 'graphic-books-and-manga' && (
+                <ListOfBooks
+                  list={graphicNovels}
+                  onPress={this.onDiscoverListItemPress}
+                />
+              )}
+              {(fictionBooks.length === 0 ||
+                nonFictionBooks.length === 0 ||
+                graphicNovels.length == 0) && (
+                <View style={{height: windowHeight * 0.29}} />
+              )}
             </View>
-          </TouchableHighlight>
-          <TouchableHighlight style={styles.touchableHighlightView}>
-            <View style={styles.quickActionButton}>
-              <Icon
-                name='favorite'
-                type='material'
-                color='#3A5673'
-              />
-              <Text style={styles.quickActionButtonTextStyle}>Favorites</Text>
-            </View>
-          </TouchableHighlight>
-          <TouchableHighlight style={styles.touchableHighlightView}>
-            <View style={styles.quickActionButton}>
-              <Icon
-                name="ios-chatbubbles"
-                type='ionicon'
-                color='#3A5673'
-              />
-              <Text style={styles.quickActionButtonTextStyle}>Messages</Text>
-            </View>
-          </TouchableHighlight>
-        </View>
-        <View style={[styles.discoverTitleContainer, styles.headlineView]}>
-          <Text style={styles.homeHeadlineOneText}>Discover</Text>
-        </View>
-        <View style={styles.discoverContainerView}>
-          {this.state.nonFictionBooks.length > 0 && (
-              <ListOfBooks list={this.state.nonFictionBooks} onPress={this.onDiscoverListItemPress} />
-          )}
-        </View>
+          </View>
         </ScrollView>
       </SafeAreaView>
     );
@@ -219,7 +305,7 @@ const styles = StyleSheet.create({
     width: '30%',
   },
   quickActionButton: {
-    aspectRatio: 1,
+    aspectRatio: 1 / 0.6,
     ...elevationShadowStyle(5),
     backgroundColor: 'white',
     borderRadius: 10,
@@ -227,7 +313,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   quickActionButtonTextStyle: {
-    fontSize: 14,
+    fontSize: 10,
     fontFamily: 'Montserrat-Regular',
     textTransform: 'uppercase',
     color: '#3A5673',
@@ -237,6 +323,7 @@ const styles = StyleSheet.create({
     paddingTop: '5%',
   },
   discoverContainerView: {
+    ...elevationShadowStyle(8),
     marginTop: '5%',
     padding: '5%',
     backgroundColor: 'white',
@@ -244,6 +331,20 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     borderTopLeftRadius: 15,
     borderTopRightRadius: 15,
+  },
+  discoverHeadlineView: {
+    flexDirection: 'row',
+    paddingBottom: windowHeight * 0.02,
+    justifyContent: 'space-between',
+  },
+  bookGenreHeadline: {
+    fontSize: 16,
+    fontFamily: 'Karla-Bold',
+    textTransform: 'uppercase',
+  },
+  listFromDiscoverView: {
+    backgroundColor: 'white',
+    alignSelf: 'center',
     flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'space-between',
@@ -258,10 +359,10 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     height: bookListItemWidth * 1.6,
   },
-  bookListItemTitleAuthorView: { 
-    paddingTop: 10, 
-    height: authorTitleViewHeight, 
-    justifyContent: 'space-between' 
+  bookListItemTitleAuthorView: {
+    paddingTop: 10,
+    height: authorTitleViewHeight,
+    justifyContent: 'space-between',
   },
   bookItemTitleText: {
     fontSize: 10,

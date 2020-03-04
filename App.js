@@ -70,10 +70,10 @@ const TabNav = () => (
   <Tab.Navigator shifting={true} barStyle={{backgroundColor: 'white'}}>
     <Tab.Screen
       name="Home"
-      // tabBarVisible={false}
+      tabBarVisible={false}
       options={{
         tabBarLabel: 'Home',
-        // tabBarVisible: false,
+        tabBarVisible: false,
         tabBarIcon: ({color, size}) => <Icon name="home" type="feather" />,
       }}
       component={MainStack}
