@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, useMemo} from 'react';
 import auth from '@react-native-firebase/auth';
 import 'react-native-gesture-handler';
 import MainEventScreen from './src/screens/MainEventScreen';
@@ -21,17 +21,18 @@ import UserContext from './src/context/UserContext';
 import {NavigationContainer} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
-import {Icon} from 'react-native-elements';
+import {createDrawerNavigator} from '@react-navigation/drawer';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
+const Drawer = createDrawerNavigator();
 
 const MainStack = () => (
   <Stack.Navigator initialRouteName="Home" headerMode="none">
     <Stack.Screen name="Home" component={HomeScreen} />
     <Stack.Screen name="MainEvent" component={MainEventScreen} />
     <Stack.Screen name="BookView" component={BookViewScreen} />
-    <Stack.Screen name="SignOutBook" component={SignOutScreen} />
+    <Stack.Screen name="Sign Out" component={SignOutScreen} />
   </Stack.Navigator>
 );
 
@@ -63,46 +64,8 @@ const CreateStack = () => (
       name="CreateEventNewClubName"
       component={CreateEventNewClubNameScreen}
     />
+    <Stack.Screen name="LoadingAuth" component={LoadingAuthScreen} />
   </Stack.Navigator>
-);
-
-const TabNav = () => (
-  <Tab.Navigator shifting={true} barStyle={{backgroundColor: 'white'}}>
-    <Tab.Screen
-      name="Home"
-      tabBarVisible={false}
-      options={{
-        tabBarLabel: 'Home',
-        tabBarVisible: false,
-        tabBarIcon: ({color, size}) => <Icon name="home" type="feather" />,
-      }}
-      component={MainStack}
-    />
-    <Tab.Screen
-      name="Test"
-      component={TestScreen}
-      tabBarVisible={false}
-      options={{
-        tabBarLabel: 'Test',
-        tabBarVisible: false,
-        tabBarIcon: ({color, size}) => (
-          <Icon name="plus-circle" type="feather" />
-        ),
-      }}
-    />
-    <Tab.Screen
-      name="Create"
-      tabBarVisible={false}
-      options={{
-        tabBarLabel: 'Create',
-        tabBarVisible: false,
-        tabBarIcon: ({color, size}) => (
-          <Icon name="plus-circle" type="feather" />
-        ),
-      }}
-      component={CreateStack}
-    />
-  </Tab.Navigator>
 );
 
 const AuthStack = () => (
@@ -120,30 +83,75 @@ const AuthStack = () => (
   </Stack.Navigator>
 );
 
-function App() {
-  const [initializing, setInitializing] = useState(true);
-  const [user, setUser] = useState();
+const OnBoardingStack = () => (
+  <Stack.Navigator initialRouteName="OnboardingOneProfile" headerMode="none">
+    <Stack.Screen
+      name="OnboardingOneProfile"
+      component={OnboardingOneProfileScreen}
+    />
+    <Stack.Screen
+      name="OnboardingTwoAvatar"
+      component={OnboardingTwoAvatarScreen}
+    />
+  </Stack.Navigator>
+);
 
-  function onChange(user) {
-    setUser(user);
-    if (initializing) {
-      setInitializing(false);
-    }
-  }
+const SignOutStack = () => (
+  <Stack.Navigator initialRouteName="Sign Out" headerMode="none">
+    <Stack.Screen name="Sign Out" component={SignOutScreen} />
+    <Stack.Screen name="AuthStack" component={AuthStack} />
+  </Stack.Navigator>
+);
+
+const DrawerNav = () => (
+  <Drawer.Navigator
+    initialRouteName="Home"
+    drawerContentOptions={{
+      activeTintColor: '#1E3342',
+      activeBackgroundColor: 'rgba(58, 86, 114, 0.2)',
+      labelStyle: {fontFamily: 'Montserrat-Bold'},
+    }}>
+    <Drawer.Screen name="Home" component={MainStack} />
+    <Drawer.Screen name="Create New Event" component={CreateStack} />
+    <Drawer.Screen name="Sign Out" component={SignOutStack} />
+  </Drawer.Navigator>
+);
+
+function App() {
+  const [isLoading, setIsLoading] = useState(true);
+  const [user, setUser] = useState(null);
 
   useEffect(() => {
-    const subscriber = auth().onAuthStateChanged(onChange);
-    return subscriber();
+    setTimeout(() => {
+      setIsLoading(false);
+    }, 1000);
   }, []);
 
-  if (initializing) {
+  useEffect(() => {
+    function changeAuthState(user) {
+      setUser(user);
+      if (isLoading) setIsLoading(false);
+    }
+    const subscriber = auth().onAuthStateChanged(changeAuthState);
+    return subscriber;
+  }, []);
+
+  if (isLoading) {
     return <LoadingAuthScreen />;
   }
 
   return (
     <UserContext.Provider value={user}>
       <NavigationContainer>
-        {user !== null ? <TabNav /> : <AuthStack />}
+        {user ? (
+          user.phone === undefined ? (
+            <OnBoardingStack />
+          ) : (
+            <DrawerNav />
+          )
+        ) : (
+          <AuthStack />
+        )}
       </NavigationContainer>
     </UserContext.Provider>
   );

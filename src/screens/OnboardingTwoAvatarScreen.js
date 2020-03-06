@@ -6,7 +6,7 @@ import {
   SafeAreaView,
   Image,
   Dimensions,
-  TouchableHighlight,
+  TouchableOpacity,
   FlatList,
 } from 'react-native';
 import CameraRoll from '@react-native-community/cameraroll';
@@ -14,6 +14,24 @@ import {Button, Avatar} from 'react-native-elements';
 import {avatarImages} from '../utils/listOfAvatars';
 import auth from '@react-native-firebase/auth';
 import UserContext from '../context/UserContext';
+import BackgroundContainer from '../components/BackgroundContainer';
+
+export const ListOfAvatars = props => {
+  const displayedAvatarList = props.avatarList.map(item => (
+    <TouchableOpacity
+      key={item.id.toString()}
+      onPress={() => props.handleAvatarAddPress(item)}>
+      <View
+        style={{
+          borderWidth:
+            props.avatarSelected && props.idSelection === item.id ? 1 : 0,
+        }}>
+        <Image source={item.src} style={[styles.galleryImage]} />
+      </View>
+    </TouchableOpacity>
+  ));
+  return displayedAvatarList;
+};
 
 export default class OnboardingTwoAvatar extends Component {
   static contextType = UserContext;
@@ -25,18 +43,14 @@ export default class OnboardingTwoAvatar extends Component {
   };
 
   componentDidMount() {
-   const {
-     firstName,
-     lastName,
-     phoneNumber,
-   } = this.props.route.params;
-   console.log(phoneNumber);
-   console.log(firstName)
-   console.log(lastName);
-
+    const {firstName, lastName, phoneNumber} = this.props.route.params;
+    console.log(phoneNumber);
+    console.log(firstName);
+    console.log(lastName);
   }
 
   handleAvatarAddPress = avatar => {
+    console.log(avatar.src);
     console.log(avatar.id);
     this.setState({
       avatarSelected: true,
@@ -65,8 +79,12 @@ export default class OnboardingTwoAvatar extends Component {
 
   render() {
     return (
-      <SafeAreaView style={styles.safeAreaViewContainer}>
-        <View style={styles.topContainer}>
+      <BackgroundContainer
+        // headline="Create Your Profile"
+        buttonTitle="Continue"
+        disableButton={this.state.disableButton}
+        onButtonPress={this.handleContinuePress}>
+        <View style={[styles.topContainer]}>
           <View style={styles.titleRowView}>
             <Text style={styles.titleTexth1}>Pick Your Avatar</Text>
             <Button
@@ -79,7 +97,7 @@ export default class OnboardingTwoAvatar extends Component {
             />
           </View>
         </View>
-        <View style={styles.middleContainer}>
+        <View style={[styles.middleContainer]}>
           {this.state.avatarSelected && (
             <View style={styles.selectedAvatarView}>
               <Image
@@ -89,39 +107,22 @@ export default class OnboardingTwoAvatar extends Component {
               />
             </View>
           )}
-          <View style={styles.listView}>
-            <FlatList
+          <View style={[styles.listView]}>
+            <ListOfAvatars
+              avatarList={avatarImages}
+              handleAvatarAddPress={this.handleAvatarAddPress}
+              avatarSelected={this.state.avatarSelected}
+              idSelection={this.state.idSelection}
+            />
+
+            {/* <FlatList
               data={avatarImages}
-              renderItem={({item}) => (
-                <TouchableHighlight
-                  style={{flex: 1}}
-                  onPress={() => this.handleAvatarAddPress(item)}>
-                  <View
-                    style={{
-                      borderWidth:
-                        this.state.avatarSelected &&
-                        this.state.idSelection === item.id
-                          ? 1
-                          : 0,
-                    }}>
-                    <Image source={item.src} style={[styles.galleryImage]} />
-                  </View>
-                </TouchableHighlight>
-              )}
               numColumns={3}
               keyExtractor={(item, index) => index.toString()}
-            />
+            /> */}
           </View>
         </View>
-        <View style={styles.bottomContainer}>
-          <Button
-            buttonStyle={styles.continueButtonViewContainer}
-            titleStyle={styles.continueTitleButtonStyle}
-            title="Continue"
-            onPress={this.handleContinuePress}
-          />
-        </View>
-      </SafeAreaView>
+      </BackgroundContainer>
     );
   }
 }
@@ -161,7 +162,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   selectedAvatarView: {
-    flex: 1,
+    height: windowHeight * .25,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -170,7 +171,9 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   listView: {
-    flex: 1,
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
     padding: 10,
   },
   galleryImage: {
@@ -181,20 +184,5 @@ const styles = StyleSheet.create({
     paddingTop: 10,
     fontFamily: 'Karla-Regular',
     fontSize: 18,
-  },
-  bottomContainer: {
-    flexShrink: 1,
-    justifyContent: 'flex-end',
-  },
-  backgroundStarterImage: {
-    height: '80%',
-    alignSelf: 'center',
-  },
-  continueButtonViewContainer: {
-    backgroundColor: '#1E3342',
-    borderRadius: 5,
-  },
-  continueTitleButtonStyle: {
-    fontFamily: 'Montserrat-Regular',
   },
 });

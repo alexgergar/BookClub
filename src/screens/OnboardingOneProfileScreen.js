@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, {Component} from 'react';
 import {
   Text,
   View,
@@ -8,95 +8,106 @@ import {
   TextInput,
   Dimensions,
 } from 'react-native';
-import { Input, Button } from 'react-native-elements';
+import {Input, Button} from 'react-native-elements';
 import UserContext from '../context/UserContext';
+import BackgroundContainer from '../components/BackgroundContainer';
 
 export default class OnboardingOneProfile extends Component {
-  static contextType = UserContext;
   state = {
     firstName: '',
     lastName: '',
     phoneNumber: '',
+    disableButton: true,
+  };
+
+  componentDidMount() {
+    let user = this.context;
+    console.log(user);
   }
 
+  componentDidUpdate(prevProps, prevState) {
+    if (
+      this.state.firstName !== prevState.firstName ||
+      this.state.lastName !== prevState.lastName ||
+      this.state.phoneNumber !== prevState.phoneNumber
+    ) {
+      this.validateDetails();
+    }
+  }
+
+  validateDetails = () => {
+    this.state.firstName.length >= 2 &&
+    this.state.lastName.length >= 2 &&
+    this.state.phoneNumber.length === 7
+      ? this.setState({disableButton: true})
+      : this.setState({disableButton: false});
+  };
+
   handleContinue = () => {
-    this.props.navigation.navigate('OnboardingTwoAvatar', {
+    this.props.navigation.push('OnboardingTwoAvatar', {
       firstName: this.state.firstName,
       lastName: this.state.lastName,
       phoneNumber: this.state.phoneNumber,
-    })
-  }
+    });
+  };
 
   render() {
     return (
-      <SafeAreaView style={styles.safeAreaViewContainer}>
-        <View style={styles.topContainer}>
-          <Text style={styles.profileTitleTexth1}>Create Your Profile</Text>
-          <View style={styles.detailsContainer}>
-            <Input
-              containerStyle={styles.inputContainer}
-              inputContainerStyle={styles.placeholderInputContainer}
-              placeholder="First Name"
-              onChangeText={firstName => this.setState({ firstName })}
-              value={this.state.firstName}
-              errorStyle={{ color: 'red' }}
-              errorMessage={this.state.errorMessage}
-            />
-            <Input
-              containerStyle={styles.inputContainer}
-              inputContainerStyle={styles.placeholderInputContainer}
-              placeholder="Last Name"
-              onChangeText={lastName => this.setState({ lastName })}
-              value={this.state.lastName}
-              errorStyle={{ color: 'red' }}
-              errorMessage={this.state.errorMessage}
-            />
-            <Input
-              containerStyle={styles.inputContainer}
-              inputContainerStyle={styles.placeholderInputContainer}
-              placeholder="Phone Number"
-              onChangeText={phoneNumber => this.setState({ phoneNumber })}
-              value={this.state.phoneNumber}
-              errorStyle={{ color: 'red' }}
-              errorMessage={this.state.errorMessage}
-            />
-          </View>
+      <BackgroundContainer
+        headline="Create Your Profile"
+        buttonTitle="Continue"
+        scrollView={false}
+        disableButton={this.state.disableButton}
+        onButtonPress={this.handleContinue}>
+        <View style={styles.detailsContainer}>
+          <Input
+            containerStyle={styles.inputContainer}
+            inputStyle={styles.inputStyle}
+            inputContainerStyle={styles.placeholderInputContainer}
+            placeholder="First Name"
+            onChangeText={firstName => this.setState({firstName})}
+            value={this.state.firstName}
+            errorStyle={{color: 'red'}}
+            errorMessage={this.state.errorMessage}
+          />
+          <Input
+            containerStyle={styles.inputContainer}
+            inputStyle={styles.inputStyle}
+            inputContainerStyle={styles.placeholderInputContainer}
+            placeholder="Last Name"
+            onChangeText={lastName => this.setState({lastName})}
+            value={this.state.lastName}
+            errorStyle={{color: 'red'}}
+            errorMessage={this.state.errorMessage}
+          />
+          <Input
+            containerStyle={styles.inputContainer}
+            inputStyle={styles.inputStyle}
+            inputContainerStyle={styles.placeholderInputContainer}
+            placeholder="Phone Number"
+            onChangeText={phoneNumber => this.setState({phoneNumber})}
+            value={this.state.phoneNumber}
+            errorStyle={{color: 'red'}}
+            errorMessage={this.state.errorMessage}
+          />
         </View>
-        <View style={styles.middleContainer}>
+        <View style={styles.imageViewStyle}>
           <Image
             style={styles.backgroundStarterImage}
             source={require('../utils/womancrossleggedreading.png')}
             resizeMode={'contain'}
           />
         </View>
-        <View style={styles.bottomContainer}>
-          <Button
-            buttonStyle={styles.continueButtonViewContainer}
-            titleStyle={styles.continueTitleButtonStyle}
-            title='Continue'
-            onPress={this.handleContinue}
-          />
-        </View>
-      </SafeAreaView>
-    )
+      </BackgroundContainer>
+    );
   }
-
 }
 
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
 const styles = StyleSheet.create({
-  safeAreaViewContainer: {
-    flex: 1,
-    justifyContent: 'space-between',
-    padding: windowWidth * .07,
-  },
-  topContainer: {
-    flexGrow: 1,
-    zIndex: 5,
-  },
   detailsContainer: {
-    top: windowHeight * .05,
+    top: windowHeight * 0.05,
   },
   profileTitleTexth1: {
     fontFamily: 'Montserrat-Regular',
@@ -114,24 +125,16 @@ const styles = StyleSheet.create({
   },
   inputStyle: {
     color: 'black',
+    fontFamily: 'Montserrat-Regular',
   },
-  middleContainer: {
-    flexShrink: 1,
-  },
-  bottomContainer: {
-    flexShrink: 1,
-    justifyContent: 'flex-end',
+  imageViewStyle: {
+    alignItems: 'center',
+    paddingTop: windowHeight * 0.05,
   },
   backgroundStarterImage: {
-    height: '80%',
-    alignSelf: 'center',
+    height: windowWidth * 0.45,
+    width: '100%',
   },
-  continueButtonViewContainer: {
-    backgroundColor: '#1E3342',
-    borderRadius: 5,
-  },
-  continueTitleButtonStyle: {
-    fontFamily: 'Montserrat-Regular',
-  }
 });
 
+OnboardingOneProfile.contextType = UserContext;

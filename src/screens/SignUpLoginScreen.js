@@ -12,6 +12,7 @@ import {Input, Button} from 'react-native-elements';
 import {TouchableHighlight} from 'react-native-gesture-handler';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import validateEmail from '../utils/validateEmail';
+import UserContext from '../context/UserContext';
 
 export default class SignUpLogin extends React.Component {
   state = {
@@ -79,7 +80,6 @@ export default class SignUpLogin extends React.Component {
     const {email, password} = this.state;
     await auth()
       .signInWithEmailAndPassword(email, password)
-      .then(() => this.props.navigation.navigate('LoadingAuth'))
       .catch(error => this.setState({errorMessage: error.message}));
   };
 
@@ -144,8 +144,7 @@ export default class SignUpLogin extends React.Component {
                   </View>
                   <View style={styles.headlineTwo}>
                     <Text style={styles.signUpBelowText}>
-                      Enter your informations below or login with a social
-                      account
+                      Enter your informations below
                     </Text>
                   </View>
                 </>
@@ -197,7 +196,7 @@ export default class SignUpLogin extends React.Component {
 
         {this.state.showBottomBar && (
           <>
-            {!this.state.showSignUp && (
+            {/* {!this.state.showSignUp && (
               <Button
                 containerStyle={styles.passwordButtonContainer}
                 titleStyle={styles.passwordButton}
@@ -205,7 +204,7 @@ export default class SignUpLogin extends React.Component {
                 title="Forgot Password?"
                 type="clear"
               />
-            )}
+            )} */}
 
             <View style={styles.bottomGreyBarView} />
 
@@ -334,3 +333,5 @@ const styles = StyleSheet.create({
     backgroundColor: '#1E3342',
   },
 });
+
+SignUpLogin.contextType = UserContext;

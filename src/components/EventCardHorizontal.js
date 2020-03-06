@@ -1,5 +1,12 @@
 import React, {useState} from 'react';
-import {Text, View, StyleSheet, Image, Dimensions} from 'react-native';
+import {
+  Text,
+  View,
+  StyleSheet,
+  Image,
+  Dimensions,
+  TouchableOpacity,
+} from 'react-native';
 import AvatarForList from './AvatarForList';
 
 const excludeAfterIndex = 4;
@@ -23,44 +30,47 @@ const EventCardHorizontal = props => {
   const timeNum = props.time.length === 7 ? props.time.slice(0, 4) : props.time.slice(0, 5)
   const timeEnd = props.time.slice(-2, props.time.length)
   return (
-    <View style={styles.container}>
-      {props.bookCover === undefined ?
-        <Image
-          style={styles.bookImageView}
-          source={require('../utils/bookPlaceholder.png')}
-          resizeMode={'contain'}
-        />
-        :
-        <Image
-          style={styles.bookImageView}
-          source={{ uri: props.bookCover }}
-          resizeMode={'contain'}
-        />
-      }
-      <View style={styles.cardContainer}>
-        <View style={[styles.innerCardContainer]}>
-          <View style={{ flexDirection: 'row', justifyContent: 'space-between'}}>
-            <View style={{flexDirection: 'column', alignItems: 'center', paddingTop: '2%' }}>
-              <Text style={styles.dateTextLineOne}>{dayOfWeek}</Text>
-              <Text style={styles.dateTextLineTwo}>{dateNumber}</Text>
+    <TouchableOpacity
+      onPress={() => this.onEventItemPress(item)}>
+      <View style={styles.container}>
+        {props.bookCover === undefined ?
+          <Image
+            style={styles.bookImageView}
+            source={require('../utils/bookPlaceholder.png')}
+            resizeMode={'contain'}
+          />
+          :
+          <Image
+            style={styles.bookImageView}
+            source={{ uri: props.bookCover }}
+            resizeMode={'contain'}
+          />
+        }
+        <View style={styles.cardContainer}>
+          <View style={[styles.innerCardContainer]}>
+            <View style={{ flexDirection: 'row', justifyContent: 'space-between'}}>
+              <View style={styles.dateView}>
+                <Text style={styles.dateTextLineOne}>{dayOfWeek}</Text>
+                <Text style={styles.dateTextLineTwo}>{dateNumber}</Text>
+              </View>
+              <View style={{alignItems: 'flex-end'}}>
+                <Text style={styles.timeTextOne}>{timeNum}</Text>
+                <Text style={styles.timeTextTwo}>{timeEnd}</Text>
+              </View>
             </View>
-            <View style={{alignItems: 'flex-end'}}>
-              <Text style={styles.timeTextOne}>{timeNum}</Text>
-              <Text style={styles.timeTextTwo}>{timeEnd}</Text>
+            <View style={{alignSelf: 'flex-end', marginBottom: '8%'}}>
+              <Text style={styles.bookTitleText}>{props.bookTitle}</Text>
             </View>
+            {/* <View>
+              <ListOfAttendees 
+              displayName={props.displayName}
+              avatar={props.avatar}
+              avatarSize={40}/>
+            </View> */}
           </View>
-          <View style={{alignSelf: 'flex-end', marginBottom: '8%'}}>
-            <Text style={styles.bookTitleText}>{props.bookTitle}</Text>
-          </View>
-          {/* <View>
-            <ListOfAttendees 
-            displayName={props.displayName}
-            avatar={props.avatar}
-            avatarSize={40}/>
-          </View> */}
         </View>
       </View>
-    </View>
+    </TouchableOpacity>
   );
 };
 
@@ -70,7 +80,7 @@ const innerCardWidth = (windowWidth * (.85 - .05)) - (windowHeight * 0.2 * .85 *
 
 const styles = StyleSheet.create({
   container: {
-    width: windowWidth * .85,
+    width: windowWidth * 0.85,
     height: windowHeight * 0.2,
   },
   bookImageView: {
@@ -86,36 +96,40 @@ const styles = StyleSheet.create({
     right: windowWidth * 0.05,
     bottom: '3%',
     position: 'absolute',
+    zIndex: 5,
     borderRadius: 15,
   },
   innerCardContainer: {
     height: '100%',
-    padding: '5%',
+    paddingHorizontal: '3%',
+    paddingRight: '6%',
     width: innerCardWidth,
     alignSelf: 'flex-end',
     justifyContent: 'space-between',
+    paddingTop: '3%',
   },
   bookTitleText: {
-    fontSize: 22,
+    fontSize: 20,
     fontFamily: 'Montserrat-SemiBold',
   },
+  dateView: {flexDirection: 'column', alignItems: 'center'},
   timeTextOne: {
     fontFamily: 'Montserrat-Bold',
-    fontSize: 30,
+    fontSize: 26,
   },
   timeTextTwo: {
     fontFamily: 'Montserrat-SemiBold',
-    fontSize: 16,
+    fontSize: 14,
     textTransform: 'uppercase',
   },
   dateTextLineOne: {
     fontFamily: 'Montserrat-Bold',
-    fontSize: 20,
+    fontSize: 16,
     textTransform: 'uppercase',
   },
   dateTextLineTwo: {
     fontFamily: 'Montserrat-Bold',
-    fontSize: 26,
+    fontSize: 22,
   },
 });
 

@@ -7,9 +7,6 @@ import {
 import {Avatar} from 'react-native-elements';
 
 export default class AvatarForLists extends Component {
-  static defaultProps = {
-    rounded: true,
-  };
 
   handleGetInitials = () => {
     return this.props.displayName
@@ -20,21 +17,21 @@ export default class AvatarForLists extends Component {
 
   render() {
     return (
-     <View>
+      <View>
       {this.props.avatar ? (
           <Avatar
             size={this.props.avatarSize}
-            rounded
             source={{uri: this.props.avatar,}}
             containerStyle={this.props.avatarContainerStyle}
+            onPress={this.props.onPress}
           />
         ) : (
           <Avatar
-            rounded
             size={this.props.avatarSize}
             titleStyle={styles.avatarTitleStyle}
             title={this.handleGetInitials(this.props.displayName)}
             avatarStyle={styles.avatarStyle}
+            onPress={this.props.onPress}
           />
         )}
         </View>

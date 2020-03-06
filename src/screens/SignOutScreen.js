@@ -7,15 +7,17 @@ import {
   View,
   Image,
 } from 'react-native';
-import {firebase} from '@react-native-firebase/auth';
+import auth from '@react-native-firebase/auth';
 import {Button} from 'react-native-elements';
 
 export default class SignOut extends React.Component {
   state = {errorMessage: null};
 
   handleLogout = async () => {
-    await firebase.auth().signOut()
-      .then(() => this.props.navigation.navigate('SignUpLogin'))
+    await auth()
+      .signOut()
+      // .then(() => this.props.navigation.navigate('SignUpLogin'))
+      .then(() => console.log('signed out'))
       .catch(error => this.setState({errorMessage: error.message}));
   };
 
@@ -34,6 +36,7 @@ export default class SignOut extends React.Component {
         <Button
           title="Sign Out"
           onPress={this.handleLogout}
+          titleStyle={styles.signOutButtonTitleText}
           containerStyle={styles.signOutButtonContainer}
           buttonStyle={styles.signOutButtonButtonStyle}
         />
@@ -51,14 +54,12 @@ const styles = StyleSheet.create({
   },
   backgroundImage: {
     flex: 6,
-    // justifyContent: 'flex-start',
     width: '70%',
-    // top: windowHeight * 0.1,
-    // backgroundColor: 'pink',
   },
   goodbyeText: {
     flex: 1,
     fontSize: 24,
+    fontFamily: 'Montserrat-Regular',
   },
   signOutButtonContainer: {
     margin: 10,
@@ -69,5 +70,8 @@ const styles = StyleSheet.create({
   signOutButtonButtonStyle: {
     backgroundColor: '#55707b',
     borderColor: '#55707b',
+  },
+  signOutButtonTitleText: {
+    fontFamily: 'Montserrat-SemiBold',
   },
 });
