@@ -12,20 +12,6 @@ import {
 } from 'react-native';
 import {Button} from 'react-native-elements';
 
-const HeadlineSection = props => (
-  <View style={props.headerView}>
-    {props.headline && (
-      <Text style={styles.headlineTitleText}>{props.headline}</Text>
-    )}
-    {props.subHeadline && (
-      <>
-        <Text style={styles.subHeadLineText}>{props.subHeadline}</Text>
-      </>
-    )}
-    <View style={props.middleContainer}>{props.children}</View>
-  </View>
-);
-
 export default class BackgroundContainer extends Component {
   constructor(props) {
     super(props);
@@ -43,7 +29,7 @@ export default class BackgroundContainer extends Component {
   }
   static defaultProps = {
     buttonTitle: 'Continue',
-    scrollView: true,
+    scrollView: false,
     showButton: true,
     hideButtonOnKeyboardView: true,
     paddingHorizontal: '5%',
@@ -104,25 +90,21 @@ export default class BackgroundContainer extends Component {
     return (
       <SafeAreaView style={styles.safeAreaView}>
         <View style={[styles.container]}>
+          <View style={this.props.headerView}>
+            {this.props.headline && (
+              <Text style={styles.headlineTitleText}>{this.props.headline}</Text>
+            )}
+            {this.props.subHeadline && 
+                <Text style={styles.subHeadLineText}>{this.props.subHeadline}</Text>
+            }
+          </View>
+
             {this.props.scrollView && (
               <ScrollView contentContainerStyle={this.props.scrollViewStyle}>
-                <HeadlineSection
-                  headerView={this.props.headerView}
-                  headline={this.props.headline}
-                  subHeadline={this.props.subHeadline}
-                  middleContainer={this.props.middleContainer}
-                  children={this.props.children}
-                />
+              {this.props.children}
               </ScrollView>
             )}
-            {!this.props.scrollView && (
-              <HeadlineSection
-                headline={this.props.headline}
-                subHeadline={this.props.subHeadline}
-                middleContainer={this.props.middleContainer}
-                children={this.props.children}
-              />
-            )}
+            {!this.props.scrollView && this.props.children}
             {this.props.showButton && (
               <>
                 <Animated.View

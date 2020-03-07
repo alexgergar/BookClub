@@ -26,7 +26,8 @@ export default class AvatarForLists extends Component {
             size={this.props.avatarSize}
             rounded
             source={{uri: this.props.avatar,}}
-            containerStyle={this.props.avatarContainerStyle}
+            containerStyle={styles.avatarContainer}
+            avatarStyle={styles.avatarContainer}
           />
         ) : (
           <Avatar
@@ -45,11 +46,12 @@ export default class AvatarForLists extends Component {
 
 const styles = StyleSheet.create({
   avatarContainer: {
-    
+    backgroundColor: 'transparent',
+    padding: 0,
+    margin: 0,
   },
   avatarTitleStyle: {
     fontFamily: 'Montserrat-SemiBold',
     fontSize: 11,
-    padding: 5,
   },
 });

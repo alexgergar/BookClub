@@ -15,7 +15,6 @@ import CreateEventAttendeesScreen from './src/screens/CreateEventAttendeesScreen
 import CreateEventVerifyInfoScreen from './src/screens/CreateEventVerifyInfoScreen';
 import CreateEventPickDateScreen from './src/screens/CreateEventPickDateScreen';
 import CreateEventNewClubNameScreen from './src/screens/CreateEventNewClubNameScreen';
-import TestScreen from './src/screens/TestScreen';
 import BookViewScreen from './src/screens/BookViewScreen';
 import UserContext from './src/context/UserContext';
 import {NavigationContainer} from '@react-navigation/native';
@@ -33,6 +32,7 @@ const MainStack = () => (
     <Stack.Screen name="MainEvent" component={MainEventScreen} />
     <Stack.Screen name="BookView" component={BookViewScreen} />
     <Stack.Screen name="Sign Out" component={SignOutScreen} />
+    <Stack.Screen name="OnBoarding" component={OnBoardingStack} />
   </Stack.Navigator>
 );
 
@@ -103,19 +103,22 @@ const SignOutStack = () => (
   </Stack.Navigator>
 );
 
-const DrawerNav = () => (
-  <Drawer.Navigator
-    initialRouteName="Home"
-    drawerContentOptions={{
-      activeTintColor: '#1E3342',
-      activeBackgroundColor: 'rgba(58, 86, 114, 0.2)',
-      labelStyle: {fontFamily: 'Montserrat-Bold'},
-    }}>
-    <Drawer.Screen name="Home" component={MainStack} />
-    <Drawer.Screen name="Create New Event" component={CreateStack} />
-    <Drawer.Screen name="Sign Out" component={SignOutStack} />
-  </Drawer.Navigator>
-);
+const DrawerNav = () => {
+  return (
+    <Drawer.Navigator
+      initialRouteName="Home"
+      drawerContentOptions={{
+        activeTintColor: '#1E3342',
+        activeBackgroundColor: 'rgba(58, 86, 114, 0.2)',
+        labelStyle: {fontFamily: 'Montserrat-Bold'},
+      }}>
+      <Drawer.Screen name="Home" component={MainStack} />
+      <Drawer.Screen name="Create New Event" component={CreateStack} />
+      <Drawer.Screen name="Sign Out" component={SignOutStack} />
+    </Drawer.Navigator>
+  )
+    
+};
 
 function App() {
   const [isLoading, setIsLoading] = useState(true);
@@ -144,11 +147,7 @@ function App() {
     <UserContext.Provider value={user}>
       <NavigationContainer>
         {user ? (
-          user.phone === undefined ? (
-            <OnBoardingStack />
-          ) : (
-            <DrawerNav />
-          )
+          <DrawerNav />
         ) : (
           <AuthStack />
         )}

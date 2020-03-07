@@ -3,11 +3,11 @@ import {
   Text,
   View,
   StyleSheet,
-  SafeAreaView,
   Image,
   Dimensions,
   TouchableOpacity,
-  FlatList,
+  ScrollView,
+  FlatView,
 } from 'react-native';
 import CameraRoll from '@react-native-community/cameraroll';
 import {Button, Avatar} from 'react-native-elements';
@@ -15,6 +15,8 @@ import {avatarImages} from '../utils/listOfAvatars';
 import auth from '@react-native-firebase/auth';
 import UserContext from '../context/UserContext';
 import BackgroundContainer from '../components/BackgroundContainer';
+import storage from '@react-native-firebase/storage';
+import { CommonActions } from '@react-navigation/native';
 
 export const ListOfAvatars = props => {
   const displayedAvatarList = props.avatarList.map(item => (
@@ -29,25 +31,21 @@ export const ListOfAvatars = props => {
         <Image source={item.src} style={[styles.galleryImage]} />
       </View>
     </TouchableOpacity>
-  ));
-  return displayedAvatarList;
+  )); 
+  return (
+    <View style={{flex: 1,}}>
+      <ScrollView contentContainerStyle={styles.listView}>{displayedAvatarList}</ScrollView>
+    </View>
+  )
 };
 
 export default class OnboardingTwoAvatar extends Component {
-  static contextType = UserContext;
   state = {
     showImageAdd: true,
     avatarSelected: false,
     idSelection: null,
     selectedAvatarData: null,
   };
-
-  componentDidMount() {
-    const {firstName, lastName, phoneNumber} = this.props.route.params;
-    console.log(phoneNumber);
-    console.log(firstName);
-    console.log(lastName);
-  }
 
   handleAvatarAddPress = avatar => {
     console.log(avatar.src);
@@ -60,16 +58,29 @@ export default class OnboardingTwoAvatar extends Component {
   };
 
   handleUpdateToProfile = async () => {
+    let user = this.context
+    const {idSelection} = this.state;
     const {firstName, lastName, phoneNumber} = this.props.route.params;
     const update = {
       displayName: `${firstName} ${lastName}`,
-      // phoneNumber: phoneNumber,
-      // photoURL: this.state.selectedAvatarData.id,
+      phoneNumber: phoneNumber,
+      photoURL: this.state.selectedAvatarData.id,
     };
-    console.log(update);
+    await storage()
+      .ref(`avatarOptions${idSelection}.png`)
+      .getDownloadURL()
+      .then(url => update.photoURL = url)
+      .catch(error => console.log(error))
     await auth()
       .currentUser.updateProfile(update)
-      .then(() => this.props.navigation.navigate('Home'))
+      .then(() => this.props.navigation.dispatch(
+        CommonActions.reset({
+          index: 0,
+          routes: [
+            { name: 'Home' },
+          ],
+        })
+      ))
       .catch(error => console.log(error));
   };
 
@@ -80,9 +91,9 @@ export default class OnboardingTwoAvatar extends Component {
   render() {
     return (
       <BackgroundContainer
-        // headline="Create Your Profile"
         buttonTitle="Continue"
         disableButton={this.state.disableButton}
+        scrollView={false}
         onButtonPress={this.handleContinuePress}>
         <View style={[styles.topContainer]}>
           <View style={styles.titleRowView}>
@@ -107,20 +118,12 @@ export default class OnboardingTwoAvatar extends Component {
               />
             </View>
           )}
-          <View style={[styles.listView]}>
             <ListOfAvatars
               avatarList={avatarImages}
               handleAvatarAddPress={this.handleAvatarAddPress}
               avatarSelected={this.state.avatarSelected}
               idSelection={this.state.idSelection}
             />
-
-            {/* <FlatList
-              data={avatarImages}
-              numColumns={3}
-              keyExtractor={(item, index) => index.toString()}
-            /> */}
-          </View>
         </View>
       </BackgroundContainer>
     );
@@ -171,6 +174,7 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   listView: {
+    // height: windowHeight * .65,
     flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'space-between',
@@ -186,3 +190,5 @@ const styles = StyleSheet.create({
     fontSize: 18,
   },
 });
+
+OnboardingTwoAvatar.contextType = UserContext;

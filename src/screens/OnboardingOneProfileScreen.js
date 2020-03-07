@@ -20,11 +20,6 @@ export default class OnboardingOneProfile extends Component {
     disableButton: true,
   };
 
-  componentDidMount() {
-    let user = this.context;
-    console.log(user);
-  }
-
   componentDidUpdate(prevProps, prevState) {
     if (
       this.state.firstName !== prevState.firstName ||
@@ -44,7 +39,7 @@ export default class OnboardingOneProfile extends Component {
   };
 
   handleContinue = () => {
-    this.props.navigation.push('OnboardingTwoAvatar', {
+    this.props.navigation.navigate('OnboardingTwoAvatar', {
       firstName: this.state.firstName,
       lastName: this.state.lastName,
       phoneNumber: this.state.phoneNumber,
@@ -69,7 +64,11 @@ export default class OnboardingOneProfile extends Component {
             value={this.state.firstName}
             errorStyle={{color: 'red'}}
             errorMessage={this.state.errorMessage}
-          />
+            onSubmitEditing={() => {
+            this.lastNameInput.focus();
+            }}
+            blurOnSubmit={false}
+            />
           <Input
             containerStyle={styles.inputContainer}
             inputStyle={styles.inputStyle}
@@ -79,6 +78,13 @@ export default class OnboardingOneProfile extends Component {
             value={this.state.lastName}
             errorStyle={{color: 'red'}}
             errorMessage={this.state.errorMessage}
+            ref={input => {
+              this.lastNameInput = input;
+            }}
+            onSubmitEditing={() => {
+            this.phoneInput.focus();
+            }}
+            blurOnSubmit={false}
           />
           <Input
             containerStyle={styles.inputContainer}
@@ -89,6 +95,10 @@ export default class OnboardingOneProfile extends Component {
             value={this.state.phoneNumber}
             errorStyle={{color: 'red'}}
             errorMessage={this.state.errorMessage}
+            ref={input => {
+              this.phoneInput = input;
+            }}
+            onSubmitEditing={this.handleContinue}
           />
         </View>
         <View style={styles.imageViewStyle}>

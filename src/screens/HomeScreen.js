@@ -13,7 +13,8 @@ import {Icon} from 'react-native-elements';
 import {ListOfBooks, SectionHeader} from '../components/HomeScreenComponents';
 import MenuDrawerButton from '../components/MenuDrawerButton';
 import UserContext from '../context/UserContext';
-import AvatarForListSquare from '../components/AvatarForListSquare';
+import AvatarForList from '../components/AvatarForList';
+import AvatarImage from '../components/AvatarImage';
 import firestore from '@react-native-firebase/firestore';
 import EventCardHorizontal from '../components/EventCardHorizontal';
 import {FlatList, TouchableOpacity} from 'react-native-gesture-handler';
@@ -33,8 +34,6 @@ export default class Home extends Component {
   };
 
   componentDidMount() {
-    let user = this.context;
-    console.log(user.phone)
     this.getUserEventsFromUID();
     this.getNYTimesList('hardcover-fiction');
   }
@@ -142,10 +141,12 @@ export default class Home extends Component {
         {eventsFinishedFetching && discoverFinishedFetching && (
           <ScrollView keyboardShouldPersistTaps={'always'} contentContainerStyle={{zIndex: 1}}>
             <View style={styles.welcomeView}>
-              <View style={{paddingRight: 10}}>
+              <View style={{paddingRight: 10, paddingBottom: 7}}>
                 <Text style={styles.homeHeadlineTwoText}>Welcome, {firstName}</Text>
               </View>
-              <AvatarForListSquare avatar={user.avatar} avatarSize={40} displayName={user.displayName} />
+              <AvatarImage 
+                image={user.photoURL}
+                style={{width: 70, height: 70,  justifyContent: 'flex-end'}} />
             </View>
             <View style={styles.headlineView}>
               <Text style={styles.homeHeadlineOneText}>Upcoming Events</Text>
@@ -182,7 +183,13 @@ export default class Home extends Component {
                   </Text>
                 </View>
               </TouchableHighlight>
-              <TouchableHighlight style={styles.touchableHighlightView}>
+              <TouchableHighlight 
+                style={styles.touchableHighlightView}
+                onPress={() =>
+                  console.log(
+                    'messages down the roads',
+                  )
+                }>
                 <View style={styles.quickActionButton}>
                   <Icon name="plus-circle" type="feather" color="#3A5673" />
                   <Text style={styles.quickActionButtonTextStyle}>
