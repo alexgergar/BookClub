@@ -15,9 +15,14 @@ import {
 } from 'react-native';
 import axios from 'axios';
 import {Icon} from 'react-native-elements';
-import {GOOGLE_BOOKS_API_KEY} from 'react-native-dotenv';
 import SearchBar from '../components/SearchBar';
-import urlFor from '../utils/urlFor';
+import BookListItem from '../components/BookListItem';
+import {goodReadsSearchCall, goodReadsConvert} from '../utils/urlFor';
+import {
+  windowWidth,
+  windowHeight,
+  elevationShadowStyle,
+} from '../style/baseStyles';
 
 export default class CreateEvent extends Component {
   constructor(props) {
@@ -44,92 +49,60 @@ export default class CreateEvent extends Component {
   state = {
     searchTitle: null,
     showcontainer: false,
-    googleBooks: [],
+    searchingBooks: [],
     showBookListImage: false,
     selectedBook: null,
   };
-
-  onSearchBooks = text => {
+  
+  onGoodReadsSearchBooks = text => {
     this.setState({searchTitle: text});
     let search = encodeURI(text);
     axios
-      .get(
-        `https://www.googleapis.com/books/v1/volumes?q=${search}&maxResults=10&orderBy=relevance&printType=books&key=${GOOGLE_BOOKS_API_KEY}`,
-      )
-      .then(response =>
+      .get(goodReadsSearchCall(search)) 
+      .then(response => {
+        const bookData = goodReadsConvert(response);
         this.setState({
-          googleBooks: response.data.items,
+          searchingBooks: bookData.search.results.work,
           showcontainer: true,
           showBookListImage: false,
-        }),
-      )
-      .then(() => this.flatListRef.scrollToIndex({animated: true, index: 0}))
+        });
+      })
       .catch(error => console.log(error));
   };
 
-  renderGoogleBooks = book => {
+  renderGoodReadsBooks = book => {
     let thumbnail = {
       small: '',
       normal: '',
     };
     if (
-      book.volumeInfo !== undefined &&
-      book.volumeInfo.imageLinks !== undefined
+      book.best_book !== undefined &&
+      (book.best_book.image_url.text !== undefined || book.best_book.small_image_url.text !== undefined)
     ) {
       thumbnail.small =
-        book.volumeInfo.imageLinks.smallThumbnail !== undefined
-          ? book.volumeInfo.imageLinks.smallThumbnail
+        book.best_book.small_image_url.text !== undefined && book.best_book.small_image_url.text !== `https://s.gr-assets.com/assets/nophoto/book/50x75-a91bf249278a81aabab721ef782c4a74.png`
+          ? book.best_book.small_image_url.text
           : null;
       thumbnail.normal =
-        book.volumeInfo.imageLinks.thumbnail !== undefined
-          ? book.volumeInfo.imageLinks.thumbnail
+        book.best_book.image_url.text !== undefined && book.best_book.image_url.text !== `https://s.gr-assets.com/assets/nophoto/book/111x148-bcc042a9c91a29c1d680899eff700a03.png` 
+          ? book.best_book.image_url.text
           : null;
     }
-    let isbn = null;
-    let identifiers = book.volumeInfo.industryIdentifiers;
-    if (identifiers !== undefined) {
-      let idResult13 = identifiers.find(({type}) => type === 'ISBN_13');
-      let idResult10 = identifiers.find(({type}) => type === 'ISBN_10');
-      if (idResult13 !== undefined) {
-        isbn = idResult13.identifier;
-      } else if (idResult10 !== undefined) {
-        isbn = idResult10.identifier;
-      }
-    }
     let bookObject = {
-      title: book.volumeInfo.title,
-      authors: book.volumeInfo.authors,
-      isbn: isbn,
+      goodreadsBookID: book.best_book.id.text,
+      title: book.best_book.title.text,
+      author: book.best_book.author.name.text,
+      authorID: book.best_book.author.id.text,
       smallThumbnail: thumbnail.small,
       thumbnail: thumbnail.normal,
-      pageCount: book.volumeInfo.pageCount,
-      language: book.volumeInfo.language,
-      description: book.volumeInfo.description,
-    };
+      averageRating: book.average_rating.text,
+      ratingsCount: book.ratings_count.text,
+    }
     return (
-      <TouchableHighlight
-        underlayColor="rgba(58, 86, 114, 0.3)"
-        onPress={() => this.onBookSelectionPress(bookObject)}>
-        <View style={styles.flatListRowContainer}>
-          {bookObject.thumbnail === null || bookObject.thumbnail === '' ? (
-            <Image
-              style={styles.bookListImage}
-              source={require('../utils/bookPlaceholder.png')}
-              resizeMode={'cover'}
-            />
-          ) : (
-            <Image
-              style={styles.bookListImage}
-              source={{uri: bookObject.thumbnail}}
-              resizeMode={'cover'}
-            />
-          )}
-          <View style={styles.titleAuthorTextContainer}>
-            <Text style={styles.titleText}>{bookObject.title}</Text>
-            <Text style={styles.authorText}>{bookObject.authors}</Text>
-          </View>
-        </View>
-      </TouchableHighlight>
+      <BookListItem 
+        onBookSelectionPress={this.onBookSelectionPress}
+        book={bookObject}
+      />
     );
   };
 
@@ -186,18 +159,28 @@ export default class CreateEvent extends Component {
     ]).start();
   };
 
+  onBackButtonPress = () => {
+    this.setState({
+      searchTitle: null,
+      showcontainer: false,
+      searchingBooks: [],
+      showBookListImage: false,
+      selectedBook: null,
+    });
+    this.props.navigation.navigate('Home')
+  }
+
   render() {
     return (
       <SafeAreaView style={styles.container}>
         {Platform.OS === 'ios' && (
-          <View
-            style={styles.iosBackButton}
-          >
+          <View style={styles.iosBackButton}>
             <Icon
               name='chevron-left'
               type='feather'
               
-              onPress={() => this.props.navigation.navigate('Home')} /></View>
+              onPress={this.onBackButtonPress} />
+          </View>
         )}
         <View style={styles.innerContainer}>
           <Animated.Image
@@ -229,16 +212,16 @@ export default class CreateEvent extends Component {
                 <Animated.View style={{width: '100%'}}>
                   <SearchBar
                     placeholder="Find a Book by Title"
-                    onChangeText={text => this.onSearchBooks(text)}
+                    onChangeText={text => this.onGoodReadsSearchBooks(text)}
                     onFocus={this.onTextInputPress}
                   />
                 </Animated.View>
                 {this.state.showcontainer && (
                   <View style={{height: windowHeight * .80}}>
                     <FlatList
-                      data={this.state.googleBooks}
+                      data={this.state.searchingBooks}
                       keyExtractor={(item, index) => index.toString()}
-                      renderItem={book => this.renderGoogleBooks(book.item)}
+                      renderItem={book => this.renderGoodReadsBooks(book.item)}
                       keyboardShouldPersistTaps={'always'}
                       ref={ref => {
                         this.flatListRef = ref;
@@ -265,13 +248,6 @@ export default class CreateEvent extends Component {
   }
 }
 
-// This is to get the window width and height for styling
-const windowWidth = Dimensions.get('window').width;
-const windowHeight = Dimensions.get('window').height;
-const flatListRowHeight = windowHeight * 0.15;
-const flatListBookImageHeight = flatListRowHeight - 20;
-const flatListBookImageWidth = flatListBookImageHeight / 1.6;
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -291,6 +267,7 @@ const styles = StyleSheet.create({
     marginBottom: 0,
     width: '100%',
     zIndex: 10,
+    ...elevationShadowStyle(5),
   },
   backgroundStarterImage: {
     width: '90%',
@@ -332,9 +309,9 @@ const styles = StyleSheet.create({
   listBackgroundBookImage: {
     justifyContent: 'flex-start',
     zIndex: 5,
-    top: 40,
+    top: 5,
     width: '60%',
-    height: '70%',
+    height: '40%',
     paddingLeft: 20,
   },
   searchButtonContainer: {
@@ -344,54 +321,11 @@ const styles = StyleSheet.create({
   searchButtonStyle: {
     backgroundColor: '#55707b',
   },
-  flatListRowContainer: {
-    padding: 10,
-    height: flatListRowHeight,
-    flexDirection: 'row',
-    justifyContent: 'flex-start',
-  },
-  titleAuthorTextContainer: {
-    flexDirection: 'column',
-    justifyContent: 'flex-end',
-    paddingHorizontal: 20,
-  },
-  titleText: {
-    fontSize: 16,
-    fontFamily: 'Montserrat-Bold',
-  },
-  authorText: {
-    fontSize: 14,
-    fontFamily: 'Montserrat-Regular',
-  },
-  bookListImage: {
-    width: flatListBookImageWidth,
-    height: flatListBookImageHeight,
-    borderRadius: 5,
-  },
   iosBackButton: {
     zIndex: 50,
-    position: 'absolute', left: windowHeight * .02, top: windowHeight * .06,
-  }
+    position: 'absolute',
+    left: windowHeight * 0.02,
+    top: windowHeight * 0.06,
+  },
 });
 
-/* Color Theme Swatches in Hex
-.Book-cover-options-1-hex { color: #3A5673; } medium blue
-.Book-cover-options-2-hex { color: #EBE2CD; } light tan
-.Book-cover-options-3-hex { color: #1E3342; } dark blue
-.Book-cover-options-4-hex { color: #A5ADB5; } grey blue
-.Book-cover-options-5-hex { color: #F8B787; } peach
-
-/* Color Theme Swatches in RGBA
-.Book-cover-options-1-rgba { color: rgba(58, 86, 114, 1); }
-.Book-cover-options-2-rgba { color: rgba(235, 226, 205, 1); }
-.Book-cover-options-3-rgba { color: rgba(29, 51, 66, 1); }
-.Book-cover-options-4-rgba { color: rgba(165, 172, 181, 1); }
-.Book-cover-options-5-rgba { color: rgba(247, 182, 135, 1); }
-
-/* Color Theme Swatches in HSLA *
-.Book-cover-options-1-hsla { color: hsla(210, 32, 33, 1); }
-.Book-cover-options-2-hsla { color: hsla(42, 42, 86, 1); }
-.Book-cover-options-3-hsla { color: hsla(205, 37, 18, 1); }
-.Book-cover-options-4-hsla { color: hsla(210, 9, 67, 1); }
-.Book-cover-options-5-hsla { color: hsla(25, 88, 75, 1); }
-*/

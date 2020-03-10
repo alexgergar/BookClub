@@ -9,6 +9,8 @@ import {Avatar} from 'react-native-elements';
 export default class AvatarForLists extends Component {
   static defaultProps = {
     rounded: true,
+    fontSize: 11,
+    color: 'white',
   };
 
   handleGetInitials = () => {
@@ -19,22 +21,24 @@ export default class AvatarForLists extends Component {
   }
 
   render() {
+    let {avatarSize, avatar, fontSize, color, displayName, overlayStyle} = this.props;
     return (
      <View>
-      {this.props.avatar ? (
+      {avatar ? (
           <Avatar
-            size={this.props.avatarSize}
+            size={avatarSize}
             rounded
-            source={{uri: this.props.avatar,}}
+            source={{uri: avatar,}}
             containerStyle={styles.avatarContainer}
             avatarStyle={styles.avatarContainer}
           />
         ) : (
           <Avatar
             rounded
-            size={this.props.avatarSize}
-            titleStyle={styles.avatarTitleStyle}
-            title={this.handleGetInitials(this.props.displayName)}
+            size={avatarSize}
+            titleStyle={[styles.avatarTitleStyle, {fontSize: fontSize, color: color}]}
+            title={this.handleGetInitials(displayName)}
+            overlayContainerStyle={overlayStyle}
             avatarStyle={styles.avatarStyle}
           />
         )}
@@ -52,6 +56,6 @@ const styles = StyleSheet.create({
   },
   avatarTitleStyle: {
     fontFamily: 'Montserrat-SemiBold',
-    fontSize: 11,
+    color: 'black',
   },
 });

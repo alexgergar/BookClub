@@ -10,19 +10,19 @@ import {
 import EventDetails from '../components/EventDetails';
 import BookDetails from '../components/BookDetails';
 import ActiveButton from '../components/ActiveButton';
-import {Button} from 'react-native-elements';
 import UserContext from '../context/UserContext';
 import firestore from '@react-native-firebase/firestore';
+import MenuDrawerButton from '../components/MenuDrawerButton';
 
 export default class MainEvent extends Component {
   state = {
-    showEventDetail: false,
+    showEventDetail: true,
     eventID: null,
     event: null,
   };
 
   componentDidMount() {
-    const {eventID, event} = this.props.route.params;
+    const {eventID} = this.props.route.params;
     this.getEventInfoFromFirestore(eventID);
   }
 
@@ -58,9 +58,15 @@ export default class MainEvent extends Component {
     });
   };
 
+  onMenuPress = () => {
+    this.props.navigation.toggleDrawer();
+  };
+
   render() {
     const {event} = this.state;
     return (
+      <>
+      <MenuDrawerButton onPress={this.onMenuPress} />
       <ScrollView contentContainerStyle={styles.container}>
         {event === null ? (
           <Image
@@ -133,6 +139,7 @@ export default class MainEvent extends Component {
           </View>
         </View>
       </ScrollView>
+      </>
     );
   }
 }

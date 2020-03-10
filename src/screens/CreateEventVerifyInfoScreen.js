@@ -12,6 +12,11 @@ import GreyWhiteBackgroundBottomButton from '../components/GreyWhiteBackgroundBo
 import EditInfoBlock from '../components/EditInfoBlock';
 import BadgeListItem from '../components/BadgeListItem';
 import firestore from '@react-native-firebase/firestore';
+import {
+  windowWidth,
+  windowHeight,
+  elevationShadowStyle,
+} from '../style/baseStyles';
 
 export default class CreateEventVerifyInfo extends Component {
   static contextType = UserContext;
@@ -113,7 +118,6 @@ export default class CreateEventVerifyInfo extends Component {
       .collection('events')
       .add(thisEvent)
       .then(ref => {
-        console.log(ref.id);
         this.handleUpdateUserEvents(thisEvent, membersOfBookClubUID, ref.id)
       })
       .catch(error => console.log(error));
@@ -136,8 +140,9 @@ export default class CreateEventVerifyInfo extends Component {
           events: addToUserEventArray
         })
         .then(ref => {
-          this.props.navigation.navigate('MainEvent', {
-            eventID: eventID
+          this.props.navigation.navigate('Home', {
+            screen: 'MainEvent',
+            params: {eventID: eventID},
           });
         })
         .catch(error => console.log(error));
@@ -238,7 +243,9 @@ export default class CreateEventVerifyInfo extends Component {
           <Text style={styles.headline3}>Host: {user.displayName}</Text>
         </View>
         <EditInfoBlock headline="Date" onEditPress={this.onEditDatePress}>
-          <Text style={styles.headline3}>{date.date} at {date.time}</Text>
+          <Text style={styles.headline3}>
+            {date.date} at {date.time}
+          </Text>
         </EditInfoBlock>
         <EditInfoBlock
           headline="Location"
@@ -261,11 +268,13 @@ export default class CreateEventVerifyInfo extends Component {
           headline="Book Details"
           onEditPress={this.onEditBookSelectionPress}>
           <View style={styles.bookDetailsView}>
-            <Image
-              style={styles.bookImageView}
-              source={{uri: selectedBook.thumbnail}}
-              resizeMode={'cover'}
-            />
+            <View style={[styles.bookImageView, {...elevationShadowStyle(4)}]}>
+              <Image
+                style={styles.bookImageView}
+                source={{uri: selectedBook.thumbnail}}
+                resizeMode={'cover'}
+              />
+            </View>
             <View style={styles.bookDetails}>
               <Text style={[styles.headline3, styles.semiBold]}>
                 {selectedBook.title}
@@ -292,9 +301,6 @@ export default class CreateEventVerifyInfo extends Component {
   }
 }
 
-// This is to get the window width and height for styling
-const windowWidth = Dimensions.get('window').width;
-const windowHeight = Dimensions.get('window').height;
 const bookcoverHeight = windowHeight * 0.15;
 const bookcoverWidth = bookcoverHeight / 1.6;
 
@@ -333,7 +339,6 @@ const styles = StyleSheet.create({
     flexWrap: 'wrap',
     flexDirection: 'row',
   },
-
 });
 
 /* Color Theme Swatches in Hex

@@ -17,7 +17,7 @@ export default class CreateEventAddDetails extends Component {
     city: '',
     state: '',
     zipcode: '',
-    detailsForLocation: null,
+    detailsForLocation: '',
     disableButton: true,
   };
 

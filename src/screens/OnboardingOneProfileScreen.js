@@ -117,7 +117,7 @@ const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
 const styles = StyleSheet.create({
   detailsContainer: {
-    top: windowHeight * 0.05,
+    // top: windowHeight * 0.05,
   },
   profileTitleTexth1: {
     fontFamily: 'Montserrat-Regular',

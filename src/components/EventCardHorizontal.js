@@ -9,20 +9,9 @@ import {
 } from 'react-native';
 import AvatarForList from './AvatarForList';
 
-const excludeAfterIndex = 4;
-const ListOfAttendees = props =>
-  props.attendees.reduce((shownedAttendees, attendee, index) => {
-    if (index < excludeAfterIndex) {
-      shownedAttendees.push(
-        <AvatarForList
-          displayName={props.displayName}
-          avatar={props.avatar}
-          avatarSize={40}
-        />,
-      );
-    }
-    return shownedAttendees;
-  }, []);
+const onPress = () => {
+  props.onEventItemPress(props.eventID);
+}
 
 const EventCardHorizontal = props => {
   const dayOfWeek = props.date.slice(4, 7);
@@ -31,7 +20,7 @@ const EventCardHorizontal = props => {
   const timeEnd = props.time.slice(-2, props.time.length)
   return (
     <TouchableOpacity
-      onPress={() => this.onEventItemPress(item)}>
+      onPress={() => props.onEventItemPress(props.eventID)}>
       <View style={styles.container}>
         {props.bookCover === undefined ?
           <Image
@@ -59,14 +48,8 @@ const EventCardHorizontal = props => {
               </View>
             </View>
             <View style={{alignSelf: 'flex-end', marginBottom: '8%'}}>
-              <Text style={styles.bookTitleText}>{props.bookTitle}</Text>
+              <Text numberOfLines={2} ellipsizeMode={'tail'} style={styles.bookTitleText}>{props.bookTitle}</Text>
             </View>
-            {/* <View>
-              <ListOfAttendees 
-              displayName={props.displayName}
-              avatar={props.avatar}
-              avatarSize={40}/>
-            </View> */}
           </View>
         </View>
       </View>

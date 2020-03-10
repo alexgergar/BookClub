@@ -12,7 +12,7 @@ import {Button} from 'react-native-elements';
 import ViewMoreText from 'react-native-view-more-text';
 import axios from 'axios';
 import convert from 'xml-js';
-import {GOODREAD_API_KEY} from 'react-native-dotenv';
+import {goodReadsAuthorCall, goodReadsConvert} from '../utils/urlFor';
 
 export default class SelectedBook extends Component {
   state = {
@@ -21,51 +21,30 @@ export default class SelectedBook extends Component {
   };
 
   componentDidMount() {
+    this.handleGettingAdditionalBookDataCall();
+  }
+
+  handleGettingAdditionalBookDataCall = () => {
     const {selectedBook} = this.props.route.params;
     const additionalBookInfo = {
       ...selectedBook,
-      authorID: null,
-      authorBio: null,
-      authorImage: null,
-      otherBooksByAuthor: null,
-      averageRating: null,
-      ratingsCount: null,
+      pageCount: '',
+      publicationYear: '',
+      description: '',
+      authorBio: '',
+      authorImage: '',
+      otherBooksByAuthor: [],
     };
     axios
-      .get(
-        `https://www.goodreads.com/search/index.xml?key=${GOODREAD_API_KEY}&q=${
-          selectedBook.isbn
-        }`, // this gets info about author from goodreads
-      )
+      .get(goodReadsAuthorCall(selectedBook.authorID)) // this gets info about author from goodreads
       .then(response => {
-        const bookDataJSON = convert.xml2js(response.data, {
-          compact: true,
-          spaces: 4,
-          textKey: 'text',
-          cdataKey: 'cdata',
-          attributesKey: 'attributes',
-        }); // changes xml to json
-        additionalBookInfo.authorID = bookDataJSON.GoodreadsResponse.search.results.work.best_book.author.id.text;
-        additionalBookInfo.averageRating = bookDataJSON.GoodreadsResponse.search.results.work.average_rating.text;
-        additionalBookInfo.ratingsCount = bookDataJSON.GoodreadsResponse.search.results.work.ratings_count.text;
-        return axios.get(
-          `https://www.goodreads.com/author/show/${additionalBookInfo.authorID}?format=xml&key=${GOODREAD_API_KEY}`,
-        ); // immediately returning a new get request to get info on author
-      })
-      .then(response => {
-        const bookDataJSON = convert.xml2js(response.data, {
-          compact: true,
-          spaces: 4,
-          textKey: 'text',
-          cdataKey: 'cdata',
-          attributesKey: 'attributes',
-        });
-        const authorBio = bookDataJSON.GoodreadsResponse.author.about.cdata; // this is the author bio
+        const bookData = goodReadsConvert(response);
+        const authorBio = bookData.author.about.cdata; // this is the author bio
         const authorImage =
-          bookDataJSON.GoodreadsResponse.author.large_image_url.cdata ||
-          bookDataJSON.GoodreadsResponse.author.image_url.cdata; // author image
+          bookData.author.large_image_url.cdata ||
+          bookData.author.image_url.cdata; // author image
         const authorsOtherBooksAllData =
-          bookDataJSON.GoodreadsResponse.author.books.book; // other books by author and the below is to map through just for the info we want
+          bookData.author.books.book; // other books by author and the below is to map through just for the info we want
         const otherBooks = authorsOtherBooksAllData.map(book => ({
           title: book.title.text,
           coverArt: book.image_url.text,
@@ -73,6 +52,10 @@ export default class SelectedBook extends Component {
           avgRating: book.average_rating.text,
           description: book.description.text,
         }));
+        const findThisBook = authorsOtherBooksAllData.filter(book => book.id.text === selectedBook.goodreadsBookID);
+        additionalBookInfo.pageCount = findThisBook[0].num_pages.text !== undefined ? findThisBook[0].num_pages.text : '';
+        additionalBookInfo.publicationYear = findThisBook[0].publication_year.text !== undefined ? findThisBook[0].publication_year.text : '';
+        additionalBookInfo.description = findThisBook[0].description.text !== undefined ? findThisBook[0].description.text : '';
         additionalBookInfo.authorBio = authorBio;
         additionalBookInfo.authorImage = authorImage;
         additionalBookInfo.otherBooksByAuthor = otherBooks;
@@ -160,7 +143,7 @@ export default class SelectedBook extends Component {
                 <View style={styles.titleAuthorView}>
                   <Text style={styles.bookTitleText}>{updatedSelectedBook.title}</Text>
                   <Text style={styles.bookAuthorsText}>
-                    {updatedSelectedBook.authors}
+                    {updatedSelectedBook.author}
                   </Text>
                 </View>
                 <View style={styles.hortizontalLine} />
@@ -182,9 +165,9 @@ export default class SelectedBook extends Component {
                     </Text>
                   </View>
                   <View style={styles.individualInGreyBoxView}>
-                    <Text style={styles.greyBoxTitle}>lang</Text>
+                    <Text style={styles.greyBoxTitle}>published</Text>
                     <Text style={styles.greyBoxSubTitle}>
-                      {updatedSelectedBook.language}
+                      {updatedSelectedBook.publicationYear}
                     </Text>
                   </View>
                 </View>
@@ -196,7 +179,7 @@ export default class SelectedBook extends Component {
                   renderViewMore={this.renderViewMore}
                   renderViewLess={this.renderViewLess}
                   textStyle={styles.descriptionBodyText}>
-                    <Text>{selectedBook.description}</Text>
+                    <Text>{updatedSelectedBook.description}</Text>
                     </ViewMoreText>}
               </View>
               </View>
@@ -270,10 +253,12 @@ const styles = StyleSheet.create({
   bookTitleText: {
     fontFamily: 'Montserrat-Bold',
     fontSize: 24,
+    textAlign: 'center',
   },
   bookAuthorsText: {
     fontFamily: 'Montserrat-Regular',
     fontSize: 14,
+    textAlign: 'center',
   },
   greyInfoBoxView: {
     backgroundColor: '#EBEBEB',
@@ -322,7 +307,6 @@ const styles = StyleSheet.create({
     bottom: 0,
     justifyContent: 'center',
     alignItems: 'center',
-    // backgroundColor: '#E3E4E6',
   },
   bottonWhiteContainerView: {
     backgroundColor: 'white',

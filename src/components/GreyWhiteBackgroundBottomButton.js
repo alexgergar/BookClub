@@ -11,6 +11,11 @@ import {
   Dimensions,
 } from 'react-native';
 import {Button} from 'react-native-elements';
+import {
+  windowWidth,
+  windowHeight,
+  elevationShadowStyle,
+} from '../style/baseStyles';
 
 const HeadlineSection = props => (
   <View style={props.headerView}>
@@ -153,26 +158,21 @@ export default class GreyWhiteBackgroundBottomButton extends Component {
   }
 }
 
-const windowWidth = Dimensions.get('window').width;
-const windowHeight = Dimensions.get('window').height;
-
 const styles = StyleSheet.create({
   safeAreaView: {
     flex: 1,
     backgroundColor: '#E3E4E6',
-    // justifyContent: 'flex-end',
   },
   container: {
     backgroundColor: '#E3E4E6',
     alignItems: 'center',
-    paddingTop: windowHeight * .05,
+    paddingTop: windowHeight * 0.05,
   },
   whiteBackgroundContainer: {
+    ...elevationShadowStyle(8),
     backgroundColor: 'white',
     width: '90%',
     height: '100%',
-    // flexGrow: 1,
-
     borderTopLeftRadius: 15,
     borderTopRightRadius: 15,
     justifyContent: 'space-between',
@@ -187,9 +187,6 @@ const styles = StyleSheet.create({
     fontFamily: 'Montserrat-Regular',
     fontSize: 16,
     marginBottom: 10,
-  },
-  bottomButtonView: {
-    // marginVertical: '3%',
   },
   continueButtonContainerStyle: {
     borderRadius: 20,

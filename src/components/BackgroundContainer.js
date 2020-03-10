@@ -109,8 +109,8 @@ export default class BackgroundContainer extends Component {
               <>
                 <Animated.View
                   style={{
-                    marginVertical: this.vertMargins,
-                    height: this.buttonHeight,
+                    // marginVertical: this.vertMargins,
+                    // height: this.buttonHeight,
                   }}>
                   <Button
                     title={this.props.buttonTitle}

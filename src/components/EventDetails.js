@@ -2,16 +2,11 @@ import React, {Component} from 'react';
 import {Text, View, StyleSheet, Dimensions} from 'react-native';
 import {bookClubEvent} from '../utils/testInfo';
 import {Avatar, Badge} from 'react-native-elements';
+import AvatarSpread from './AvatarSpread'
 
 export default class EventDetails extends Component {
   state = {
     showAllAttendeesInfo: false,
-  };
-  handleGetInitials = fullName => {
-    return fullName
-      .split(' ')
-      .map(name => name[0])
-      .join('');
   };
 
   toggleShowAllAttendeesInfo = () => {
@@ -22,72 +17,20 @@ export default class EventDetails extends Component {
 
   render() {
     const {event} = this.props;
-    const excludeAfterIndex = 4;
-    const listOfAttendees = event.attendees.reduce(
-      (shownedAttendees, attendee, index) => {
-        if (index < excludeAfterIndex) {
-          const initialsOfName = this.handleGetInitials(attendee.displayName);
-          shownedAttendees.push(
-            <Avatar
-              key={index}
-              size={40}
-              overlayContainerStyle={styles.avatarContainer}
-              title={initialsOfName}
-              titleStyle={{fontFamily: 'Montserrat-SemiBold', fontSize: 14}}
-            />,
-          );
-        }
-        return shownedAttendees;
-      },
-      [],
-    );
-
     return (
       <View>
-        {/* What I need to bring to event as card with icon or if I need to pick from list - tell what i'm bringing */}
-        {/* <View style={styles.whatToBringContainer}>
-          <Icon name="add-alert" type="material" />
-          <Text style={styles.cardTitleStyle}>
-            Bring {bookClubEvent.whatGuestsProvides[0].whatTheyAreBringing}!
-          </Text>
-        </View> */}
         <View style={styles.headlineView}>
           <Text style={styles.headlineText}>Who is coming?</Text>
         </View>
         <View style={styles.whoIsComingListContainer}>
-          {event !== null && (
-            <>
-            {listOfAttendees}
-            <View>
-              {event.attendees.length > 4 && (
-                <>
-                  <Avatar
-                    size={30}
-                    overlayContainerStyle={styles.avatarContainer}
-                    icon={{name: 'more-horizontal', type: 'feather'}}
-                  />
-                  <Badge
-                    badgeStyle={styles.seeMoreAttendeesBadge}
-                    value={
-                      <Text style={styles.badgeText}>
-                        {event.attendees.length - 4}
-                      </Text>
-                    }
-                    containerStyle={{position: 'absolute', top: -6, right: -6}}
-                  />
-                </>
-                )
-              }
-            </View>
-            </>
-          )}
+          {event !== null && <AvatarSpread event={event} color={'white'} fontSize={14} />}
         </View>
         <View style={styles.headlineView}>
           <Text style={styles.headlineText}>Info</Text>
         </View>
         <View style={styles.importantInfoContainer}>
           <Text style={styles.eventDetailsText}>
-            {event.host.displayName} wanted you to know...
+            {event.host.displayName.split(' ')[0]} wanted you to know...
           </Text>
           {event !== null && 
             <Text style={styles.eventDetailsQuoteText}>
@@ -108,11 +51,6 @@ export default class EventDetails extends Component {
             </View>
           </>
         )}
-
-        {/* }
-                    <Text>Card list of who is attending - click and it expands into more info - slice the list based on a certain number based on size of avatar then add plus sign</Text>
-                    <Text>Details/important info on what to know - how to get to location, allergies, door access codes - bulleted or list formate</Text>
-                    <Text>Details for location</Text> {*/}
       </View>
     );
   }
@@ -160,21 +98,11 @@ const styles = StyleSheet.create({
     fontFamily: 'Montserrat-Bold',
   },
   whoIsComingListContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
     alignItems: 'center',
     marginLeft: '5%',
     marginRight: '5%',
-    marginTop: 5,
-    marginBottom: 15,
-    borderWidth: 0,
-  },
-  listItemContentWhoIsComing: {
-    backgroundColor: 'rgba(165, 172, 181, 0.1)',
-  },
-  listContainerWhoIsComing: {
-    borderRadius: 10,
-    borderWidth: 0,
+    marginTop: 10,
+    marginBottom: 10,
   },
   eventDetailsText: {
     marginLeft: '5%',
@@ -203,25 +131,3 @@ const styles = StyleSheet.create({
     fontFamily: 'Karla-Regular',
   },
 });
-
-/* Color Theme Swatches in Hex
-.Book-cover-options-1-hex { color: #3A5673; } medium blue
-.Book-cover-options-2-hex { color: #EBE2CD; } light tan
-.Book-cover-options-3-hex { color: #1E3342; } dark blue
-.Book-cover-options-4-hex { color: #A5ADB5; } grey blue
-.Book-cover-options-5-hex { color: #F8B787; } peach
-
-/* Color Theme Swatches in RGBA
-.Book-cover-options-1-rgba { color: rgba(58, 86, 114, 1); }
-.Book-cover-options-2-rgba { color: rgba(235, 226, 205, 1); }
-.Book-cover-options-3-rgba { color: rgba(29, 51, 66, 1); }
-.Book-cover-options-4-rgba { color: rgba(165, 172, 181, 1); }
-.Book-cover-options-5-rgba { color: rgba(247, 182, 135, 1); }
-
-/* Color Theme Swatches in HSLA *
-.Book-cover-options-1-hsla { color: hsla(210, 32, 33, 1); }
-.Book-cover-options-2-hsla { color: hsla(42, 42, 86, 1); }
-.Book-cover-options-3-hsla { color: hsla(205, 37, 18, 1); }
-.Book-cover-options-4-hsla { color: hsla(210, 9, 67, 1); }
-.Book-cover-options-5-hsla { color: hsla(25, 88, 75, 1); }
-*/

@@ -7,14 +7,13 @@ import {
   Dimensions,
   TouchableOpacity,
   ScrollView,
-  FlatView,
 } from 'react-native';
 import CameraRoll from '@react-native-community/cameraroll';
-import {Button, Avatar} from 'react-native-elements';
+import {Button} from 'react-native-elements';
 import {avatarImages} from '../utils/listOfAvatars';
-import auth from '@react-native-firebase/auth';
 import UserContext from '../context/UserContext';
 import BackgroundContainer from '../components/BackgroundContainer';
+import firestore from '@react-native-firebase/firestore';
 import storage from '@react-native-firebase/storage';
 import { CommonActions } from '@react-navigation/native';
 
@@ -45,11 +44,10 @@ export default class OnboardingTwoAvatar extends Component {
     avatarSelected: false,
     idSelection: null,
     selectedAvatarData: null,
+    avatarURL: 'avatarOptions1.png',
   };
 
   handleAvatarAddPress = avatar => {
-    console.log(avatar.src);
-    console.log(avatar.id);
     this.setState({
       avatarSelected: true,
       idSelection: avatar.id,
@@ -57,22 +55,28 @@ export default class OnboardingTwoAvatar extends Component {
     });
   };
 
-  handleUpdateToProfile = async () => {
-    let user = this.context
-    const {idSelection} = this.state;
+  handleGetAvatarRefFromGoogleStorage = async avatarID => {
+    const avatarFile = `avatarOptions${avatarID}.png`;
+    const avatarRef = await storage().ref(avatarFile);
+    await avatarRef
+      .getDownloadURL()
+      .then(url => this.handleCreateUserInDB(url))
+      .catch(error => console.log(error));
+  }
+  
+  handleCreateUserInDB = async url => {
+    let user = this.context;
     const {firstName, lastName, phoneNumber} = this.props.route.params;
     const update = {
       displayName: `${firstName} ${lastName}`,
       phoneNumber: phoneNumber,
-      photoURL: this.state.selectedAvatarData.id,
+      avatarURL: url,
+      events: [],
+      bookClubs: [],
     };
-    await storage()
-      .ref(`avatarOptions${idSelection}.png`)
-      .getDownloadURL()
-      .then(url => update.photoURL = url)
-      .catch(error => console.log(error))
-    await auth()
-      .currentUser.updateProfile(update)
+    await firestore().collection('users')
+      .doc(user.uid)
+      .set(update)
       .then(() => this.props.navigation.dispatch(
         CommonActions.reset({
           index: 0,
@@ -81,7 +85,12 @@ export default class OnboardingTwoAvatar extends Component {
           ],
         })
       ))
-      .catch(error => console.log(error));
+      .catch(error => console.log(error))
+  }
+
+  handleUpdateToProfile = async () => {
+    const {idSelection} = this.state;
+    this.handleGetAvatarRefFromGoogleStorage(idSelection);
   };
 
   handleContinuePress = () => {

@@ -13,17 +13,18 @@ import {Icon} from 'react-native-elements';
 import {ListOfBooks, SectionHeader} from '../components/HomeScreenComponents';
 import MenuDrawerButton from '../components/MenuDrawerButton';
 import UserContext from '../context/UserContext';
-import AvatarForList from '../components/AvatarForList';
 import AvatarImage from '../components/AvatarImage';
 import firestore from '@react-native-firebase/firestore';
 import EventCardHorizontal from '../components/EventCardHorizontal';
-import {FlatList, TouchableOpacity} from 'react-native-gesture-handler';
+import {FlatList} from 'react-native-gesture-handler';
 import axios from 'axios';
-import {NYTIMES_KEY} from 'react-native-dotenv';
-
+import {nyTimesBestSellersList} from '../utils/urlFor';
+import LottieView from 'lottie-react-native';
+import {windowWidth, windowHeight, elevationShadowStyle} from '../style/baseStyles';
 
 export default class Home extends Component {
   state = {
+    user: {},
     events: [],
     nonFictionBooks: [],
     fictionBooks: [],
@@ -34,32 +35,45 @@ export default class Home extends Component {
   };
 
   componentDidMount() {
-    this.getUserEventsFromUID();
+    this.getUserInfoFromDB();
     this.getNYTimesList('hardcover-fiction');
   }
 
-  getUserEventsFromUID = () => {
+  componentWillUnmount() {
+    this.getUserInfoFromDB();
+  }
+
+
+  getUserInfoFromDB = () => {
+    console.log('in get user info');
     let user = this.context;
     firestore()
       .collection('users')
       .doc(user.uid)
-      .get()
-      .then(doc => {
-        this.setState({
+      .onSnapshot(
+        doc => {
+          this.setState({
           events: doc.data().events,
+          bookClubs: doc.data().bookClubs,
           eventsFinishedFetching: true,
+          user: {
+            uid: user.uid,
+            displayName: doc.data().displayName,
+            firstName: doc.data().displayName.split(' ')[0],
+            email: doc.data().email,
+            phoneNumber: doc.data().phoneNumber,
+            avatarURL: doc.data().avatarURL,
+          },
         });
-      })
-      .catch(err => {
-        console.log('Error getting documents', err);
-      });
+        }, error => {
+          console.log(error);
+        }
+      )
   };
 
   getNYTimesList = genre => {
     axios
-      .get(
-        `https://api.nytimes.com/svc/books/v3/lists/current/${genre}.json?api-key=${NYTIMES_KEY}`, // this gets info about author from goodreads
-      )
+      .get(nyTimesBestSellersList(genre))
       .then(response => {
         if (genre === 'hardcover-fiction') {
           this.setState({
@@ -92,14 +106,17 @@ export default class Home extends Component {
       isbn: book.isbns[0].isbn13,
       thumbnail: book.book_image,
     };
-    this.props.navigation.navigate('BookView', {
-      selectedBook: bookObject,
+    this.props.navigation.navigate('MainStack', {
+      screen: 'BookView',
+      params: {
+        selectedBook: bookObject,
+      },
     });
   };
 
-  onEventItemPress = event => {
+  onEventItemPress = eventID => {
     this.props.navigation.navigate('MainEvent', {
-      eventID: event.eventID,
+        eventID: eventID,
     });
   };
 
@@ -120,12 +137,12 @@ export default class Home extends Component {
   };
 
   onMenuPress = () => {
-    this.props.navigation.toggleDrawer()
-  }
- 
+    this.props.navigation.toggleDrawer();
+  };
+
   render() {
-    let user = this.context;
     const {
+      user,
       events,
       discoverSection,
       nonFictionBooks,
@@ -134,40 +151,59 @@ export default class Home extends Component {
       eventsFinishedFetching,
       discoverFinishedFetching,
     } = this.state;
-    const firstName = user.displayName.split(' ')[0];
     return (
       <SafeAreaView style={styles.container}>
-        {eventsFinishedFetching && discoverFinishedFetching && <MenuDrawerButton onPress={this.onMenuPress}/>}
+        {eventsFinishedFetching == false || discoverFinishedFetching == false && (
+          <View style={{alignItems: 'center'}}>
+            <LottieView
+              source={require('../utils/loading-book-blue.json')}
+              autoPlay
+              loop
+            />
+          </View>
+        )}
         {eventsFinishedFetching && discoverFinishedFetching && (
-          <ScrollView keyboardShouldPersistTaps={'always'} contentContainerStyle={{zIndex: 1}}>
+          <MenuDrawerButton onPress={this.onMenuPress} />
+        )}
+        {eventsFinishedFetching && discoverFinishedFetching && (
+          <ScrollView
+            keyboardShouldPersistTaps={'always'}
+            contentContainerStyle={{zIndex: 1}}>
             <View style={styles.welcomeView}>
               <View style={{paddingRight: 10, paddingBottom: 7}}>
-                <Text style={styles.homeHeadlineTwoText}>Welcome, {firstName}</Text>
+                <Text style={styles.homeHeadlineTwoText}>
+                  Welcome, {user.firstName}
+                </Text>
               </View>
-              <AvatarImage 
-                image={user.photoURL}
-                style={{width: 70, height: 70,  justifyContent: 'flex-end'}} />
+              <AvatarImage
+                image={user.avatarURL}
+                style={{width: 70, height: 70, justifyContent: 'flex-end'}}
+              />
             </View>
-            <View style={styles.headlineView}>
-              <Text style={styles.homeHeadlineOneText}>Upcoming Events</Text>
-            </View>
-            <View style={styles.topHorizontalCard}>
-              {events.length !== 0 && (
-                <FlatList
-                  horizontal
-                  data={events}
-                  keyExtractor={item => item.eventID.toString()}
-                  renderItem={({item}) => (
-                    <EventCardHorizontal
-                      date={item.date}
-                      time={item.time}
-                      bookTitle={item.bookTitle}
-                      bookCover={item.bookCover}
+            {events.length > 0 && (
+              <View>
+                <View style={styles.headlineView}>
+                  <Text style={styles.homeHeadlineOneText}>Upcoming Events</Text>
+                </View>
+                <View style={styles.topHorizontalCard}>
+                    <FlatList
+                      horizontal
+                      data={events}
+                      keyExtractor={item => item.eventID.toString()}
+                      renderItem={({item}) => (
+                        <EventCardHorizontal
+                          date={item.date}
+                          time={item.time}
+                          bookTitle={item.bookTitle}
+                          bookCover={item.bookCover}
+                          eventID={item.eventID}
+                          onEventItemPress={this.onEventItemPress}
+                        />
+                      )}
                     />
-                  )}
-                />
-              )}
-            </View>
+                </View>
+              </View>
+            )}
             <View style={styles.quickActionButtonsView}>
               <TouchableHighlight
                 style={styles.touchableHighlightView}
@@ -183,12 +219,12 @@ export default class Home extends Component {
                   </Text>
                 </View>
               </TouchableHighlight>
-              <TouchableHighlight 
+              <TouchableHighlight
                 style={styles.touchableHighlightView}
                 onPress={() =>
-                  console.log(
-                    'messages down the roads',
-                  )
+                  this.props.navigation.navigate('Create New Event', {
+                    screen: 'CreateEvent',
+                  })
                 }>
                 <View style={styles.quickActionButton}>
                   <Icon name="plus-circle" type="feather" color="#3A5673" />
@@ -206,7 +242,7 @@ export default class Home extends Component {
                 </View>
               </TouchableHighlight>
             </View>
-            <View style={[styles.headlineView, {marginTop: "8%"}]}>
+            <View style={[styles.headlineView, {marginTop: '8%'}]}>
               <Text style={styles.homeHeadlineOneText}>Discover</Text>
             </View>
             <View style={styles.discoverContainerView}>
@@ -246,21 +282,8 @@ export default class Home extends Component {
     );
   }
 }
-function elevationShadowStyle(elevation) {
-  return {
-    elevation,
-    shadowColor: 'black',
-    shadowOffset: {width: 0, height: 0.5 * elevation},
-    shadowOpacity: 0.3,
-    shadowRadius: 0.8 * elevation,
-  };
-}
-
-const windowWidth = Dimensions.get('window').width;
-const windowHeight = Dimensions.get('window').height;
 const bookListItemWidth = windowWidth * 0.8 * 0.3;
 const bookListItemHeight = bookListItemWidth * 1.6 + windowHeight * 0.06;
-const authorTitleViewHeight = bookListItemHeight - bookListItemWidth * 1.6;
 
 const styles = StyleSheet.create({
   container: {
@@ -274,8 +297,8 @@ const styles = StyleSheet.create({
     alignSelf: 'flex-end',
     justifyContent: 'flex-end',
     alignItems: 'flex-end',
-    padding: 10,
-    paddingRight: 10,
+    paddingTop: 10,
+    paddingRight: 20,
     flexDirection: 'row',
   },
   headlineView: {

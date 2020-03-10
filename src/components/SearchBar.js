@@ -140,7 +140,7 @@ class SearchBar extends Component {
             {(hasFocus && !isEmpty) && (
               <TouchableOpacity onPress={this.clear}>
                 <View style={rightIconStyle}>
-                  <Icon type='material' name='close' color='#8F8F8F' size={16} />
+                  <Icon type='material' name='close' color='#8F8F8F' size={12} />
                 </View>
               </TouchableOpacity>
             )}

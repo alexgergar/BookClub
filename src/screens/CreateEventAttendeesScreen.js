@@ -316,9 +316,7 @@ export default class CreateEventAttendees extends Component {
   render() {
     let user = this.context;
     let workingAttendeeInviteList = this.state.selectedBookClubMembers;
-    console.log(workingAttendeeInviteList);
     if (workingAttendeeInviteList.find(({uid}) => uid === user.uid) === undefined) {
-      console.log('need to add me')
       const userInfo = {
         email: user.email,
         displayName: user.displayName,
@@ -326,7 +324,6 @@ export default class CreateEventAttendees extends Component {
         phone: user.phone,
       }
       workingAttendeeInviteList = [userInfo, ...workingAttendeeInviteList];
-      console.log(workingAttendeeInviteList);
     }
     const displayOfList = this.state.showSearchList ? (
       <FlatList

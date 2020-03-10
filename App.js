@@ -1,4 +1,4 @@
-import React, {useState, useEffect, useMemo} from 'react';
+import React, {useState, useEffect} from 'react';
 import auth from '@react-native-firebase/auth';
 import 'react-native-gesture-handler';
 import MainEventScreen from './src/screens/MainEventScreen';
@@ -20,7 +20,9 @@ import UserContext from './src/context/UserContext';
 import {NavigationContainer} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
-import {createDrawerNavigator} from '@react-navigation/drawer';
+import {createDrawerNavigator, DrawerContentScrollView,
+  DrawerItemList,
+  DrawerItem,} from '@react-navigation/drawer';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -31,8 +33,6 @@ const MainStack = () => (
     <Stack.Screen name="Home" component={HomeScreen} />
     <Stack.Screen name="MainEvent" component={MainEventScreen} />
     <Stack.Screen name="BookView" component={BookViewScreen} />
-    <Stack.Screen name="Sign Out" component={SignOutScreen} />
-    <Stack.Screen name="OnBoarding" component={OnBoardingStack} />
   </Stack.Navigator>
 );
 
@@ -103,26 +103,57 @@ const SignOutStack = () => (
   </Stack.Navigator>
 );
 
+
+
 const DrawerNav = () => {
   return (
     <Drawer.Navigator
-      initialRouteName="Home"
+      initialRouteName="MainStack"
       drawerContentOptions={{
         activeTintColor: '#1E3342',
         activeBackgroundColor: 'rgba(58, 86, 114, 0.2)',
         labelStyle: {fontFamily: 'Montserrat-Bold'},
-      }}>
-      <Drawer.Screen name="Home" component={MainStack} />
+      }}
+      drawerContent={props => <CustomDrawerContent navigation={props.navigation} />}
+      >
+      <Drawer.Screen name="MainStack" component={MainStack} />
       <Drawer.Screen name="Create New Event" component={CreateStack} />
       <Drawer.Screen name="Sign Out" component={SignOutStack} />
     </Drawer.Navigator>
   )
-    
 };
+
+const CustomDrawerContent = ({navigation}) => {
+  return (
+    <DrawerContentScrollView>
+      <DrawerItem
+        activeTintColor={'#1E3342'}
+        activeBackgroundColor= {'rgba(58, 86, 114, 0.2)'}
+        labelStyle={{fontFamily: 'Montserrat-Bold', fontSize: 16}}
+        label="Home"
+        onPress={() => navigation.navigate('MainStack', {screen: 'Home'})}
+      />
+      <DrawerItem
+        activeTintColor={'#1E3342'}
+        activeBackgroundColor= {'rgba(58, 86, 114, 0.2)'}
+        labelStyle={{fontFamily: 'Montserrat-Bold', fontSize: 16}}
+        label="Create New Event"
+        onPress={() => navigation.navigate('Create New Event')}
+      />
+      <DrawerItem
+        activeTintColor={'#1E3342'}
+        activeBackgroundColor= {'rgba(58, 86, 114, 0.2)'}
+        labelStyle={{fontFamily: 'Montserrat-Bold', fontSize: 16}}
+        label="Sign Out"
+        onPress={() => navigation.navigate('Sign Out')}
+      />
+    </DrawerContentScrollView>
+  );
+}
 
 function App() {
   const [isLoading, setIsLoading] = useState(true);
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState();
 
   useEffect(() => {
     setTimeout(() => {
@@ -142,6 +173,7 @@ function App() {
   if (isLoading) {
     return <LoadingAuthScreen />;
   }
+
 
   return (
     <UserContext.Provider value={user}>
