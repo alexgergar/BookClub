@@ -66,79 +66,82 @@ export default class MainEvent extends Component {
     const {event} = this.state;
     return (
       <>
-      <MenuDrawerButton onPress={this.onMenuPress} />
-      <ScrollView contentContainerStyle={styles.container}>
-        {event === null ? (
-          <Image
-            style={styles.bookImageView}
-            source={require('../utils/bookPlaceholder.png')}
-            resizeMode={'cover'}
-          />
-        ) : (
-          <Image
-            style={styles.bookImageView}
-            source={{
-              uri:
-                event.bookForEvent.thumbnail ||
-                event.bookForEvent.smallThumbnail,
-            }}
-            resizeMode={'cover'}
-          />
-        )}
-        <View style={styles.backgroundContentContainer}>
-          <View style={styles.informationContentContainer}>
-            <View style={styles.textRowCenterAlign}>
-              <Text style={styles.dateText}>
-                {event !== null &&
-                  event.eventDate.date}
-              </Text>
-              <Text style={styles.spacerText}> at </Text>
-              {event !== null && 
-                <Text style={styles.dateText}>{event.eventDate.time}</Text>}
-            </View>
+        <MenuDrawerButton onPress={this.onMenuPress} />
+        <ScrollView contentContainerStyle={styles.container}>
+          {event === null ? (
+            <Image
+              style={styles.bookImageView}
+              source={require('../utils/bookPlaceholder.png')}
+              resizeMode={'cover'}
+            />
+          ) : (
+            <Image
+              style={styles.bookImageView}
+              source={{
+                uri:
+                  event.bookForEvent.thumbnail ||
+                  event.bookForEvent.smallThumbnail,
+              }}
+              resizeMode={'cover'}
+            />
+          )}
+          <View style={styles.backgroundContentContainer}>
+            <View style={styles.informationContentContainer}>
+              <View style={styles.textRowCenterAlign}>
+                <Text style={styles.dateText}>
+                  {event !== null && event.eventDate.date}
+                </Text>
+                <Text style={styles.spacerText}> at </Text>
+                {event !== null && (
+                  <Text style={styles.dateText}>{event.eventDate.time}</Text>
+                )}
+              </View>
 
-            {/* in the future maybe change this to a card component or a box that the user can click on to get more info on person, contact info, map, ect. see notes from 1.21.20 */}
-            <View style={{marginTop: 10}}>
-              {event !== null && (
-                <>
-                  <Text style={styles.hostNameText}>
-                    {event.host.displayName}
-                  </Text>
-                  <Text style={styles.addressText}>
-                    {event.eventLocation.address.streetAddress}
-                  </Text>
-                  <View style={styles.textRowCenterAlign}>
-                    <Text style={styles.cityStateZipText}>
-                      {event.eventLocation.address.city}{' '}
-                      {event.eventLocation.address.state},{' '}
-                      {event.eventLocation.address.zipcode}
+              {/* in the future maybe change this to a card component or a box that the user can click on to get more info on person, contact info, map, ect. see notes from 1.21.20 */}
+              <View style={{marginTop: 10}}>
+                {event !== null && (
+                  <>
+                    <Text style={styles.hostNameText}>
+                      {event.host.displayName}
                     </Text>
-                  </View>
-                </>
+                    <Text style={styles.addressText}>
+                      {event.eventLocation.address.streetAddress}
+                    </Text>
+                    <View style={styles.textRowCenterAlign}>
+                      <Text style={styles.cityStateZipText}>
+                        {event.eventLocation.address.city}{' '}
+                        {event.eventLocation.address.state},{' '}
+                        {event.eventLocation.address.zipcode}
+                      </Text>
+                    </View>
+                  </>
+                )}
+              </View>
+              {/* end of card data... */}
+              <View style={styles.hortizontalLine} />
+              <View style={styles.clickableDetailTabRow}>
+                <ActiveButton
+                  title="Event Details"
+                  type="clear"
+                  showButton={this.state.showEventDetail}
+                  onPress={this.onEventDetailPress}
+                />
+                <ActiveButton
+                  title="Book Details"
+                  type="clear"
+                  showButton={!this.state.showEventDetail}
+                  onPress={this.onBookDetailPress}
+                />
+              </View>
+              {this.state.showEventDetail && event !== null && (
+                <EventDetails event={event} />
               )}
-              
+              {!this.state.showEventDetail && event !== null && (
+                <BookDetails book={event.bookForEvent} />
+              )}
             </View>
-            {/* end of card data... */}
-            <View style={styles.hortizontalLine} />
-            <View style={styles.clickableDetailTabRow}>
-              <ActiveButton
-                title="Event Details"
-                type="clear"
-                showButton={this.state.showEventDetail}
-                onPress={this.onEventDetailPress}
-              />
-              <ActiveButton
-                title="Book Details"
-                type="clear"
-                showButton={!this.state.showEventDetail}
-                onPress={this.onBookDetailPress}
-              />
-            </View>
-            {this.state.showEventDetail && event !== null && <EventDetails event={event} />}
-            {!this.state.showEventDetail && event !== null && <BookDetails book={event.bookForEvent} />}  
           </View>
-        </View>
-      </ScrollView>
+        </ScrollView>
       </>
     );
   }
@@ -195,7 +198,7 @@ const styles = StyleSheet.create({
   },
   dateTextFiller: {
     height: 20,
-    backgroundColor: 'grey'
+    backgroundColor: 'grey',
   },
   spacerText: {
     textTransform: 'uppercase',

@@ -3,8 +3,6 @@ import {
   Text,
   View,
   StyleSheet,
-  Image,
-  Dimensions,
   SafeAreaView,
   ScrollView,
   TouchableHighlight,
@@ -20,7 +18,7 @@ import {FlatList} from 'react-native-gesture-handler';
 import axios from 'axios';
 import {nyTimesBestSellersList} from '../utils/urlFor';
 import LottieView from 'lottie-react-native';
-import {windowWidth, windowHeight, elevationShadowStyle} from '../style/baseStyles';
+import {windowHeight, elevationShadowStyle} from '../style/baseStyles';
 
 export default class Home extends Component {
   state = {
@@ -43,9 +41,7 @@ export default class Home extends Component {
     this.getUserInfoFromDB();
   }
 
-
   getUserInfoFromDB = () => {
-    console.log('in get user info');
     let user = this.context;
     firestore()
       .collection('users')
@@ -53,22 +49,23 @@ export default class Home extends Component {
       .onSnapshot(
         doc => {
           this.setState({
-          events: doc.data().events,
-          bookClubs: doc.data().bookClubs,
-          eventsFinishedFetching: true,
-          user: {
-            uid: user.uid,
-            displayName: doc.data().displayName,
-            firstName: doc.data().displayName.split(' ')[0],
-            email: doc.data().email,
-            phoneNumber: doc.data().phoneNumber,
-            avatarURL: doc.data().avatarURL,
-          },
-        });
-        }, error => {
+            events: doc.data().events,
+            bookClubs: doc.data().bookClubs,
+            eventsFinishedFetching: true,
+            user: {
+              uid: user.uid,
+              displayName: doc.data().displayName,
+              firstName: doc.data().displayName.split(' ')[0],
+              email: doc.data().email,
+              phoneNumber: doc.data().phoneNumber,
+              avatarURL: doc.data().avatarURL,
+            },
+          });
+        },
+        error => {
           console.log(error);
-        }
-      )
+        },
+      );
   };
 
   getNYTimesList = genre => {
@@ -116,22 +113,22 @@ export default class Home extends Component {
 
   onEventItemPress = eventID => {
     this.props.navigation.navigate('MainEvent', {
-        eventID: eventID,
+      eventID: eventID,
     });
   };
 
   onSectionHeaderPress = genre => {
     if (
       genre === 'hardcover-nonfiction' &&
-      this.state.nonFictionBooks.length == 0
+      this.state.nonFictionBooks.length === 0
     ) {
-      this.getNYTimesList(`hardcover-nonfiction`);
+      this.getNYTimesList('hardcover-nonfiction');
     }
     if (
       genre === 'graphic-books-and-manga' &&
-      this.state.graphicNovels.length == 0
+      this.state.graphicNovels.length === 0
     ) {
-      this.getNYTimesList(`graphic-books-and-manga`);
+      this.getNYTimesList('graphic-books-and-manga');
     }
     this.setState({discoverSection: genre});
   };
@@ -153,15 +150,16 @@ export default class Home extends Component {
     } = this.state;
     return (
       <SafeAreaView style={styles.container}>
-        {eventsFinishedFetching == false || discoverFinishedFetching == false && (
-          <View style={{alignItems: 'center'}}>
-            <LottieView
+        {eventsFinishedFetching === false ||
+          (discoverFinishedFetching == false && (
+            <View style={{alignItems: 'center'}}>
+              <LottieView
               source={require('../utils/loading-book-blue.json')}
               autoPlay
               loop
             />
-          </View>
-        )}
+            </View>
+          ))}
         {eventsFinishedFetching && discoverFinishedFetching && (
           <MenuDrawerButton onPress={this.onMenuPress} />
         )}
@@ -180,38 +178,36 @@ export default class Home extends Component {
                 style={{width: 70, height: 70, justifyContent: 'flex-end'}}
               />
             </View>
-            {events.length > 0 && (
+            {events && events.length > 0 && (
               <View>
                 <View style={styles.headlineView}>
-                  <Text style={styles.homeHeadlineOneText}>Upcoming Events</Text>
+                  <Text style={styles.homeHeadlineOneText}>
+                    Upcoming Events
+                  </Text>
                 </View>
                 <View style={styles.topHorizontalCard}>
-                    <FlatList
-                      horizontal
-                      data={events}
-                      keyExtractor={item => item.eventID.toString()}
-                      renderItem={({item}) => (
-                        <EventCardHorizontal
-                          date={item.date}
-                          time={item.time}
-                          bookTitle={item.bookTitle}
-                          bookCover={item.bookCover}
-                          eventID={item.eventID}
-                          onEventItemPress={this.onEventItemPress}
-                        />
-                      )}
-                    />
+                  <FlatList
+                    horizontal
+                    data={events}
+                    keyExtractor={item => item.eventID.toString()}
+                    renderItem={({item}) => (
+                      <EventCardHorizontal
+                        date={item.date}
+                        time={item.time}
+                        bookTitle={item.bookTitle}
+                        bookCover={item.bookCover}
+                        eventID={item.eventID}
+                        onEventItemPress={this.onEventItemPress}
+                      />
+                    )}
+                  />
                 </View>
               </View>
             )}
             <View style={styles.quickActionButtonsView}>
               <TouchableHighlight
                 style={styles.touchableHighlightView}
-                onPress={() =>
-                  console.log(
-                    'this will take your to the list of user bookclubs',
-                  )
-                }>
+                >
                 <View style={styles.quickActionButton}>
                   <Icon name="ios-people" type="ionicon" color="#3A5673" />
                   <Text style={styles.quickActionButtonTextStyle}>
@@ -282,8 +278,6 @@ export default class Home extends Component {
     );
   }
 }
-const bookListItemWidth = windowWidth * 0.8 * 0.3;
-const bookListItemHeight = bookListItemWidth * 1.6 + windowHeight * 0.06;
 
 const styles = StyleSheet.create({
   container: {

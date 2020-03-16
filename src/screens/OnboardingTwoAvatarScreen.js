@@ -15,6 +15,7 @@ import UserContext from '../context/UserContext';
 import BackgroundContainer from '../components/BackgroundContainer';
 import firestore from '@react-native-firebase/firestore';
 import storage from '@react-native-firebase/storage';
+import auth from '@react-native-firebase/auth';
 import { CommonActions } from '@react-navigation/native';
 
 export const ListOfAvatars = props => {
@@ -63,6 +64,12 @@ export default class OnboardingTwoAvatar extends Component {
       .then(url => this.handleCreateUserInDB(url))
       .catch(error => console.log(error));
   }
+
+  handleUpdateToGoogleAuthProfile = async authUpdate => {
+    await auth().currentUser.updateProfile(authUpdate)
+    .then(() => this.props.navigation.navigate('Loading'))
+    .catch(error => console.log(error))
+  }
   
   handleCreateUserInDB = async url => {
     let user = this.context;
@@ -74,23 +81,22 @@ export default class OnboardingTwoAvatar extends Component {
       events: [],
       bookClubs: [],
     };
+    const authUpdate = {
+      displayName: `${firstName} ${lastName}`,
+      photoURL: url,
+    }
     await firestore().collection('users')
       .doc(user.uid)
       .set(update)
-      .then(() => this.props.navigation.dispatch(
-        CommonActions.reset({
-          index: 0,
-          routes: [
-            { name: 'Home' },
-          ],
-        })
-      ))
+      .then(() => this.handleUpdateToGoogleAuthProfile(authUpdate))
       .catch(error => console.log(error))
   }
+
 
   handleUpdateToProfile = async () => {
     const {idSelection} = this.state;
     this.handleGetAvatarRefFromGoogleStorage(idSelection);
+
   };
 
   handleContinuePress = () => {

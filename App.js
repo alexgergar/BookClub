@@ -19,13 +19,13 @@ import BookViewScreen from './src/screens/BookViewScreen';
 import UserContext from './src/context/UserContext';
 import {NavigationContainer} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
-import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
-import {createDrawerNavigator, DrawerContentScrollView,
-  DrawerItemList,
-  DrawerItem,} from '@react-navigation/drawer';
+import {
+  createDrawerNavigator,
+  DrawerContentScrollView,
+  DrawerItem,
+} from '@react-navigation/drawer';
 
 const Stack = createStackNavigator();
-const Tab = createBottomTabNavigator();
 const Drawer = createDrawerNavigator();
 
 const MainStack = () => (
@@ -71,15 +71,6 @@ const CreateStack = () => (
 const AuthStack = () => (
   <Stack.Navigator initialRouteName="SignUpLogin" headerMode="none">
     <Stack.Screen name="SignUpLogin" component={SignUpLoginScreen} />
-    <Stack.Screen
-      name="OnboardingOneProfile"
-      component={OnboardingOneProfileScreen}
-    />
-    <Stack.Screen
-      name="OnboardingTwoAvatar"
-      component={OnboardingTwoAvatarScreen}
-    />
-    <Stack.Screen name="LoadingAuth" component={LoadingAuthScreen} />
   </Stack.Navigator>
 );
 
@@ -93,17 +84,16 @@ const OnBoardingStack = () => (
       name="OnboardingTwoAvatar"
       component={OnboardingTwoAvatarScreen}
     />
+    <Stack.Screen name="Loading" component={LoadingAuthScreen} />
   </Stack.Navigator>
 );
 
 const SignOutStack = () => (
   <Stack.Navigator initialRouteName="Sign Out" headerMode="none">
     <Stack.Screen name="Sign Out" component={SignOutScreen} />
-    <Stack.Screen name="AuthStack" component={AuthStack} />
+    <Stack.Screen name="SignUpLogin" component={SignUpLoginScreen} />
   </Stack.Navigator>
 );
-
-
 
 const DrawerNav = () => {
   return (
@@ -114,13 +104,14 @@ const DrawerNav = () => {
         activeBackgroundColor: 'rgba(58, 86, 114, 0.2)',
         labelStyle: {fontFamily: 'Montserrat-Bold'},
       }}
-      drawerContent={props => <CustomDrawerContent navigation={props.navigation} />}
-      >
+      drawerContent={props => (
+        <CustomDrawerContent navigation={props.navigation} />
+      )}>
       <Drawer.Screen name="MainStack" component={MainStack} />
       <Drawer.Screen name="Create New Event" component={CreateStack} />
       <Drawer.Screen name="Sign Out" component={SignOutStack} />
     </Drawer.Navigator>
-  )
+  );
 };
 
 const CustomDrawerContent = ({navigation}) => {
@@ -128,28 +119,28 @@ const CustomDrawerContent = ({navigation}) => {
     <DrawerContentScrollView>
       <DrawerItem
         activeTintColor={'#1E3342'}
-        activeBackgroundColor= {'rgba(58, 86, 114, 0.2)'}
+        activeBackgroundColor={'rgba(58, 86, 114, 0.2)'}
         labelStyle={{fontFamily: 'Montserrat-Bold', fontSize: 16}}
         label="Home"
         onPress={() => navigation.navigate('MainStack', {screen: 'Home'})}
       />
       <DrawerItem
         activeTintColor={'#1E3342'}
-        activeBackgroundColor= {'rgba(58, 86, 114, 0.2)'}
+        activeBackgroundColor={'rgba(58, 86, 114, 0.2)'}
         labelStyle={{fontFamily: 'Montserrat-Bold', fontSize: 16}}
         label="Create New Event"
         onPress={() => navigation.navigate('Create New Event')}
       />
       <DrawerItem
         activeTintColor={'#1E3342'}
-        activeBackgroundColor= {'rgba(58, 86, 114, 0.2)'}
+        activeBackgroundColor={'rgba(58, 86, 114, 0.2)'}
         labelStyle={{fontFamily: 'Montserrat-Bold', fontSize: 16}}
         label="Sign Out"
         onPress={() => navigation.navigate('Sign Out')}
       />
     </DrawerContentScrollView>
   );
-}
+};
 
 function App() {
   const [isLoading, setIsLoading] = useState(true);
@@ -164,7 +155,9 @@ function App() {
   useEffect(() => {
     function changeAuthState(user) {
       setUser(user);
-      if (isLoading) setIsLoading(false);
+      if (isLoading) {
+        setIsLoading(false);
+      }
     }
     const subscriber = auth().onAuthStateChanged(changeAuthState);
     return subscriber;
@@ -174,12 +167,15 @@ function App() {
     return <LoadingAuthScreen />;
   }
 
-
   return (
     <UserContext.Provider value={user}>
       <NavigationContainer>
         {user ? (
-          <DrawerNav />
+          user.displayName === null ? (
+            <OnBoardingStack />
+          ) : (
+            <DrawerNav />
+          )
         ) : (
           <AuthStack />
         )}

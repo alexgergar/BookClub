@@ -85,9 +85,7 @@ export default class SelectedBook extends Component {
           {
             updatedSelectedBook: additionalBookInfo,
             hideContinueButton: false,
-          },
-          () => console.log(this.state.updatedSelectedBook),
-        );
+          });
       })
       .catch(error => console.log(error));
   }

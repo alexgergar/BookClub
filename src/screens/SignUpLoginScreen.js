@@ -6,10 +6,10 @@ import {
   SafeAreaView,
   Dimensions,
   Keyboard,
+  TouchableOpacity,
 } from 'react-native';
 import auth from '@react-native-firebase/auth';
 import {Input, Button} from 'react-native-elements';
-import {TouchableHighlight} from 'react-native-gesture-handler';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import validateEmail from '../utils/validateEmail';
 import UserContext from '../context/UserContext';
@@ -24,6 +24,10 @@ export default class SignUpLogin extends React.Component {
   };
 
   componentDidMount() {
+    this.keyboardDidShowListener = Keyboard.addListener(
+      'keyboardDidShow',
+      this._keyboardDidShow,
+    );
     this.keyboardDidHideListener = Keyboard.addListener(
       'keyboardDidHide',
       this._keyboardDidHide,
@@ -31,8 +35,15 @@ export default class SignUpLogin extends React.Component {
   }
 
   componentWillUnmount() {
+    this.keyboardDidShowListener.remove();
     this.keyboardDidHideListener.remove();
   }
+
+  _keyboardDidShow = () => {
+    this.setState({
+      showBottomBar: false,
+    });
+  };
 
   _keyboardDidHide = () => {
     this.setState({
@@ -96,7 +107,7 @@ export default class SignUpLogin extends React.Component {
       <SafeAreaView style={styles.safeAreaViewContainer}>
         <View style={styles.topContainer}>
           <View style={styles.authOptionsRow}>
-            <TouchableHighlight onPress={() => this.onLoginTextPress()}>
+            <TouchableOpacity onPress={() => this.onLoginTextPress()}>
               <View>
                 <Text
                   style={
@@ -110,8 +121,10 @@ export default class SignUpLogin extends React.Component {
                   <View style={styles.authOptionsActiveLine} />
                 )}
               </View>
-            </TouchableHighlight>
-            <TouchableHighlight onPress={() => this.onSignUpTextPress()}>
+            </TouchableOpacity>
+            <TouchableOpacity
+              // activeOpacity={0.05}
+              onPress={() => this.onSignUpTextPress()}>
               <View style={styles.signUpText}>
                 <Text
                   style={
@@ -125,7 +138,7 @@ export default class SignUpLogin extends React.Component {
                   <View style={styles.authOptionsActiveLine} />
                 )}
               </View>
-            </TouchableHighlight>
+            </TouchableOpacity>
           </View>
         </View>
         <KeyboardAwareScrollView>
@@ -176,6 +189,10 @@ export default class SignUpLogin extends React.Component {
                 errorStyle={{color: 'red'}}
                 errorMessage={this.state.errorMessage}
                 keyboardType="email-address"
+                onSubmitEditing={() => {
+                  this.passwordInput.focus();
+                }}
+                blurOnSubmit={false}
               />
               <Input
                 containerStyle={styles.inputContainer}
@@ -189,6 +206,10 @@ export default class SignUpLogin extends React.Component {
                 value={this.state.password}
                 errorStyle={{color: 'red'}}
                 errorMessage={this.state.errorMessage}
+                ref={input => {
+                  this.passwordInput = input;
+                }}
+                onSubmitEditing={this.handleSubmit}
               />
             </View>
           </View>

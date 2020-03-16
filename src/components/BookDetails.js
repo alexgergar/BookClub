@@ -1,14 +1,5 @@
 import React, {Component} from 'react';
-import {
-  Text,
-  View,
-  StyleSheet,
-  Dimensions,
-  FlatList,
-  Image,
-} from 'react-native';
-import {bookClubEvent} from '../utils/testInfo';
-import {Icon, Avatar} from 'react-native-elements';
+import {Text, View, StyleSheet, Dimensions, FlatList} from 'react-native';
 import BookcoverImage from './BookcoverImage';
 import ViewMoreText from 'react-native-view-more-text';
 
@@ -16,7 +7,7 @@ export default class BookDetails extends Component {
   static defaultProps = {
     showTitleAuthor: true,
   };
-  
+
   renderViewMore = onPress => {
     return (
       <Text style={styles.viewMore} onPress={onPress}>
@@ -34,72 +25,75 @@ export default class BookDetails extends Component {
   };
 
   renderBookCovers = ({item}) => {
-    if (item.title.toLowerCase() !== this.props.book.title.toLowerCase() && item.coverArt !== `https://s.gr-assets.com/assets/nophoto/book/111x148-bcc042a9c91a29c1d680899eff700a03.png`) {
+    if (
+      item.title.toLowerCase() !== this.props.book.title.toLowerCase() &&
+      item.coverArt !==
+        'https://s.gr-assets.com/assets/nophoto/book/111x148-bcc042a9c91a29c1d680899eff700a03.png'
+    ) {
       return (
         <BookcoverImage
-          source={{ uri: item.coverArt }}
+          source={{uri: item.coverArt}}
           style={styles.bookCoverList}
         />
       );
     }
-  }
+  };
 
   render() {
     const {book, showTitleAuthor, headlineText} = this.props;
-    const author = book.authors !== '' && book.authors !== undefined ? book.authors : book.author;
+    const author =
+      book.authors !== '' && book.authors !== undefined
+        ? book.authors
+        : book.author;
     return (
       <View>
-       {showTitleAuthor && (
-         <>
+        {showTitleAuthor && (
+          <>
             <View style={styles.headlineView}>
-              {book !== null &&
-                <Text style={styles.bookTitleTextHeadline}>
-                  {book.title}
-                </Text>}
+              {book !== null && (
+                <Text style={styles.bookTitleTextHeadline}>{book.title}</Text>
+              )}
             </View>
             <View style={styles.headlineView}>
-              {book !== null &&
-                <Text style={styles.bookAuthorTextHeadline}>
-                  {author}
-                </Text>}
+              {book !== null && (
+                <Text style={styles.bookAuthorTextHeadline}>{author}</Text>
+              )}
             </View>
-         </>
-       )}
-        
+          </>
+        )}
+
         <View style={styles.bookHeadlineView}>
           <Text style={[styles.headlineText, headlineText]}>Description</Text>
-            <ViewMoreText
-              numberOfLines={3}
-              renderViewMore={this.renderViewMore}
-              renderViewLess={this.renderViewLess}
-              textStyle={styles.bookDescriptionText}>
+          <ViewMoreText
+            numberOfLines={3}
+            renderViewMore={this.renderViewMore}
+            renderViewLess={this.renderViewLess}
+            textStyle={styles.bookDescriptionText}>
             <Text>{book.description}</Text>
-            </ViewMoreText>
+          </ViewMoreText>
         </View>
         <View style={styles.bookHeadlineView}>
           <Text style={[styles.headlineText, headlineText]}>
             About {author}
           </Text>
-            <ViewMoreText
-              numberOfLines={3}
-              renderViewMore={this.renderViewMore}
-              renderViewLess={this.renderViewLess}
-              textStyle={styles.bookDescriptionText}>
+          <ViewMoreText
+            numberOfLines={3}
+            renderViewMore={this.renderViewMore}
+            renderViewLess={this.renderViewLess}
+            textStyle={styles.bookDescriptionText}>
             <Text>{book.authorBio}</Text>
-            </ViewMoreText>
+          </ViewMoreText>
         </View>
 
         <View style={styles.bookHeadlineView}>
-            <Text style={styles.headlineText}>
-            Other Books by {author}
-            </Text>
+          <Text style={styles.headlineText}>Other Books by {author}</Text>
           <View style={styles.bookCoversListView}>
-              <FlatList
-                horizontal={true}
-                data={book.otherBooksByAuthor}
-                keyExtractor={(item, index) => index.toString()}
-                renderItem={this.renderBookCovers}
-              />
+            <FlatList
+              horizontal={true}
+              data={book.otherBooksByAuthor}
+              keyExtractor={(item, index) => index.toString()}
+              renderItem={this.renderBookCovers}
+            />
           </View>
         </View>
       </View>
@@ -109,7 +103,6 @@ export default class BookDetails extends Component {
 
 // This is to get the window width and height for styling
 const windowWidth = Dimensions.get('window').width;
-const windowHeight = Dimensions.get('window').height;
 const bookCoverListImageWidth = windowWidth * 0.15;
 const bookCoverListImageHeight = bookCoverListImageWidth * 1.6;
 
