@@ -3,8 +3,8 @@
 BookClub is built with React Native. Created to help solve the problem of finding the perfect book and organzing a bookclub event by keeping it all in one place. Backend utilizes Google Firebase Authentication, Firebase Cloud Database and Firebase Storage, API calls from GoogleReads.com, Google Books and NYTimes. 
 This was a study for full stack mobile design to combine high-end UX/UI design with scalable backend logic to create a real world working app that is ready to launch. 
 
-![BookClub HomePage Demo](./utils/BookClub-ScrollingHomepage.gif)
-![BookClub Create Event Demo](./utils/Create1.gif)
+![BookClub HomePage Demo](./src/utils/BookClub-ScrollingHomepage.gif)
+![BookClub Create Event Demo](./src/utils/Create1.gif)
 
 # Getting Started
 
@@ -16,7 +16,6 @@ This was a study for full stack mobile design to combine high-end UX/UI design w
 
 * ## IOS
   * Run ```cd ios pod install```
-  * After that install, ```cd ..```
 
 * ## Android
   * No Steps required
