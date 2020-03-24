@@ -51,7 +51,7 @@
 		B8BCA5F8BCED4C7387A3920C /* Montserrat-SemiBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = B1D1F8945F2D4CC9840BBC64 /* Montserrat-SemiBold.ttf */; };
 		BD0CF85DB8FA44CE8C16D85F /* Montserrat-LightItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 9159762ADDDF4F8ABC8DD4F4 /* Montserrat-LightItalic.ttf */; };
 		C8C1CAAAEB3647E2BA519611 /* AntDesign.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 66C7EBC5A5394BFBAC6FBCBB /* AntDesign.ttf */; };
-		D448442B23D6555200923CBB /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = D448442A23D6555200923CBB /* GoogleService-Info.plist */; };
+		D42AC0C9242A893B00D510BF /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = D42AC0C6242A893A00D510BF /* GoogleService-Info.plist */; };
 		D4FF4B3924169C6B00E1C583 /* File.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4FF4B3824169C6B00E1C583 /* File.swift */; };
 		E69EF11B3639426FB2F54A65 /* FontAwesome5_Brands.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 618B7BB7FA3546388210FA84 /* FontAwesome5_Brands.ttf */; };
 		E82172464F7D4BC997376A76 /* Montserrat-Black.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 2BA20E444FC64201ACFBDFAC /* Montserrat-Black.ttf */; };
@@ -148,7 +148,7 @@
 		BF4E8A27DB1A46EBB819D791 /* Karla-BoldItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Karla-BoldItalic.ttf"; path = "../assets/fonts/Karla-BoldItalic.ttf"; sourceTree = "<group>"; };
 		CBDD8F5355D14566B5D4643E /* FontAwesome5_Regular.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = FontAwesome5_Regular.ttf; path = "../node_modules/react-native-vector-icons/Fonts/FontAwesome5_Regular.ttf"; sourceTree = "<group>"; };
 		D40ED6D523E3BC4C002EDAD2 /* RNGestureHandler.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RNGestureHandler.xcodeproj; path = "../node_modules/react-native-gesture-handler/ios/RNGestureHandler.xcodeproj"; sourceTree = "<group>"; };
-		D448442A23D6555200923CBB /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
+		D42AC0C6242A893A00D510BF /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		D4FF4B3724169C6A00E1C583 /* BookClub-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "BookClub-Bridging-Header.h"; sourceTree = "<group>"; };
 		D4FF4B3824169C6B00E1C583 /* File.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = File.swift; sourceTree = "<group>"; };
 		D8E15F868E0E4B23BA2659EA /* Karla-Regular.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Karla-Regular.ttf"; path = "../assets/fonts/Karla-Regular.ttf"; sourceTree = "<group>"; };
@@ -316,8 +316,8 @@
 		83CBB9F61A601CBA00E9B192 = {
 			isa = PBXGroup;
 			children = (
+				D42AC0C6242A893A00D510BF /* GoogleService-Info.plist */,
 				D4FF4B3824169C6B00E1C583 /* File.swift */,
-				D448442A23D6555200923CBB /* GoogleService-Info.plist */,
 				13B07FAE1A68108700A75B9A /* BookClub */,
 				832341AE1AAA6A7D00B99B32 /* Libraries */,
 				00E356EF1AD99517003FC87E /* BookClubTests */,
@@ -520,7 +520,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
-				D448442B23D6555200923CBB /* GoogleService-Info.plist in Resources */,
 				13B07FBD1A68108700A75B9A /* LaunchScreen.xib in Resources */,
 				1E880AC16E214CADBD0AFB1B /* Karla-Bold.ttf in Resources */,
 				69E846BF233B4A48A2448CE3 /* Karla-BoldItalic.ttf in Resources */,
@@ -560,6 +559,7 @@
 				282354C52AE048EC99F0A2BC /* Octicons.ttf in Resources */,
 				F9767F77A130441CB2FE9DEF /* SimpleLineIcons.ttf in Resources */,
 				40FDD816E28848D4AE70D449 /* Zocial.ttf in Resources */,
+				D42AC0C9242A893B00D510BF /* GoogleService-Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
