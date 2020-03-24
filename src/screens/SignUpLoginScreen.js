@@ -19,7 +19,7 @@ export default class SignUpLogin extends React.Component {
     email: '',
     password: '',
     errorMessage: null,
-    showSignUp: false,
+    showSignUp: true,
     showBottomBar: true,
   };
 

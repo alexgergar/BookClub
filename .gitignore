@@ -2,6 +2,8 @@
 #
 .DS_Store
 
+
+
 # Xcode
 #
 build/
@@ -58,3 +60,7 @@ buck-out/
 
 # CocoaPods
 /ios/Pods/
+
+# Google Console / Firebase
+/ios/GoogleService-Info.plist
+/android/app/google-services.json
