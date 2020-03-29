@@ -4,7 +4,7 @@ BookClub is built with React Native. Created to help solve the problem of findin
 This was a study for full stack mobile design to combine high-end UX/UI design with scalable backend logic to create a real world working app that is ready to launch. 
 
 <img src="./src/utils/BookClub-ScrollingHomepage.gif" alt="BookClub HomePage Demo" width="30%"> 
-<img src="./src/utils/Create-1.gif" alt="BookClub Find Book Demo" width="30%">
+<img src="./src/utils/Create1.gif" alt="BookClub Find Book Demo" width="30%">
 
 # Getting Started
 
