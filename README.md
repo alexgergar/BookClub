@@ -5,7 +5,9 @@ This was a study for full stack mobile design to combine high-end UX/UI design w
 
 <img src="./src/utils/BookClub-ScrollingHomepage.gif" alt="BookClub HomePage Demo" width="30%"> |
 <img src="./src/utils/createnewandroid-full.gif" alt="BookClub create new full Demo" width="30%"> |
-<img src="./src/utils/Create1.gif" alt="BookClub Find Book Demo" width="30%"> 
+<img src="./src/utils/Create1.gif" alt="BookClub Find Book Demo" width="30%"> |
+<img src="./src/utils/signinlogout.gif" alt="BookClub sign in log out Demo" width="30%"> |
+<img src="./src/utils/NYTIMESSeeAndroid.gif" alt="BookClub ny times Demo" width="30%"> |
 
 # Getting Started
 
