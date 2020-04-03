@@ -15,6 +15,7 @@ import CreateEventAttendeesScreen from './src/screens/CreateEventAttendeesScreen
 import CreateEventVerifyInfoScreen from './src/screens/CreateEventVerifyInfoScreen';
 import CreateEventPickDateScreen from './src/screens/CreateEventPickDateScreen';
 import CreateEventNewClubNameScreen from './src/screens/CreateEventNewClubNameScreen';
+import LoadingAfterSignUpScreen from './src/screens/LoadingAfterSignUpScreen';
 import BookViewScreen from './src/screens/BookViewScreen';
 import UserContext from './src/context/UserContext';
 import {NavigationContainer} from '@react-navigation/native';
@@ -64,7 +65,6 @@ const CreateStack = () => (
       name="CreateEventNewClubName"
       component={CreateEventNewClubNameScreen}
     />
-    <Stack.Screen name="LoadingAuth" component={LoadingAuthScreen} />
   </Stack.Navigator>
 );
 
@@ -84,14 +84,13 @@ const OnBoardingStack = () => (
       name="OnboardingTwoAvatar"
       component={OnboardingTwoAvatarScreen}
     />
-    <Stack.Screen name="Loading" component={LoadingAuthScreen} />
+    {/* <Stack.Screen name="Loading" component={LoadingAuthScreen} /> */}
   </Stack.Navigator>
 );
 
 const SignOutStack = () => (
   <Stack.Navigator initialRouteName="Sign Out" headerMode="none">
     <Stack.Screen name="Sign Out" component={SignOutScreen} />
-    <Stack.Screen name="SignUpLogin" component={SignUpLoginScreen} />
   </Stack.Navigator>
 );
 
@@ -161,6 +160,17 @@ function App() {
     }
     const subscriber = auth().onAuthStateChanged(changeAuthState);
     return subscriber;
+  }, []);
+
+  useEffect(() => {
+    function changeUserState(user) {
+      setUser(user);
+      if (isLoading) {
+        setIsLoading(false);
+      }
+    }
+    const userUpdated = auth().onUserChanged(changeUserState);
+    return userUpdated;
   }, []);
 
   if (isLoading) {

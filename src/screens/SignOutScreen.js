@@ -16,7 +16,6 @@ export default class SignOut extends React.Component {
   handleLogout = async () => {
     await auth()
       .signOut()
-      .then(() => this.props.navigation.navigate('SignUpLogin'))
       .catch(error => this.setState({errorMessage: error.message}));
   };
 

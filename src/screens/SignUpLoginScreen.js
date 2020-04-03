@@ -98,7 +98,6 @@ export default class SignUpLogin extends React.Component {
     const {email, password} = this.state;
     await auth()
       .createUserWithEmailAndPassword(email, password)
-      .then(() => this.props.navigation.navigate('OnboardingOneProfile'))
       .catch(error => this.setState({errorMessage: error.message}));
   };
 
@@ -217,18 +216,7 @@ export default class SignUpLogin extends React.Component {
 
         {this.state.showBottomBar && (
           <>
-            {/* {!this.state.showSignUp && (
-              <Button
-                containerStyle={styles.passwordButtonContainer}
-                titleStyle={styles.passwordButton}
-                buttonStyle={{paddingLeft: 0}}
-                title="Forgot Password?"
-                type="clear"
-              />
-            )} */}
-
             <View style={styles.bottomGreyBarView} />
-
             <View style={styles.buttonContainer}>
               <Button
                 buttonStyle={styles.submitButtonViewContainer}

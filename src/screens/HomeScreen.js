@@ -39,6 +39,7 @@ export default class Home extends Component {
 
   componentWillUnmount() {
     this.getUserInfoFromDB();
+    this.getNYTimesList('hardcover-fiction');
   }
 
   getUserInfoFromDB = () => {
@@ -154,10 +155,10 @@ export default class Home extends Component {
           (discoverFinishedFetching == false && (
             <View style={{alignItems: 'center'}}>
               <LottieView
-              source={require('../utils/loading-book-blue.json')}
-              autoPlay
-              loop
-            />
+                source={require('../utils/loading-book-blue.json')}
+                autoPlay
+                loop
+              />
             </View>
           ))}
         {eventsFinishedFetching && discoverFinishedFetching && (
@@ -205,9 +206,7 @@ export default class Home extends Component {
               </View>
             )}
             <View style={styles.quickActionButtonsView}>
-              <TouchableHighlight
-                style={styles.touchableHighlightView}
-                >
+              <TouchableHighlight style={styles.touchableHighlightView}>
                 <View style={styles.quickActionButton}>
                   <Icon name="ios-people" type="ionicon" color="#3A5673" />
                   <Text style={styles.quickActionButtonTextStyle}>

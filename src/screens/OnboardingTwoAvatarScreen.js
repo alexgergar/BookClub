@@ -15,8 +15,6 @@ import UserContext from '../context/UserContext';
 import BackgroundContainer from '../components/BackgroundContainer';
 import firestore from '@react-native-firebase/firestore';
 import storage from '@react-native-firebase/storage';
-import auth from '@react-native-firebase/auth';
-import { CommonActions } from '@react-navigation/native';
 
 export const ListOfAvatars = props => {
   const displayedAvatarList = props.avatarList.map(item => (
@@ -31,12 +29,14 @@ export const ListOfAvatars = props => {
         <Image source={item.src} style={[styles.galleryImage]} />
       </View>
     </TouchableOpacity>
-  )); 
+  ));
   return (
-    <View style={{flex: 1,}}>
-      <ScrollView contentContainerStyle={styles.listView}>{displayedAvatarList}</ScrollView>
+    <View style={{flex: 1}}>
+      <ScrollView contentContainerStyle={styles.listView}>
+        {displayedAvatarList}
+      </ScrollView>
     </View>
-  )
+  );
 };
 
 export default class OnboardingTwoAvatar extends Component {
@@ -63,14 +63,20 @@ export default class OnboardingTwoAvatar extends Component {
       .getDownloadURL()
       .then(url => this.handleCreateUserInDB(url))
       .catch(error => console.log(error));
-  }
+  };
 
   handleUpdateToGoogleAuthProfile = async authUpdate => {
-    await auth().currentUser.updateProfile(authUpdate)
-    .then(() => this.props.navigation.navigate('Loading'))
-    .catch(error => console.log(error))
-  }
-  
+    let user = this.context;
+
+    await user
+      .updateProfile({
+        displayName: authUpdate.displayName,
+        photoURL: authUpdate.photoURL,
+      })
+      .then(() => user.reload())
+      .catch(error => console.log(error));
+  };
+
   handleCreateUserInDB = async url => {
     let user = this.context;
     const {firstName, lastName, phoneNumber} = this.props.route.params;
@@ -81,26 +87,17 @@ export default class OnboardingTwoAvatar extends Component {
       events: [],
       bookClubs: [],
     };
-    const authUpdate = {
-      displayName: `${firstName} ${lastName}`,
-      photoURL: url,
-    }
-    await firestore().collection('users')
+    await firestore()
+      .collection('users')
       .doc(user.uid)
       .set(update)
-      .then(() => this.handleUpdateToGoogleAuthProfile(authUpdate))
-      .catch(error => console.log(error))
-  }
-
-
-  handleUpdateToProfile = async () => {
-    const {idSelection} = this.state;
-    this.handleGetAvatarRefFromGoogleStorage(idSelection);
-
+      .then(() => this.handleUpdateToGoogleAuthProfile(update))
+      .catch(error => console.log(error));
   };
 
   handleContinuePress = () => {
-    this.handleUpdateToProfile();
+    const {idSelection} = this.state;
+    this.handleGetAvatarRefFromGoogleStorage(idSelection);
   };
 
   render() {
@@ -133,12 +130,12 @@ export default class OnboardingTwoAvatar extends Component {
               />
             </View>
           )}
-            <ListOfAvatars
-              avatarList={avatarImages}
-              handleAvatarAddPress={this.handleAvatarAddPress}
-              avatarSelected={this.state.avatarSelected}
-              idSelection={this.state.idSelection}
-            />
+          <ListOfAvatars
+            avatarList={avatarImages}
+            handleAvatarAddPress={this.handleAvatarAddPress}
+            avatarSelected={this.state.avatarSelected}
+            idSelection={this.state.idSelection}
+          />
         </View>
       </BackgroundContainer>
     );
@@ -180,7 +177,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   selectedAvatarView: {
-    height: windowHeight * .25,
+    height: windowHeight * 0.25,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -189,7 +186,6 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   listView: {
-    // height: windowHeight * .65,
     flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'space-between',

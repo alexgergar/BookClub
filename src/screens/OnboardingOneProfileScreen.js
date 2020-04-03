@@ -1,14 +1,6 @@
 import React, {Component} from 'react';
-import {
-  Text,
-  View,
-  StyleSheet,
-  SafeAreaView,
-  Image,
-  TextInput,
-  Dimensions,
-} from 'react-native';
-import {Input, Button} from 'react-native-elements';
+import {View, StyleSheet, Image, Dimensions} from 'react-native';
+import {Input} from 'react-native-elements';
 import UserContext from '../context/UserContext';
 import BackgroundContainer from '../components/BackgroundContainer';
 
