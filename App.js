@@ -15,7 +15,6 @@ import CreateEventAttendeesScreen from './src/screens/CreateEventAttendeesScreen
 import CreateEventVerifyInfoScreen from './src/screens/CreateEventVerifyInfoScreen';
 import CreateEventPickDateScreen from './src/screens/CreateEventPickDateScreen';
 import CreateEventNewClubNameScreen from './src/screens/CreateEventNewClubNameScreen';
-import LoadingAfterSignUpScreen from './src/screens/LoadingAfterSignUpScreen';
 import BookViewScreen from './src/screens/BookViewScreen';
 import UserContext from './src/context/UserContext';
 import {NavigationContainer} from '@react-navigation/native';
